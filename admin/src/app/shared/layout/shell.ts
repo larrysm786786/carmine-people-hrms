@@ -28,7 +28,9 @@ export class Shell {
     this.breakpointObserver.observe(Breakpoints.Handset).pipe(map((result) => result.matches)),
     { initialValue: false },
   );
-  protected readonly sidenavOpened = signal(true);
+  // Only drives the phone-width overlay drawer (desktop keeps the sidenav permanently open),
+  // so it starts closed — otherwise every page load on a phone opens covered by the menu.
+  protected readonly sidenavOpened = signal(false);
 
   toggleSidenav(): void {
     this.sidenavOpened.set(!this.sidenavOpened());

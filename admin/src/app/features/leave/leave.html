@@ -18,6 +18,7 @@
       @if (errorMessage()) {
         <p class="error">{{ errorMessage() }}</p>
       }
+      <div class="table-scroll">
       <table mat-table [dataSource]="items()" class="mat-elevation-z0">
         <ng-container matColumnDef="employee">
           <th mat-header-cell *matHeaderCellDef>Employee</th>
@@ -68,6 +69,7 @@
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
       </table>
+      </div>
 
       @if (!isLoading() && items().length === 0) {
         <p class="empty">No leave applications found.</p>
@@ -85,6 +87,7 @@
         <button mat-flat-button color="primary" (click)="addType()">Add</button>
       </div>
 
+      <div class="table-scroll">
       <table mat-table [dataSource]="types()">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -140,6 +143,7 @@
         <tr mat-header-row *matHeaderRowDef="['name', 'days', 'paid', 'attachment', 'actions']"></tr>
         <tr mat-row *matRowDef="let row; columns: ['name', 'days', 'paid', 'attachment', 'actions']"></tr>
       </table>
+      </div>
 
       <h3>Allocate leave balances</h3>
       <p class="hint">Gives every active employee their default annual days for each leave type above, for the selected year. Employees who already have a balance for a type/year are left untouched.</p>

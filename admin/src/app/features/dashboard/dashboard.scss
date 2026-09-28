@@ -93,7 +93,7 @@ h1 {
 .chart-grid {
   margin-top: 24px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
   gap: 16px;
 }
 
@@ -109,11 +109,17 @@ h1 {
 .table-grid {
   margin-top: 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
   gap: 16px;
 }
 
+// Grid tracks are clamped (minmax(0, …) / min(420px, 100%)) because a plain 1fr track grows
+// to its table's min-content width, which pushed the whole dashboard wider than a phone
+// screen; the table scrolls inside its card instead.
 .table-card {
+  min-width: 0;
+  overflow-x: auto;
+
   table {
     width: 100%;
   }
@@ -127,11 +133,11 @@ h1 {
 
 @media (max-width: 599px) {
   .kpi-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .chart-grid,
   .table-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 }

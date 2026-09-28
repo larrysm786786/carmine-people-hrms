@@ -6,10 +6,14 @@
   align-items: center;
   justify-content: center;
   background: #f7f7f7;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 .login-card {
-  width: 380px;
+  width: 100%;
+  max-width: 436px; // 380px content + 2 × 28px padding, same as the original fixed width
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 16px;

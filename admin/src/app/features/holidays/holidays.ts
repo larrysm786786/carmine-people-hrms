@@ -22,6 +22,7 @@ export class Holidays {
   private readonly toast = inject(ToastService);
 
   readonly holidays = signal<Holiday[]>([]);
+  readonly isLoading = signal(true);
   readonly displayedColumns = ['name', 'date', 'isOptional', 'actions'];
 
   newName = '';
@@ -38,6 +39,8 @@ export class Holidays {
       this.holidays.set(await this.holidayService.getList());
     } catch (err) {
       this.toast.error(errorMessage(err) ?? 'Unable to load holidays.');
+    } finally {
+      this.isLoading.set(false);
     }
   }
 

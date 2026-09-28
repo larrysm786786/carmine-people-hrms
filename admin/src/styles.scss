@@ -159,6 +159,18 @@ table.mat-mdc-table {
   background: #ffffff;
   box-shadow: var(--app-shadow-card);
 }
+// Horizontal scroll for wide tables on narrow screens. The vertical padding/negative-margin
+// pair leaves room for the card shadow, which overflow-x would otherwise clip. No horizontal
+// negative margin: inside a mat-tab body it overflowed the tab and shifted the whole page.
+.table-scroll {
+  overflow-x: auto;
+  padding: 4px 0 20px;
+  margin: -4px 0 -20px;
+
+  > table.mat-mdc-table {
+    min-width: 640px;
+  }
+}
 mat-card table.mat-mdc-table {
   background: transparent;
   box-shadow: none;
@@ -224,6 +236,16 @@ mat-card .mat-mdc-row {
 // filters had no visual container while the table (or nothing) did.
 .filters-card {
   margin-bottom: 16px;
+}
+
+// On phones, filter/add-row fields stack one per line; feature styles give them fixed desktop
+// widths (200–240px), which left them half-width with a ragged right edge. !important is
+// needed to beat those component-scoped widths.
+@media (max-width: 599px) {
+  .filters-card .mat-mdc-form-field,
+  .add-row .mat-mdc-form-field {
+    width: 100% !important;
+  }
 }
 
 // Tabbed pages (Organization, Leave) put their add/filter row straight under the tab strip;

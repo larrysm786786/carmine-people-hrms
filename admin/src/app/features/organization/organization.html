@@ -23,6 +23,7 @@
         <mat-checkbox [(ngModel)]="newDepartment.isActive">Active</mat-checkbox>
         <button mat-flat-button color="primary" (click)="addDepartment()">Add</button>
       </div>
+      <div class="table-scroll">
       <table mat-table [dataSource]="departments()">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -84,6 +85,7 @@
         <tr mat-header-row *matHeaderRowDef="['name', 'code', 'manager', 'status', 'actions']"></tr>
         <tr mat-row *matRowDef="let row; columns: ['name', 'code', 'manager', 'status', 'actions']"></tr>
       </table>
+      </div>
       @if (!isLoading() && departments().length === 0) {
         <p class="empty">No departments found.</p>
       }
@@ -109,6 +111,7 @@
         <mat-checkbox [(ngModel)]="newDesignation.isActive">Active</mat-checkbox>
         <button mat-flat-button color="primary" (click)="addDesignation()">Add</button>
       </div>
+      <div class="table-scroll">
       <table mat-table [dataSource]="designations()">
         <ng-container matColumnDef="title">
           <th mat-header-cell *matHeaderCellDef>Title</th>
@@ -169,6 +172,7 @@
         <tr mat-header-row *matHeaderRowDef="['title', 'description', 'department', 'status', 'actions']"></tr>
         <tr mat-row *matRowDef="let row; columns: ['title', 'description', 'department', 'status', 'actions']"></tr>
       </table>
+      </div>
       @if (!isLoading() && designations().length === 0) {
         <p class="empty">No designations found.</p>
       }
@@ -191,6 +195,7 @@
         <mat-checkbox [(ngModel)]="newLocation.isActive">Active</mat-checkbox>
         <button mat-flat-button color="primary" (click)="addLocation()">Add</button>
       </div>
+      <div class="table-scroll">
       <table mat-table [dataSource]="locations()">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -268,6 +273,7 @@
         <tr mat-header-row *matHeaderRowDef="['name', 'address', 'coords', 'geofence', 'wifi', 'status', 'actions']"></tr>
         <tr mat-row *matRowDef="let row; columns: ['name', 'address', 'coords', 'geofence', 'wifi', 'status', 'actions']"></tr>
       </table>
+      </div>
       @if (!isLoading() && locations().length === 0) {
         <p class="empty">No locations found.</p>
       }
@@ -293,6 +299,7 @@
         <mat-form-field appearance="outline"><mat-label>Required work (min)</mat-label><input matInput type="number" [(ngModel)]="newShift.requiredWorkMinutes" /></mat-form-field>
         <button mat-flat-button color="primary" (click)="addShift()">Add</button>
       </div>
+      <div class="table-scroll">
       <table mat-table [dataSource]="shifts()">
         <ng-container matColumnDef="name">
           <th mat-header-cell *matHeaderCellDef>Name</th>
@@ -377,6 +384,7 @@
         <tr mat-header-row *matHeaderRowDef="['name', 'type', 'time', 'grace', 'break', 'workingHours', 'requiredWork', 'actions']"></tr>
         <tr mat-row *matRowDef="let row; columns: ['name', 'type', 'time', 'grace', 'break', 'workingHours', 'requiredWork', 'actions']"></tr>
       </table>
+      </div>
       @if (!isLoading() && shifts().length === 0) {
         <p class="empty">No shifts found.</p>
       }
@@ -406,6 +414,7 @@
         <button mat-flat-button color="primary" (click)="assignShift()">Assign</button>
       </div>
 
+      <div class="table-scroll">
       <table mat-table [dataSource]="employeeShifts()">
         <ng-container matColumnDef="employee">
           <th mat-header-cell *matHeaderCellDef>Employee</th>
@@ -422,6 +431,7 @@
         <tr mat-header-row *matHeaderRowDef="['employee', 'shift', 'effectiveFrom']"></tr>
         <tr mat-row *matRowDef="let row; columns: ['employee', 'shift', 'effectiveFrom']"></tr>
       </table>
+      </div>
       @if (!isLoading() && employeeShifts().length === 0) {
         <p class="empty">No shift assignments found.</p>
       }
