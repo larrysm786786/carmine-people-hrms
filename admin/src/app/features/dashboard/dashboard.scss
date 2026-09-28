@@ -1,0 +1,137 @@
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.error {
+  color: #cd0040;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 16px;
+  justify-content: end;
+  align-content: center;
+}
+
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  mat-icon {
+    color: #cd0040;
+  }
+
+  .kpi-value {
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .kpi-label {
+    opacity: 0.6;
+    font-size: 13px;
+  }
+}
+
+.anomaly-card {
+  margin-top: 24px;
+
+  h2 {
+    margin: 0 0 4px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .hint {
+    margin: 0 0 16px;
+    opacity: 0.6;
+    font-size: 13px;
+  }
+
+  .empty {
+    opacity: 0.6;
+    font-size: 13px;
+  }
+
+  .ai-icon {
+    color: #cd0040;
+  }
+}
+
+.anomaly-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.anomaly-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--app-radius-sm);
+  background: #f7f7f7;
+}
+
+.anomaly-name {
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.anomaly-reason {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-top: 2px;
+}
+
+.chart-grid {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 16px;
+}
+
+.chart-card,
+.table-card {
+  h2 {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+}
+
+.table-grid {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+  gap: 16px;
+}
+
+.table-card {
+  table {
+    width: 100%;
+  }
+
+  .empty {
+    opacity: 0.6;
+    font-size: 13px;
+    padding: 12px 0;
+  }
+}
+
+@media (max-width: 599px) {
+  .kpi-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .chart-grid,
+  .table-grid {
+    grid-template-columns: 1fr;
+  }
+}

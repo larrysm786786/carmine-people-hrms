@@ -1,0 +1,71 @@
+<h1>Settings</h1>
+
+<mat-card class="profile-card">
+  <div class="row">
+    <mat-icon>account_circle</mat-icon>
+    <div>
+      <div class="name">{{ authService.profile()?.firstName }} {{ authService.profile()?.lastName }}</div>
+      <div class="email">{{ authService.profile()?.email }}</div>
+      <div class="role">{{ authService.profile()?.roleName }}</div>
+    </div>
+  </div>
+</mat-card>
+
+<mat-card class="section-card">
+  <h2>In-app notifications</h2>
+  @for (category of categories; track category) {
+    <mat-checkbox [checked]="isEnabled(category)" (change)="togglePreference(category)">
+      {{ category | titlecase }} updates
+    </mat-checkbox>
+  }
+</mat-card>
+
+@if (isSuperAdmin) {
+  <mat-card class="section-card">
+    <h2>Branding</h2>
+    <p class="hint">Company name, app name, logo and colors. Changes apply immediately for all users.</p>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Company name</mat-label>
+      <input matInput [ngModel]="brandingForm().companyName" (ngModelChange)="updateBrandingField('companyName', $event)" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>App name</mat-label>
+      <input matInput [ngModel]="brandingForm().appName" (ngModelChange)="updateBrandingField('appName', $event)" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Logo URL</mat-label>
+      <input matInput [ngModel]="brandingForm().logoUrl" (ngModelChange)="updateBrandingField('logoUrl', $event)" placeholder="https://..." />
+    </mat-form-field>
+
+    <p class="hint">Brand colors are fixed (carmine, gray, white, black) and not user-configurable.</p>
+
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Company time zone</mat-label>
+      <mat-select [ngModel]="brandingForm().timeZoneId" (ngModelChange)="updateBrandingField('timeZoneId', $event)">
+        @for (tz of timeZones; track tz) {
+          <mat-option [value]="tz">{{ tz }}</mat-option>
+        }
+      </mat-select>
+      <mat-hint>All timestamps are stored in UTC; this controls how dates/times are displayed.</mat-hint>
+    </mat-form-field>
+
+    <button mat-flat-button color="primary" [disabled]="brandingSaving()" (click)="saveBranding()">
+      @if (brandingSaving()) {
+        Saving...
+      } @else {
+        Save branding
+      }
+    </button>
+    @if (brandingSaved()) {
+      <span class="saved-hint">Saved.</span>
+    }
+  </mat-card>
+}
+
+<button mat-stroked-button color="warn" (click)="logout()">
+  <mat-icon>logout</mat-icon>
+  Sign out
+</button>

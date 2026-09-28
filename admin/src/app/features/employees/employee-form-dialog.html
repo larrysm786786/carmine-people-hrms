@@ -1,0 +1,138 @@
+<h2 mat-dialog-title>{{ isEditMode ? 'Edit employee' : 'Add employee' }}</h2>
+
+<mat-dialog-content>
+  @if (isLoading()) {
+    <div class="loading">
+      <mat-spinner diameter="32"></mat-spinner>
+    </div>
+  } @else if (loadErrorMessage()) {
+    <p class="error">{{ loadErrorMessage() }}</p>
+  } @else {
+    <div class="form-grid">
+      @if (!isEditMode) {
+        <mat-form-field appearance="outline">
+          <mat-label>Employee code</mat-label>
+          <input matInput [(ngModel)]="employeeCode" required />
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>First name</mat-label>
+        <input matInput [(ngModel)]="firstName" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Last name</mat-label>
+        <input matInput [(ngModel)]="lastName" required />
+      </mat-form-field>
+
+      @if (!isEditMode) {
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput type="email" [(ngModel)]="email" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Temporary password</mat-label>
+          <input matInput type="password" [(ngModel)]="password" required />
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Phone number</mat-label>
+        <input matInput [(ngModel)]="phoneNumber" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Department</mat-label>
+        <mat-select [(ngModel)]="departmentId" (selectionChange)="onDepartmentChange()" required>
+          @for (d of departments(); track d.id) {
+            <mat-option [value]="d.id">{{ d.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Designation</mat-label>
+        <mat-select [(ngModel)]="designationId" required [disabled]="!departmentId">
+          @for (d of designations(); track d.id) {
+            <mat-option [value]="d.id">{{ d.title }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Location</mat-label>
+        <mat-select [(ngModel)]="locationId" required>
+          @for (l of locations(); track l.id) {
+            <mat-option [value]="l.id">{{ l.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Manager</mat-label>
+        <mat-select [(ngModel)]="managerId">
+          <mat-option value="">None</mat-option>
+          @for (m of managers(); track m.id) {
+            <mat-option [value]="m.id">{{ m.firstName }} {{ m.lastName }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Role</mat-label>
+        <mat-select [(ngModel)]="roleId" required>
+          @for (r of roles(); track r.id) {
+            <mat-option [value]="r.id">{{ r.name }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      @if (!isEditMode) {
+        <mat-form-field appearance="outline">
+          <mat-label>Date of joining</mat-label>
+          <input matInput type="date" [(ngModel)]="dateOfJoining" required />
+        </mat-form-field>
+      }
+
+      <mat-form-field appearance="outline">
+        <mat-label>Date of birth</mat-label>
+        <input matInput type="date" [(ngModel)]="dateOfBirth" />
+      </mat-form-field>
+
+      @if (isEditMode) {
+        <mat-form-field appearance="outline">
+          <mat-label>Employment status</mat-label>
+          <mat-select [(ngModel)]="employmentStatus">
+            @for (label of statusLabels; track label; let i = $index) {
+              <mat-option [value]="i">{{ label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      }
+
+      @if (isEditMode && canManageSalary) {
+        <mat-form-field appearance="outline">
+          <mat-label>Monthly salary (Rs)</mat-label>
+          <input matInput type="number" min="0" [(ngModel)]="monthlySalary" />
+        </mat-form-field>
+      }
+    </div>
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+  }
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="cancel()">Cancel</button>
+  <button mat-flat-button color="primary" [disabled]="isSaving() || isLoading() || !!loadErrorMessage()" (click)="save()">
+    @if (isSaving()) {
+      Saving...
+    } @else {
+      Save
+    }
+  </button>
+</mat-dialog-actions>

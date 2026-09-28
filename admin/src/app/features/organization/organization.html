@@ -1,0 +1,430 @@
+<h1>Organization</h1>
+
+@if (isLoading()) {
+  <p class="loading">Loading...</p>
+}
+
+<mat-tab-group>
+  <mat-tab label="Departments">
+    <div class="tab-content">
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput [(ngModel)]="newDepartment.name" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Code</mat-label><input matInput [(ngModel)]="newDepartment.code" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Description</mat-label><input matInput [(ngModel)]="newDepartment.description" /></mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Manager</mat-label>
+          <mat-select [(ngModel)]="newDepartment.managerId">
+            <mat-option value="">None</mat-option>
+            @for (e of employees(); track e.id) {
+              <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-checkbox [(ngModel)]="newDepartment.isActive">Active</mat-checkbox>
+        <button mat-flat-button color="primary" (click)="addDepartment()">Add</button>
+      </div>
+      <table mat-table [dataSource]="departments()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDepartmentId === d.id) {
+              <input matInput [(ngModel)]="editDepartment.name" style="width: 140px" />
+            } @else {
+              {{ d.name }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="code">
+          <th mat-header-cell *matHeaderCellDef>Code</th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDepartmentId === d.id) {
+              <input matInput [(ngModel)]="editDepartment.code" style="width: 80px" />
+            } @else {
+              {{ d.code || '—' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="manager">
+          <th mat-header-cell *matHeaderCellDef>Manager</th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDepartmentId === d.id) {
+              <mat-select [(ngModel)]="editDepartment.managerId" style="width: 160px">
+                <mat-option value="">None</mat-option>
+                @for (e of employees(); track e.id) {
+                  <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }}</mat-option>
+                }
+              </mat-select>
+            } @else {
+              {{ d.managerName || '—' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDepartmentId === d.id) {
+              <mat-checkbox [(ngModel)]="editDepartment.isActive">Active</mat-checkbox>
+            } @else {
+              {{ d.isActive ? 'Active' : 'Inactive' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDepartmentId === d.id) {
+              <button mat-button (click)="saveEditDepartment()">Save</button>
+              <button mat-button (click)="cancelEditDepartment()">Cancel</button>
+            } @else {
+              <button mat-button (click)="startEditDepartment(d)">Edit</button>
+              <button mat-icon-button color="warn" (click)="removeDepartment(d.id)"><mat-icon>delete</mat-icon></button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['name', 'code', 'manager', 'status', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name', 'code', 'manager', 'status', 'actions']"></tr>
+      </table>
+      @if (!isLoading() && departments().length === 0) {
+        <p class="empty">No departments found.</p>
+      }
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Designations">
+    <div class="tab-content">
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline">
+          <mat-label>Title</mat-label>
+          <input matInput [(ngModel)]="newDesignation.title" />
+        </mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Description</mat-label><input matInput [(ngModel)]="newDesignation.description" /></mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Department</mat-label>
+          <mat-select [(ngModel)]="newDesignation.departmentId">
+            @for (d of departments(); track d.id) {
+              <mat-option [value]="d.id">{{ d.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-checkbox [(ngModel)]="newDesignation.isActive">Active</mat-checkbox>
+        <button mat-flat-button color="primary" (click)="addDesignation()">Add</button>
+      </div>
+      <table mat-table [dataSource]="designations()">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Title</th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDesignationId === d.id) {
+              <input matInput [(ngModel)]="editDesignation.title" style="width: 140px" />
+            } @else {
+              {{ d.title }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDesignationId === d.id) {
+              <input matInput [(ngModel)]="editDesignation.description" style="width: 160px" />
+            } @else {
+              {{ d.description || '—' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDesignationId === d.id) {
+              <mat-select [(ngModel)]="editDesignation.departmentId" style="width: 140px">
+                @for (dept of departments(); track dept.id) {
+                  <mat-option [value]="dept.id">{{ dept.name }}</mat-option>
+                }
+              </mat-select>
+            } @else {
+              {{ d.departmentName }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDesignationId === d.id) {
+              <mat-checkbox [(ngModel)]="editDesignation.isActive">Active</mat-checkbox>
+            } @else {
+              {{ d.isActive ? 'Active' : 'Inactive' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let d">
+            @if (editingDesignationId === d.id) {
+              <button mat-button (click)="saveEditDesignation()">Save</button>
+              <button mat-button (click)="cancelEditDesignation()">Cancel</button>
+            } @else {
+              <button mat-button (click)="startEditDesignation(d)">Edit</button>
+              <button mat-icon-button color="warn" (click)="removeDesignation(d.id)"><mat-icon>delete</mat-icon></button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['title', 'description', 'department', 'status', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['title', 'description', 'department', 'status', 'actions']"></tr>
+      </table>
+      @if (!isLoading() && designations().length === 0) {
+        <p class="empty">No designations found.</p>
+      }
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Locations">
+    <div class="tab-content">
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput [(ngModel)]="newLocation.name" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Address</mat-label><input matInput [(ngModel)]="newLocation.address" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Latitude</mat-label><input matInput type="number" [(ngModel)]="newLocation.latitude" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Longitude</mat-label><input matInput type="number" [(ngModel)]="newLocation.longitude" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Geofence (m)</mat-label><input matInput type="number" [(ngModel)]="newLocation.geofenceRadiusMeters" /></mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Office WiFi name(s) (SSID)</mat-label>
+          <input matInput [(ngModel)]="newLocation.officeWifiSsid" placeholder="e.g. Airtel_Carmine, Airtel_Carmine 5G" />
+          <mat-hint>Comma-separated if multiple networks (2.4GHz/5GHz/backup) are allowed</mat-hint>
+        </mat-form-field>
+        <mat-checkbox [(ngModel)]="newLocation.isActive">Active</mat-checkbox>
+        <button mat-flat-button color="primary" (click)="addLocation()">Add</button>
+      </div>
+      <table mat-table [dataSource]="locations()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let l">
+            @if (editingLocationId === l.id) {
+              <input matInput [(ngModel)]="editLocation.name" style="width: 120px" />
+            } @else {
+              {{ l.name }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="wifi">
+          <th mat-header-cell *matHeaderCellDef>Office WiFi</th>
+          <td mat-cell *matCellDef="let l">
+            @if (editingLocationId === l.id) {
+              <input matInput [(ngModel)]="editLocation.officeWifiSsid" style="width: 120px" placeholder="Optional" />
+            } @else {
+              {{ l.officeWifiSsid || '—' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="address">
+          <th mat-header-cell *matHeaderCellDef>Address</th>
+          <td mat-cell *matCellDef="let l">
+            @if (editingLocationId === l.id) {
+              <input matInput [(ngModel)]="editLocation.address" style="width: 160px" />
+            } @else {
+              {{ l.address || '—' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="coords">
+          <th mat-header-cell *matHeaderCellDef>Coordinates</th>
+          <td mat-cell *matCellDef="let l">
+            @if (editingLocationId === l.id) {
+              <input matInput type="number" [(ngModel)]="editLocation.latitude" style="width: 80px" />
+              <input matInput type="number" [(ngModel)]="editLocation.longitude" style="width: 80px" />
+            } @else {
+              {{ l.latitude }}, {{ l.longitude }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="geofence">
+          <th mat-header-cell *matHeaderCellDef>Geofence</th>
+          <td mat-cell *matCellDef="let l">
+            @if (editingLocationId === l.id) {
+              <input matInput type="number" [(ngModel)]="editLocation.geofenceRadiusMeters" style="width: 70px" />
+            } @else {
+              {{ l.geofenceRadiusMeters }}m
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let l">
+            @if (editingLocationId === l.id) {
+              <mat-checkbox [(ngModel)]="editLocation.isActive">Active</mat-checkbox>
+            } @else {
+              {{ l.isActive ? 'Active' : 'Inactive' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let l">
+            @if (editingLocationId === l.id) {
+              <button mat-button (click)="saveEditLocation()">Save</button>
+              <button mat-button (click)="cancelEditLocation()">Cancel</button>
+            } @else {
+              <button mat-button (click)="startEditLocation(l)">Edit</button>
+              <button mat-icon-button color="warn" (click)="removeLocation(l.id)"><mat-icon>delete</mat-icon></button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['name', 'address', 'coords', 'geofence', 'wifi', 'status', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name', 'address', 'coords', 'geofence', 'wifi', 'status', 'actions']"></tr>
+      </table>
+      @if (!isLoading() && locations().length === 0) {
+        <p class="empty">No locations found.</p>
+      }
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Shifts">
+    <div class="tab-content">
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput [(ngModel)]="newShift.name" /></mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Type</mat-label>
+          <mat-select [(ngModel)]="newShift.type">
+            @for (label of shiftTypeLabels; track label; let i = $index) {
+              <mat-option [value]="i">{{ label }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Start</mat-label><input matInput [(ngModel)]="newShift.startTime" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>End</mat-label><input matInput [(ngModel)]="newShift.endTime" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Grace (min)</mat-label><input matInput type="number" [(ngModel)]="newShift.gracePeriodMinutes" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Break (min)</mat-label><input matInput type="number" [(ngModel)]="newShift.breakMinutes" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Required work (min)</mat-label><input matInput type="number" [(ngModel)]="newShift.requiredWorkMinutes" /></mat-form-field>
+        <button mat-flat-button color="primary" (click)="addShift()">Add</button>
+      </div>
+      <table mat-table [dataSource]="shifts()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let s">
+            @if (editingShiftId === s.id) {
+              <input matInput [(ngModel)]="editShift.name" />
+            } @else {
+              {{ s.name }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let s">
+            @if (editingShiftId === s.id) {
+              <mat-select [(ngModel)]="editShift.type">
+                @for (label of shiftTypeLabels; track label; let i = $index) {
+                  <mat-option [value]="i">{{ label }}</mat-option>
+                }
+              </mat-select>
+            } @else {
+              {{ shiftTypeLabels[s.type] }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="time">
+          <th mat-header-cell *matHeaderCellDef>Time</th>
+          <td mat-cell *matCellDef="let s">
+            @if (editingShiftId === s.id) {
+              <input matInput [(ngModel)]="editShift.startTime" style="width: 70px" /> -
+              <input matInput [(ngModel)]="editShift.endTime" style="width: 70px" />
+            } @else {
+              {{ s.startTime }} - {{ s.endTime }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="grace">
+          <th mat-header-cell *matHeaderCellDef>Grace (min)</th>
+          <td mat-cell *matCellDef="let s">
+            @if (editingShiftId === s.id) {
+              <input matInput type="number" [(ngModel)]="editShift.gracePeriodMinutes" style="width: 60px" />
+            } @else {
+              {{ s.gracePeriodMinutes }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="break">
+          <th mat-header-cell *matHeaderCellDef>Break (min)</th>
+          <td mat-cell *matCellDef="let s">
+            @if (editingShiftId === s.id) {
+              <input matInput type="number" [(ngModel)]="editShift.breakMinutes" style="width: 60px" />
+            } @else {
+              {{ s.breakMinutes }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="workingHours">
+          <th mat-header-cell *matHeaderCellDef>Working hours</th>
+          <td mat-cell *matCellDef="let s">{{ (s.workingMinutes / 60).toFixed(1) }}h</td>
+        </ng-container>
+        <ng-container matColumnDef="requiredWork">
+          <th mat-header-cell *matHeaderCellDef>Required work (min)</th>
+          <td mat-cell *matCellDef="let s">
+            @if (editingShiftId === s.id) {
+              <input matInput type="number" [(ngModel)]="editShift.requiredWorkMinutes" style="width: 70px" />
+            } @else {
+              {{ s.requiredWorkMinutes }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let s">
+            @if (editingShiftId === s.id) {
+              <button mat-button (click)="saveEditShift()">Save</button>
+              <button mat-button (click)="cancelEditShift()">Cancel</button>
+            } @else {
+              <button mat-button (click)="startEditShift(s)">Edit</button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['name', 'type', 'time', 'grace', 'break', 'workingHours', 'requiredWork', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name', 'type', 'time', 'grace', 'break', 'workingHours', 'requiredWork', 'actions']"></tr>
+      </table>
+      @if (!isLoading() && shifts().length === 0) {
+        <p class="empty">No shifts found.</p>
+      }
+
+      <h3>Assign employee to shift</h3>
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline">
+          <mat-label>Employee</mat-label>
+          <mat-select [(ngModel)]="assignEmployeeId">
+            @for (e of employees(); track e.id) {
+              <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Shift</mat-label>
+          <mat-select [(ngModel)]="assignShiftId">
+            @for (s of shifts(); track s.id) {
+              <mat-option [value]="s.id">{{ s.name }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+          <mat-label>Effective from</mat-label>
+          <input matInput type="date" [(ngModel)]="assignEffectiveFrom" />
+        </mat-form-field>
+        <button mat-flat-button color="primary" (click)="assignShift()">Assign</button>
+      </div>
+
+      <table mat-table [dataSource]="employeeShifts()">
+        <ng-container matColumnDef="employee">
+          <th mat-header-cell *matHeaderCellDef>Employee</th>
+          <td mat-cell *matCellDef="let a">{{ employeeName(a.employeeId) }}</td>
+        </ng-container>
+        <ng-container matColumnDef="shift">
+          <th mat-header-cell *matHeaderCellDef>Shift</th>
+          <td mat-cell *matCellDef="let a">{{ a.shiftName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="effectiveFrom">
+          <th mat-header-cell *matHeaderCellDef>Effective from</th>
+          <td mat-cell *matCellDef="let a">{{ a.effectiveFrom | slice: 0 : 10 }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['employee', 'shift', 'effectiveFrom']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['employee', 'shift', 'effectiveFrom']"></tr>
+      </table>
+      @if (!isLoading() && employeeShifts().length === 0) {
+        <p class="empty">No shift assignments found.</p>
+      }
+    </div>
+  </mat-tab>
+</mat-tab-group>

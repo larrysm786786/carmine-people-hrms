@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "75551069996",
+    "project_id": "carmine-people",
+    "storage_bucket": "carmine-people.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:75551069996:android:1ed5ddc724d5babe12be89",
+        "android_client_info": {
+          "package_name": "dev.carminepeople.carmine_people"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD4CcVJkWwOIfVHwgQSyC5n9isfToQ87uE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

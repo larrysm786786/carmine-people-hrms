@@ -1,0 +1,40 @@
+<div class="login-page">
+  <form class="login-card" (ngSubmit)="submit()">
+    <div class="brand">
+      <div class="brand-avatar">
+        @if (brandingService.branding().logoUrl) {
+          <img class="brand-logo" [src]="brandingService.branding().logoUrl" alt="" />
+        } @else {
+          <mat-icon class="brand-icon">badge</mat-icon>
+        }
+      </div>
+      <h1>{{ brandingService.branding().appName }}</h1>
+      <p>Admin sign in</p>
+    </div>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Work email</mat-label>
+      <input matInput type="email" name="email" [(ngModel)]="email" required autocomplete="username" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Password</mat-label>
+      <input matInput [type]="hidePassword() ? 'password' : 'text'" name="password" [(ngModel)]="password" required autocomplete="current-password" />
+      <button mat-icon-button matSuffix type="button" (click)="hidePassword.set(!hidePassword())">
+        <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+      </button>
+    </mat-form-field>
+
+    @if (errorMessage()) {
+      <p class="error">{{ errorMessage() }}</p>
+    }
+
+    <button mat-flat-button color="primary" type="submit" [disabled]="isLoading()">
+      @if (isLoading()) {
+        <mat-spinner diameter="20"></mat-spinner>
+      } @else {
+        Sign in
+      }
+    </button>
+  </form>
+</div>

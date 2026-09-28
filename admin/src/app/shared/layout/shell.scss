@@ -1,0 +1,89 @@
+// Mirrors the mobile app's flat, no-gradient design language: white surfaces, carmine
+// reserved for the active/primary state, gray only for subtle backgrounds.
+.shell {
+  height: 100vh;
+  background: #f7f7f7;
+}
+
+.sidenav {
+  width: 248px;
+  background: #ffffff;
+  border-right: none;
+  display: flex;
+  flex-direction: column;
+  padding: 16px 12px;
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 8px 20px;
+    font-weight: 800;
+    font-size: 16px;
+    color: #000000;
+
+    .brand-logo {
+      width: 32px;
+      height: 32px;
+      object-fit: contain;
+      border-radius: 999px;
+    }
+
+    mat-icon {
+      color: #cd0040;
+    }
+  }
+
+  mat-nav-list {
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  a[mat-list-item] {
+    border-radius: 12px;
+    color: #000000;
+    --mat-list-list-item-container-color: transparent;
+  }
+
+  // Material's list tokens set the title color on an inner element (overriding `color`
+  // on the anchor), so the label and icon tokens are overridden for every interaction state.
+  a.active {
+    background: #cd0040;
+    color: #ffffff;
+    --mat-list-list-item-label-text-color: #ffffff;
+    --mat-list-list-item-hover-label-text-color: #ffffff;
+    --mat-list-list-item-focus-label-text-color: #ffffff;
+    --mat-list-list-item-leading-icon-color: #ffffff;
+    --mat-list-list-item-hover-leading-icon-color: #ffffff;
+    --mat-list-list-item-focus-leading-icon-color: #ffffff;
+
+    ::ng-deep .mat-icon,
+    ::ng-deep .mdc-list-item__primary-text {
+      color: #ffffff;
+    }
+  }
+}
+
+.topbar {
+  background: #ffffff;
+  border-bottom: 1px solid #f7f7f7;
+  color: #000000;
+
+  .spacer {
+    flex: 1 1 auto;
+  }
+}
+
+.content {
+  padding: 24px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+@media (max-width: 599px) {
+  .content {
+    padding: 16px;
+  }
+}

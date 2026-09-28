@@ -1,0 +1,44 @@
+<div class="donut-wrapper">
+  <svg [attr.width]="size()" [attr.height]="size()" viewBox="0 0 33.83 33.83" class="donut-svg">
+    <circle cx="16.91" cy="16.91" [attr.r]="r" fill="transparent" stroke-width="4" class="donut-track" />
+    @for (arc of arcs(); track arc.label) {
+      @if (arc.color === '#ffffff') {
+        <circle
+          cx="16.91"
+          cy="16.91"
+          [attr.r]="r"
+          fill="transparent"
+          stroke-width="4.6"
+          stroke="#000000"
+          [attr.stroke-dasharray]="arc.dashArray"
+          [attr.stroke-dashoffset]="arc.dashOffset"
+        />
+      }
+      <circle
+        cx="16.91"
+        cy="16.91"
+        [attr.r]="r"
+        fill="transparent"
+        stroke-width="4"
+        [attr.stroke]="arc.color"
+        [attr.stroke-dasharray]="arc.dashArray"
+        [attr.stroke-dashoffset]="arc.dashOffset"
+        class="donut-arc"
+      />
+    }
+  </svg>
+  <div class="donut-center">
+    <span class="donut-total">{{ total() }}</span>
+    <span class="donut-total-label">Total</span>
+  </div>
+</div>
+
+<div class="donut-legend">
+  @for (arc of arcs(); track arc.label) {
+    <div class="legend-item">
+      <span class="legend-dot" [style.background]="arc.color"></span>
+      <span class="legend-label">{{ arc.label }}</span>
+      <span class="legend-value">{{ arc.value }}</span>
+    </div>
+  }
+</div>

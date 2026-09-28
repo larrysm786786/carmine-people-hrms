@@ -1,0 +1,37 @@
+<h1>Roles &amp; Permissions</h1>
+
+<mat-card class="filters-card">
+  <div class="add-row">
+    <mat-form-field appearance="outline"><mat-label>New role name</mat-label><input matInput [(ngModel)]="newRoleName" /></mat-form-field>
+    <button mat-flat-button color="primary" (click)="addRole()">Add role</button>
+  </div>
+</mat-card>
+
+@if (isLoading()) {
+  <p class="loading">Loading...</p>
+}
+@if (!isLoading() && roles().length === 0) {
+  <p class="empty">No roles found.</p>
+}
+
+<div class="roles-grid">
+  @for (role of roles(); track role.id) {
+    <mat-card class="role-card">
+      <h3>{{ role.name }}</h3>
+      @if (role.description) {
+        <p class="description">{{ role.description }}</p>
+      }
+      <div class="permission-list" [class.saving]="savingRoleId() === role.id">
+        @for (permission of permissions(); track permission.id) {
+          <mat-checkbox
+            [checked]="hasPermission(role, permission.code)"
+            [disabled]="savingRoleId() === role.id"
+            (change)="togglePermission(role, permission)"
+          >
+            {{ permission.code }}
+          </mat-checkbox>
+        }
+      </div>
+    </mat-card>
+  }
+</div>

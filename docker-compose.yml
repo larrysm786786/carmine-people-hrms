@@ -1,0 +1,50 @@
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "${SQL_SA_PASSWORD:?set SQL_SA_PASSWORD in .env}"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Production"
+      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=CarminePeopleDb;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True"
+      Jwt__SigningKey: "${JWT_SIGNING_KEY:?set JWT_SIGNING_KEY in .env, at least 32 chars}"
+      Jwt__Issuer: "${JWT_ISSUER:-CarminePeople}"
+      Jwt__Audience: "${JWT_AUDIENCE:-CarminePeopleClients}"
+      Jwt__AccessTokenMinutes: "${JWT_ACCESS_TOKEN_MINUTES:-15}"
+      Cors__AllowedOrigins__0: "${CORS_ALLOWED_ORIGIN_0:-http://localhost:4200}"
+      DocumentStorage__RootPath: "${STORAGE_ROOT_PATH:-App_Data/documents}"
+      Fcm__ServiceAccountJson: "${FCM_SERVICE_ACCOUNT_JSON:-}"
+      Ai__Anthropic__ApiKey: "${AI_ANTHROPIC_API_KEY:-}"
+      Ai__Anthropic__Model: "${AI_ANTHROPIC_MODEL:-claude-sonnet-4-5-20250929}"
+      Ai__Anthropic__MaxTokens: "${AI_ANTHROPIC_MAX_TOKENS:-1024}"
+    ports:
+      - "5080:8080"
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+
+  admin:
+    build:
+      context: ./admin
+      dockerfile: Dockerfile
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+volumes:
+  sqlserver-data:

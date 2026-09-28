@@ -1,0 +1,38 @@
+<svg [attr.width]="width()" [attr.height]="height()" [attr.viewBox]="'0 0 ' + width() + ' ' + height()" class="line-chart-svg">
+  @for (grid of gridLines(); track grid) {
+    <line
+      [attr.x1]="32"
+      [attr.x2]="width() - 32"
+      [attr.y1]="height() - 32 - (grid / maxValue()) * (height() - 64)"
+      [attr.y2]="height() - 32 - (grid / maxValue()) * (height() - 64)"
+      class="grid-line"
+    />
+    <text [attr.x]="4" [attr.y]="height() - 32 - (grid / maxValue()) * (height() - 64) + 4" class="axis-label">{{ grid }}</text>
+  }
+
+  @for (line of linePaths(); track line.label) {
+    <path [attr.d]="line.path" fill="none" [attr.stroke]="line.color" stroke-width="2" class="line-path" />
+    @for (point of line.points; track point.x) {
+      <circle [attr.cx]="point.x" [attr.cy]="point.y" r="2.5" [attr.fill]="line.color" />
+    }
+  }
+
+  @for (label of labels(); track label; let i = $index) {
+    <text
+      [attr.x]="32 + (i / (labels().length - 1 || 1)) * (width() - 64)"
+      [attr.y]="xAxisY() + 16"
+      class="axis-label x-label"
+    >
+      {{ label }}
+    </text>
+  }
+</svg>
+
+<div class="line-legend">
+  @for (line of linePaths(); track line.label) {
+    <div class="legend-item">
+      <span class="legend-dot" [style.background]="line.color"></span>
+      <span class="legend-label">{{ line.label }}</span>
+    </div>
+  }
+</div>

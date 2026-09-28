@@ -1,0 +1,19 @@
+.loading {
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 4px 16px;
+  min-width: 480px;
+  padding-top: 4px;
+}
+
+.error {
+  color: #cd0040;
+  font-size: 13px;
+  margin: 0 0 8px;
+}

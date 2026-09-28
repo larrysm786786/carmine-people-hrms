@@ -1,0 +1,18 @@
+<svg [attr.width]="width()" [attr.height]="height()" [attr.viewBox]="'0 0 ' + width() + ' ' + height()" class="bar-chart-svg">
+  <line [attr.x1]="32" [attr.x2]="width() - 32" [attr.y1]="xAxisY()" [attr.y2]="xAxisY()" class="axis-line" />
+
+  @for (bar of bars(); track bar.label) {
+    @if (bar.secondaryValue !== undefined) {
+      <rect
+        [attr.x]="bar.x"
+        [attr.y]="bar.secondaryY"
+        [attr.width]="bar.barWidth"
+        [attr.height]="bar.secondaryHeight"
+        class="bar-secondary"
+      />
+    }
+    <rect [attr.x]="bar.x" [attr.y]="bar.y" [attr.width]="bar.barWidth" [attr.height]="bar.barHeight" [attr.fill]="bar.color" class="bar-primary" />
+    <text [attr.x]="bar.labelX" [attr.y]="xAxisY() + 16" class="axis-label x-label">{{ bar.label }}</text>
+    <text [attr.x]="bar.labelX" [attr.y]="bar.y - 6" class="bar-value">{{ bar.value }}</text>
+  }
+</svg>

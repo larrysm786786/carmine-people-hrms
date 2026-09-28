@@ -1,0 +1,112 @@
+<h1>Announcements</h1>
+
+<mat-card class="publish-card">
+  <mat-form-field appearance="outline"><mat-label>Title</mat-label><input matInput [(ngModel)]="newTitle" /></mat-form-field>
+  <mat-form-field appearance="outline"><mat-label>Body</mat-label><textarea matInput rows="3" [(ngModel)]="newBody"></textarea></mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <mat-label>Audience</mat-label>
+    <mat-select [(ngModel)]="newAudienceType" (selectionChange)="onAudienceTypeChange()">
+      @for (label of audienceTypeLabels; track label; let i = $index) {
+        <mat-option [value]="i">{{ label }}</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+
+  @if (newAudienceType === 1) {
+    <mat-form-field appearance="outline">
+      <mat-label>Departments</mat-label>
+      <mat-select [(ngModel)]="newAudienceIds" multiple>
+        @for (d of departments(); track d.id) {
+          <mat-option [value]="d.id">{{ d.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+  @if (newAudienceType === 2) {
+    <mat-form-field appearance="outline">
+      <mat-label>Locations</mat-label>
+      <mat-select [(ngModel)]="newAudienceIds" multiple>
+        @for (l of locations(); track l.id) {
+          <mat-option [value]="l.id">{{ l.name }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+  @if (newAudienceType === 3) {
+    <mat-form-field appearance="outline">
+      <mat-label>Employees</mat-label>
+      <mat-select [(ngModel)]="newAudienceIds" multiple>
+        @for (e of employees(); track e.id) {
+          <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  }
+
+  <mat-form-field appearance="outline">
+    <mat-label>Publish date</mat-label>
+    <input matInput type="datetime-local" [(ngModel)]="newPublishAt" />
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Expiry date (optional)</mat-label>
+    <input matInput type="datetime-local" [(ngModel)]="newExpiresAt" />
+  </mat-form-field>
+
+  <div class="file-row">
+    <div class="file-field">
+      <span class="file-label">Image (optional)</span>
+      <input #imageInput type="file" accept="image/*" hidden (change)="onImageSelected($event)" />
+      <div class="file-picker">
+        <button mat-stroked-button type="button" (click)="imageInput.click()">
+          <mat-icon>image</mat-icon>
+          {{ imageFile ? 'Change' : 'Choose image' }}
+        </button>
+        @if (imageFile) {
+          <span class="file-name" [title]="imageFile.name">{{ imageFile.name }}</span>
+          <button mat-icon-button type="button" aria-label="Remove image" (click)="imageFile = null">
+            <mat-icon>close</mat-icon>
+          </button>
+        } @else {
+          <span class="file-empty">No file chosen</span>
+        }
+      </div>
+    </div>
+
+    <div class="file-field">
+      <span class="file-label">Attachment (optional)</span>
+      <input #attachmentInput type="file" hidden (change)="onAttachmentSelected($event)" />
+      <div class="file-picker">
+        <button mat-stroked-button type="button" (click)="attachmentInput.click()">
+          <mat-icon>attach_file</mat-icon>
+          {{ attachmentFile ? 'Change' : 'Choose file' }}
+        </button>
+        @if (attachmentFile) {
+          <span class="file-name" [title]="attachmentFile.name">{{ attachmentFile.name }}</span>
+          <button mat-icon-button type="button" aria-label="Remove attachment" (click)="attachmentFile = null">
+            <mat-icon>close</mat-icon>
+          </button>
+        } @else {
+          <span class="file-empty">No file chosen</span>
+        }
+      </div>
+    </div>
+  </div>
+
+  <button mat-flat-button color="primary" [disabled]="isPublishing()" (click)="publish()">
+    @if (isPublishing()) { Publishing... } @else { Publish }
+  </button>
+</mat-card>
+
+<div class="feed">
+  @for (a of announcements(); track a.id) {
+    <mat-card class="feed-item">
+      <h3>{{ a.title }}</h3>
+      <p>{{ a.body }}</p>
+      <small>{{ audienceTypeLabels[a.audienceType] }} · {{ a.publishAt | date: 'medium' }}@if (a.expiresAt) { · expires {{ a.expiresAt | date: 'medium' }} }</small>
+    </mat-card>
+  }
+  @if (announcements().length === 0) {
+    <p class="empty">No announcements yet.</p>
+  }
+</div>

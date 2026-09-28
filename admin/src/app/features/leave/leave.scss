@@ -1,0 +1,38 @@
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.error {
+  color: #cd0040;
+}
+
+.tab-content {
+  padding: 20px 0;
+}
+
+.add-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  &.wrap {
+    flex-wrap: wrap;
+  }
+
+  mat-form-field {
+    width: 180px;
+  }
+}
+
+table {
+  width: 100%;
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  opacity: 0.6;
+}

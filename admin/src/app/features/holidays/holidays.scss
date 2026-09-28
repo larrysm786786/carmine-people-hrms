@@ -1,0 +1,23 @@
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.add-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  mat-form-field {
+    width: 200px;
+  }
+
+  button {
+    height: 56px;
+  }
+}
+
+table {
+  width: 100%;
+}

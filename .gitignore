@@ -1,0 +1,34 @@
+# Folder-level rules live in admin/.gitignore and mobile/**/.gitignore; this file covers
+# the repo root and the backend, which has none of its own.
+
+# .NET build output and IDE state
+bin/
+obj/
+.vs/
+*.user
+TestResults/
+
+# Uploaded files (employee documents, ID photos, payslips) — runtime data, never source
+backend/src/CarminePeople.Api/App_Data/
+
+# Build output
+admin/dist/
+mobile/build/
+
+# Logs from local runs
+*.log
+
+# Local secrets and machine-specific settings
+.env
+.env.*
+!.env.example
+appsettings.*.local.json
+.claude/settings.local.json
+
+# OS clutter
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# Internal planning documents, not part of the client handover
+attendance roadmap.docx

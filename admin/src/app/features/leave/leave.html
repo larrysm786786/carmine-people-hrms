@@ -1,0 +1,154 @@
+<h1>Leave</h1>
+
+<mat-tab-group>
+  <mat-tab label="Applications">
+    <div class="tab-content">
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline">
+          <mat-label>Employee</mat-label>
+          <mat-select [(ngModel)]="employeeId" (selectionChange)="onFilterChange()">
+            <mat-option value="">All employees</mat-option>
+            @for (e of employees(); track e.id) {
+              <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }} ({{ e.employeeCode }})</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+      @if (errorMessage()) {
+        <p class="error">{{ errorMessage() }}</p>
+      }
+      <table mat-table [dataSource]="items()" class="mat-elevation-z0">
+        <ng-container matColumnDef="employee">
+          <th mat-header-cell *matHeaderCellDef>Employee</th>
+          <td mat-cell *matCellDef="let l">{{ l.employeeName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="leaveType">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let l">{{ l.leaveTypeName }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="dates">
+          <th mat-header-cell *matHeaderCellDef>Dates</th>
+          <td mat-cell *matCellDef="let l">{{ l.startDate }} → {{ l.endDate }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="days">
+          <th mat-header-cell *matHeaderCellDef>Days</th>
+          <td mat-cell *matCellDef="let l">{{ l.daysCount }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="reason">
+          <th mat-header-cell *matHeaderCellDef>Reason</th>
+          <td mat-cell *matCellDef="let l">{{ l.reason || '—' }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let l">
+            <mat-chip [class]="statusChipClass(l.status)">{{ statusLabels[l.status] }}</mat-chip>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let l">
+            @if (l.status === 0 || l.status === 1) {
+              <button mat-icon-button color="primary" [disabled]="actingId() === l.id" (click)="approve(l.id)">
+                <mat-icon>check_circle</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" [disabled]="actingId() === l.id" (click)="reject(l.id)">
+                <mat-icon>cancel</mat-icon>
+              </button>
+            }
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      @if (!isLoading() && items().length === 0) {
+        <p class="empty">No leave applications found.</p>
+      }
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Leave Types">
+    <div class="tab-content">
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput [(ngModel)]="newType.name" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Default annual days</mat-label><input matInput type="number" [(ngModel)]="newType.defaultAnnualDays" /></mat-form-field>
+        <mat-checkbox [(ngModel)]="newType.isPaid">Paid</mat-checkbox>
+        <mat-checkbox [(ngModel)]="newType.requiresAttachment">Requires attachment</mat-checkbox>
+        <button mat-flat-button color="primary" (click)="addType()">Add</button>
+      </div>
+
+      <table mat-table [dataSource]="types()">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let t">
+            @if (editingTypeId === t.id) {
+              <input matInput [(ngModel)]="editType.name" />
+            } @else {
+              {{ t.name }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="days">
+          <th mat-header-cell *matHeaderCellDef>Annual days</th>
+          <td mat-cell *matCellDef="let t">
+            @if (editingTypeId === t.id) {
+              <input matInput type="number" [(ngModel)]="editType.defaultAnnualDays" style="width: 60px" />
+            } @else {
+              {{ t.defaultAnnualDays }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="paid">
+          <th mat-header-cell *matHeaderCellDef>Paid</th>
+          <td mat-cell *matCellDef="let t">
+            @if (editingTypeId === t.id) {
+              <mat-checkbox [(ngModel)]="editType.isPaid"></mat-checkbox>
+            } @else {
+              {{ t.isPaid ? 'Yes' : 'No' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="attachment">
+          <th mat-header-cell *matHeaderCellDef>Requires attachment</th>
+          <td mat-cell *matCellDef="let t">
+            @if (editingTypeId === t.id) {
+              <mat-checkbox [(ngModel)]="editType.requiresAttachment"></mat-checkbox>
+            } @else {
+              {{ t.requiresAttachment ? 'Yes' : 'No' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let t">
+            @if (editingTypeId === t.id) {
+              <button mat-icon-button color="primary" (click)="saveEdit()"><mat-icon>check</mat-icon></button>
+              <button mat-icon-button (click)="cancelEdit()"><mat-icon>close</mat-icon></button>
+            } @else {
+              <button mat-icon-button (click)="startEdit(t)"><mat-icon>edit</mat-icon></button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="['name', 'days', 'paid', 'attachment', 'actions']"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['name', 'days', 'paid', 'attachment', 'actions']"></tr>
+      </table>
+
+      <h3>Allocate leave balances</h3>
+      <p class="hint">Gives every active employee their default annual days for each leave type above, for the selected year. Employees who already have a balance for a type/year are left untouched.</p>
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline"><mat-label>Year</mat-label><input matInput type="number" [(ngModel)]="allocateYear" /></mat-form-field>
+        <button mat-flat-button color="primary" [disabled]="isAllocating()" (click)="allocateDefaultBalances()">
+          @if (isAllocating()) { Allocating... } @else { Allocate for all employees }
+        </button>
+      </div>
+    </div>
+  </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,91 @@
+<h1>Attendance</h1>
+
+<mat-card class="filters-card">
+  <div class="filters">
+    <mat-form-field appearance="outline">
+      <mat-label>Employee</mat-label>
+      <mat-select [(ngModel)]="employeeId" (selectionChange)="onFilterChange()">
+        <mat-option value="">All employees</mat-option>
+        @for (e of employees(); track e.id) {
+          <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }} ({{ e.employeeCode }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>From</mat-label>
+      <input matInput type="date" [(ngModel)]="from" (ngModelChange)="onFilterChange()" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>To</mat-label>
+      <input matInput type="date" [(ngModel)]="to" (ngModelChange)="onFilterChange()" />
+    </mat-form-field>
+
+    <mat-form-field appearance="outline">
+      <mat-label>Status</mat-label>
+      <mat-select [(ngModel)]="status" (selectionChange)="onFilterChange()">
+        <mat-option [value]="null">All</mat-option>
+        @for (label of statusLabels; track label; let i = $index) {
+          <mat-option [value]="i">{{ label }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <button mat-stroked-button (click)="clearFilters()">Clear</button>
+  </div>
+</mat-card>
+
+@if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+}
+
+<div class="table-scroll">
+<table mat-table [dataSource]="items()" class="mat-elevation-z0">
+  <ng-container matColumnDef="employee">
+    <th mat-header-cell *matHeaderCellDef>Employee</th>
+    <td mat-cell *matCellDef="let a">{{ a.employeeName }} <span class="muted">({{ a.employeeCode }})</span></td>
+  </ng-container>
+
+  <ng-container matColumnDef="date">
+    <th mat-header-cell *matHeaderCellDef>Date</th>
+    <td mat-cell *matCellDef="let a">{{ a.date }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="checkInAt">
+    <th mat-header-cell *matHeaderCellDef>Check-in</th>
+    <td mat-cell *matCellDef="let a">{{ formatTime(a.checkInAt) }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="checkOutAt">
+    <th mat-header-cell *matHeaderCellDef>Check-out</th>
+    <td mat-cell *matCellDef="let a">{{ formatTime(a.checkOutAt) }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="breakMinutes">
+    <th mat-header-cell *matHeaderCellDef>Break</th>
+    <td mat-cell *matCellDef="let a">{{ a.breakMinutes }}m</td>
+  </ng-container>
+
+  <ng-container matColumnDef="workingMinutes">
+    <th mat-header-cell *matHeaderCellDef>Hours</th>
+    <td mat-cell *matCellDef="let a">{{ (a.workingMinutes / 60).toFixed(1) }}h</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let a">
+      <mat-chip [class]="statusChipClass(a.status)">{{ statusLabels[a.status] }}</mat-chip>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+</div>
+
+@if (!isLoading() && items().length === 0) {
+  <p class="empty">No attendance records found.</p>
+}
+
+<mat-paginator [length]="total()" [pageSize]="pageSize" [pageSizeOptions]="[20, 50, 100]" (page)="onPage($event)"></mat-paginator>

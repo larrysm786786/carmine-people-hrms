@@ -1,0 +1,89 @@
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.publish-card {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 24px;
+  max-width: 500px;
+
+  button {
+    align-self: flex-start;
+  }
+}
+
+.file-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.file-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.file-label {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.file-picker {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+
+  button[mat-stroked-button] {
+    flex-shrink: 0;
+  }
+}
+
+.file-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.file-empty {
+  font-size: 14px;
+  opacity: 0.5;
+}
+
+.feed {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.feed-item {
+  padding: 16px 20px;
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 16px;
+  }
+
+  p {
+    margin: 0 0 8px;
+  }
+
+  small {
+    opacity: 0.6;
+  }
+}
+
+.empty {
+  opacity: 0.6;
+  padding: 24px;
+  text-align: center;
+}

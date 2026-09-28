@@ -1,0 +1,50 @@
+:host {
+  display: block;
+}
+
+.line-chart-svg {
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+
+.grid-line {
+  stroke: var(--mat-sys-outline-variant, #f7f7f7);
+  stroke-width: 1;
+}
+
+.axis-label {
+  font-size: 9px;
+  fill: currentColor;
+  opacity: 0.55;
+}
+
+.x-label {
+  text-anchor: middle;
+}
+
+.line-path {
+  transition: d 0.4s ease;
+}
+
+.line-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  opacity: 0.8;
+}
+
+.legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}

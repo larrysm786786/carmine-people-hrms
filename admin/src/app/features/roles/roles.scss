@@ -1,0 +1,59 @@
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.add-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 24px;
+
+  button {
+    height: 56px;
+  }
+}
+
+.empty,
+.loading {
+  padding: 24px;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.role-card {
+  padding: 20px;
+
+  h3 {
+    margin: 0 0 4px;
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .description {
+    margin: 0 0 12px;
+    opacity: 0.6;
+    font-size: 13px;
+  }
+
+  .permission-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+
+    &.saving {
+      opacity: 0.6;
+    }
+
+    mat-checkbox {
+      font-size: 13px;
+    }
+  }
+}

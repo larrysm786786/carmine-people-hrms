@@ -1,0 +1,196 @@
+<h1>Dashboard</h1>
+
+@if (isLoading()) {
+  <p>Loading…</p>
+} @else if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+} @else {
+  <div class="kpi-grid">
+    @for (kpi of kpis(); track kpi.label) {
+      <mat-card class="kpi-card">
+        <mat-icon>{{ kpi.icon }}</mat-icon>
+        <div class="kpi-value">{{ kpi.value }}</div>
+        <div class="kpi-label">{{ kpi.label }}</div>
+      </mat-card>
+    }
+  </div>
+
+  <mat-card class="anomaly-card">
+    <h2><mat-icon class="ai-icon">insights</mat-icon> AI Attendance Insights</h2>
+    <p class="hint">Employees whose recent attendance pattern has changed significantly from their own baseline.</p>
+    @if (anomaliesLoading()) {
+      <p>Loading…</p>
+    } @else if (anomalies().length === 0) {
+      <p class="empty">No unusual attendance patterns detected.</p>
+    } @else {
+      <div class="anomaly-list">
+        @for (anomaly of anomalies(); track anomaly.employeeId) {
+          <div class="anomaly-row">
+            <mat-icon class="ai-icon">warning</mat-icon>
+            <div>
+              <div class="anomaly-name">{{ anomaly.employeeName }}</div>
+              @for (reason of anomaly.reasons; track reason) {
+                <div class="anomaly-reason">{{ reason }}</div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </mat-card>
+
+  <mat-card class="anomaly-card">
+    <h2><mat-icon class="ai-icon">event_available</mat-icon> AI Leave Forecast @if (leavePredictionMonthName()) {— {{ leavePredictionMonthName() }}}</h2>
+    <p class="hint">Employees who have historically taken leave in this month, based on their own past pattern.</p>
+    @if (leavePredictionsLoading()) {
+      <p>Loading…</p>
+    } @else if (leavePredictions().length === 0) {
+      <p class="empty">No recurring leave patterns detected for next month yet.</p>
+    } @else {
+      <div class="anomaly-list">
+        @for (prediction of leavePredictions(); track prediction.employeeId) {
+          <div class="anomaly-row">
+            <mat-icon class="ai-icon">event_available</mat-icon>
+            <div>
+              <div class="anomaly-name">{{ prediction.employeeName }} — {{ prediction.likelihoodPercent }}% likely</div>
+              <div class="anomaly-reason">{{ prediction.reason }}</div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </mat-card>
+
+  <div class="chart-grid">
+    <mat-card class="chart-card">
+      <h2>Today's attendance breakdown</h2>
+      <app-donut-chart [segments]="attendanceDonut()"></app-donut-chart>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <h2>Attendance trend (14 days)</h2>
+      <app-line-chart [series]="attendanceTrendSeries()" [labels]="attendanceTrendLabels()"></app-line-chart>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <h2>Department attendance (today)</h2>
+      <app-bar-chart [data]="departmentBars()"></app-bar-chart>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <h2>Leave trend (6 months)</h2>
+      <app-bar-chart [data]="leaveTrendBars()"></app-bar-chart>
+    </mat-card>
+
+    <mat-card class="chart-card">
+      <h2>Average working hours (14 days)</h2>
+      <app-line-chart [series]="workingHoursSeries()" [labels]="workingHoursLabels()"></app-line-chart>
+    </mat-card>
+  </div>
+
+  <div class="table-grid">
+    <mat-card class="table-card">
+      <h2>Recent attendance</h2>
+      <table mat-table [dataSource]="data()!.recentAttendance">
+        <ng-container matColumnDef="employeeName">
+          <th mat-header-cell *matHeaderCellDef>Employee</th>
+          <td mat-cell *matCellDef="let r">{{ r.employeeName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="date">
+          <th mat-header-cell *matHeaderCellDef>Date</th>
+          <td mat-cell *matCellDef="let r">{{ r.date }}</td>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef>Status</th>
+          <td mat-cell *matCellDef="let r"><mat-chip>{{ r.status }}</mat-chip></td>
+        </ng-container>
+        <ng-container matColumnDef="checkInAt">
+          <th mat-header-cell *matHeaderCellDef>Check-in</th>
+          <td mat-cell *matCellDef="let r">{{ r.checkInAt ? (r.checkInAt | date: 'shortTime') : '—' }}</td>
+        </ng-container>
+        <ng-container matColumnDef="checkOutAt">
+          <th mat-header-cell *matHeaderCellDef>Check-out</th>
+          <td mat-cell *matCellDef="let r">{{ r.checkOutAt ? (r.checkOutAt | date: 'shortTime') : '—' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="recentAttendanceColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: recentAttendanceColumns"></tr>
+      </table>
+      @if (data()!.recentAttendance.length === 0) {
+        <p class="empty">No attendance records yet.</p>
+      }
+    </mat-card>
+
+    <mat-card class="table-card">
+      <h2>Pending approvals</h2>
+      <table mat-table [dataSource]="data()!.pendingApprovals">
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+          <td mat-cell *matCellDef="let p"><mat-chip>{{ p.type }}</mat-chip></td>
+        </ng-container>
+        <ng-container matColumnDef="employeeName">
+          <th mat-header-cell *matHeaderCellDef>Employee</th>
+          <td mat-cell *matCellDef="let p">{{ p.employeeName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="summary">
+          <th mat-header-cell *matHeaderCellDef>Details</th>
+          <td mat-cell *matCellDef="let p">{{ p.summary }}</td>
+        </ng-container>
+        <ng-container matColumnDef="requestedAt">
+          <th mat-header-cell *matHeaderCellDef>Requested</th>
+          <td mat-cell *matCellDef="let p">{{ p.requestedAt | date: 'short' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="pendingApprovalColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: pendingApprovalColumns"></tr>
+      </table>
+      @if (data()!.pendingApprovals.length === 0) {
+        <p class="empty">No pending approvals.</p>
+      }
+    </mat-card>
+
+    <mat-card class="table-card">
+      <h2>Recent employees</h2>
+      <table mat-table [dataSource]="data()!.recentEmployees">
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let e">{{ e.fullName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="department">
+          <th mat-header-cell *matHeaderCellDef>Department</th>
+          <td mat-cell *matCellDef="let e">{{ e.department }}</td>
+        </ng-container>
+        <ng-container matColumnDef="designation">
+          <th mat-header-cell *matHeaderCellDef>Designation</th>
+          <td mat-cell *matCellDef="let e">{{ e.designation }}</td>
+        </ng-container>
+        <ng-container matColumnDef="dateOfJoining">
+          <th mat-header-cell *matHeaderCellDef>Joined</th>
+          <td mat-cell *matCellDef="let e">{{ e.dateOfJoining | date: 'mediumDate' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="recentEmployeeColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: recentEmployeeColumns"></tr>
+      </table>
+      @if (data()!.recentEmployees.length === 0) {
+        <p class="empty">No employees yet.</p>
+      }
+    </mat-card>
+
+    <mat-card class="table-card">
+      <h2>Recent announcements</h2>
+      <table mat-table [dataSource]="data()!.recentAnnouncements">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Title</th>
+          <td mat-cell *matCellDef="let a">{{ a.title }}</td>
+        </ng-container>
+        <ng-container matColumnDef="publishAt">
+          <th mat-header-cell *matHeaderCellDef>Published</th>
+          <td mat-cell *matCellDef="let a">{{ a.publishAt | date: 'medium' }}</td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="recentAnnouncementColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: recentAnnouncementColumns"></tr>
+      </table>
+      @if (data()!.recentAnnouncements.length === 0) {
+        <p class="empty">No announcements yet.</p>
+      }
+    </mat-card>
+  </div>
+}

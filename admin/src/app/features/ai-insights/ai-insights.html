@@ -1,0 +1,32 @@
+<h1>AI Insights</h1>
+
+@if (isConfigured() === false) {
+  <p class="not-configured">The AI assistant isn't configured yet. Add an Anthropic API key in the backend configuration to enable it.</p>
+} @else {
+  <div class="chat-card">
+    <div class="messages">
+      @if (messages().length === 0) {
+        <p class="hint">Ask about attendance trends, leave patterns, department headcount, or pending approvals.</p>
+      }
+      @for (message of messages(); track $index) {
+        <div class="bubble" [class.user]="message.role === 'user'">
+          {{ message.content }}
+        </div>
+      }
+      <div #scrollAnchor></div>
+    </div>
+
+    @if (isSending()) {
+      <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+    }
+
+    <div class="input-row">
+      <mat-form-field appearance="outline" class="input-field">
+        <input matInput [(ngModel)]="input" placeholder="Type a message..." (keydown.enter)="send()" />
+      </mat-form-field>
+      <button mat-icon-button color="primary" [disabled]="isSending()" (click)="send()">
+        <mat-icon>send</mat-icon>
+      </button>
+    </div>
+  </div>
+}
