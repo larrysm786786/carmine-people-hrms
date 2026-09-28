@@ -80,8 +80,13 @@ export class AuthService {
           permissions: permissionValues,
         });
       }
-    } catch {
-      this.tokenStorage.clear();
+    } catch (err) {
+      // Only an actually-rejected session signs the user out. A transient failure (429 rate
+      // limit, network blip, 5xx) keeps the tokens so the next request can succeed; genuine
+      // 401s are already handled by the auth interceptor's refresh-or-logout flow.
+      if (err instanceof HttpErrorResponse && err.status === 401) {
+        this.tokenStorage.clear();
+      }
     }
   }
 }

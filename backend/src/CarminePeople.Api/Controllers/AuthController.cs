@@ -10,7 +10,6 @@ namespace CarminePeople.Api.Controllers;
 [ApiController]
 [ApiVersion("1.0")]
 [Route("api/v{version:apiVersion}/auth")]
-[EnableRateLimiting("auth")]
 public class AuthController : ControllerBase
 {
     private readonly AuthService _authService;
@@ -21,6 +20,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("login")]
+    [EnableRateLimiting("auth")]
     [AllowAnonymous]
     public async Task<IActionResult> Login([FromBody] LoginRequest request, CancellationToken ct)
     {
@@ -33,6 +33,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("forgot-password")]
+    [EnableRateLimiting("auth")]
     [AllowAnonymous]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordRequest request, CancellationToken ct)
     {
@@ -42,6 +43,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("reset-password")]
+    [EnableRateLimiting("auth")]
     [AllowAnonymous]
     public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request, CancellationToken ct)
     {

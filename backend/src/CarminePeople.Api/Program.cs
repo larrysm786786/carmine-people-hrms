@@ -161,11 +161,19 @@ var isTestingEnvironment = builder.Environment.IsEnvironment("Testing");
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-    options.AddFixedWindowLimiter("auth", limiterOptions =>
+    // Brute-force guard for the credential endpoints (login, forgot/reset password). Partitioned
+    // per client IP: an unpartitioned limiter is one shared bucket for the whole company, so the
+    // 11th login of a busy minute failed for everyone. Session endpoints (/me, /refresh, /logout)
+    // are deliberately not on this policy — the admin app calls /me on every page load.
+    options.AddPolicy("auth", httpContext =>
     {
-        limiterOptions.Window = TimeSpan.FromMinutes(1);
-        limiterOptions.PermitLimit = isTestingEnvironment ? 1000 : 10;
-        limiterOptions.QueueLimit = 0;
+        var ip = httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown";
+        return System.Threading.RateLimiting.RateLimitPartition.GetFixedWindowLimiter(ip, _ => new System.Threading.RateLimiting.FixedWindowRateLimiterOptions
+        {
+            Window = TimeSpan.FromMinutes(1),
+            PermitLimit = isTestingEnvironment ? 1000 : 10,
+            QueueLimit = 0,
+        });
     });
     // AI chat proxies a paid Anthropic API call per request — a tighter, dedicated limit
     // caps worst-case cost exposure independent of the general per-IP limiter below.
