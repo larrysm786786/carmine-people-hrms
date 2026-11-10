@@ -25,6 +25,10 @@ services:
         value: "15"
       - key: Cors__AllowedOrigins__0
         sync: false
+      # Admin dashboard is served from GitHub Pages (project pages share this origin
+      # regardless of repo name): https://larrysm786786.github.io/carmine-people-hrms/
+      - key: Cors__AllowedOrigins__1
+        value: https://larrysm786786.github.io
       - key: Fcm__ServiceAccountJson
         sync: false
       - key: Ai__Anthropic__ApiKey
