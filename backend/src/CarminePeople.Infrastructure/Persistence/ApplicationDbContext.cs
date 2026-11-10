@@ -62,17 +62,17 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
             }
         }
 
-        // SQL Server's datetime2 columns carry no timezone info, so EF Core reads every
-        // DateTime back with DateTimeKind.Unspecified — System.Text.Json then serializes it
-        // WITHOUT a "Z" suffix, and every client (mobile, admin) misreads a UTC instant as
-        // local time (a ~5.5h error for IST). This converter forces DateTimeKind.Utc on
-        // every DateTime/DateTime? column on read, since every DateTime this app writes is
-        // already DateTime.UtcNow — it never actually held local time, only the Kind tag was
-        // lost in the round trip through the database.
+        // Every DateTime this app writes is already DateTime.UtcNow, so every DateTime/DateTime?
+        // column is mapped to Postgres's "timestamp with time zone" (timestamptz) rather than
+        // the Kind-less "timestamp without time zone" — Npgsql refuses to write a Kind=Utc
+        // DateTime into the latter. The converter still forces DateTimeKind.Utc on read so
+        // System.Text.Json serializes a "Z" suffix and every client (mobile, admin) doesn't
+        // misread the UTC instant as local time (a ~5.5h error for IST).
         var utcConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime, DateTime>(
-            v => v, v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
+            v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc), v => DateTime.SpecifyKind(v, DateTimeKind.Utc));
         var nullableUtcConverter = new Microsoft.EntityFrameworkCore.Storage.ValueConversion.ValueConverter<DateTime?, DateTime?>(
-            v => v, v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
+            v => v.HasValue ? (v.Value.Kind == DateTimeKind.Utc ? v.Value : DateTime.SpecifyKind(v.Value, DateTimeKind.Utc)) : v,
+            v => v.HasValue ? DateTime.SpecifyKind(v.Value, DateTimeKind.Utc) : v);
 
         foreach (var entityType in builder.Model.GetEntityTypes())
         {
@@ -81,10 +81,12 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
                 if (property.ClrType == typeof(DateTime))
                 {
                     property.SetValueConverter(utcConverter);
+                    property.SetColumnType("timestamp with time zone");
                 }
                 else if (property.ClrType == typeof(DateTime?))
                 {
                     property.SetValueConverter(nullableUtcConverter);
+                    property.SetColumnType("timestamp with time zone");
                 }
             }
         }

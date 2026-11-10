@@ -8,7 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace CarminePeople.IntegrationTests;
 
 // Runs the full API pipeline (including Program.cs's own migrate+seed-on-startup,
-// since ASPNETCORE_ENVIRONMENT=Development) against a uniquely-named SQL Server
+// since ASPNETCORE_ENVIRONMENT=Development) against a uniquely-named Postgres
 // database per test class instance, so integration tests can rely on real
 // constraints (unique indexes, FK behavior) that the InMemory provider does not enforce.
 public class CarminePeopleApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
@@ -28,19 +28,17 @@ public class CarminePeopleApiFactory : WebApplicationFactory<Program>, IAsyncLif
         });
     }
 
-    // Windows dev (Trusted_Connection) by default; CI overrides via TEST_SQL_SERVER /
-    // TEST_SQL_USER / TEST_SQL_PASSWORD to hit the CI SQL Server container over SA auth.
+    // Local Postgres on localhost:5432 with the default "postgres" superuser by default;
+    // CI overrides via TEST_PG_HOST / TEST_PG_PORT / TEST_PG_USER / TEST_PG_PASSWORD to hit
+    // the CI Postgres service container.
     private string BuildConnectionString()
     {
-        var server = Environment.GetEnvironmentVariable("TEST_SQL_SERVER") ?? "localhost";
-        var user = Environment.GetEnvironmentVariable("TEST_SQL_USER");
-        var password = Environment.GetEnvironmentVariable("TEST_SQL_PASSWORD");
+        var host = Environment.GetEnvironmentVariable("TEST_PG_HOST") ?? "localhost";
+        var port = Environment.GetEnvironmentVariable("TEST_PG_PORT") ?? "5432";
+        var user = Environment.GetEnvironmentVariable("TEST_PG_USER") ?? "postgres";
+        var password = Environment.GetEnvironmentVariable("TEST_PG_PASSWORD") ?? "postgres";
 
-        if (!string.IsNullOrEmpty(user))
-        {
-            return $"Server={server};Database={_databaseName};User Id={user};Password={password};TrustServerCertificate=True";
-        }
-        return $"Server={server};Database={_databaseName};Trusted_Connection=True;TrustServerCertificate=True";
+        return $"Host={host};Port={port};Database={_databaseName};Username={user};Password={password}";
     }
 
     public Task InitializeAsync()

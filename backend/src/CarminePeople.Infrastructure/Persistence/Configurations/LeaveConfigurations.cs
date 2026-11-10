@@ -12,6 +12,8 @@ public class LeaveBalanceConfig : IEntityTypeConfiguration<LeaveBalance>
         builder.Property(lb => lb.Available).HasPrecision(6, 2);
         builder.Property(lb => lb.Used).HasPrecision(6, 2);
         builder.Property(lb => lb.Pending).HasPrecision(6, 2);
+        // Postgres has no SQL Server-style rowversion column; IsRowVersion() on a uint
+        // property maps it to Postgres's internal xid-based row versioning instead.
         builder.Property(lb => lb.RowVersion).IsRowVersion();
 
         builder.HasOne(lb => lb.Employee).WithMany().HasForeignKey(lb => lb.EmployeeId).OnDelete(DeleteBehavior.Restrict);
