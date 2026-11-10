@@ -13,8 +13,8 @@ public class EmployeeConfiguration : IEntityTypeConfiguration<Employee>
         // filter, EmployeeService's uniqueness checks (which respect the IsDeleted query
         // filter) would report the value as free while the DB-level index still rejects the
         // insert with an unhandled DbUpdateException.
-        builder.HasIndex(e => e.Email).IsUnique().HasFilter("[IsDeleted] = 0");
-        builder.HasIndex(e => e.EmployeeCode).IsUnique().HasFilter("[IsDeleted] = 0");
+        builder.HasIndex(e => e.Email).IsUnique().HasFilter("\"IsDeleted\" = false");
+        builder.HasIndex(e => e.EmployeeCode).IsUnique().HasFilter("\"IsDeleted\" = false");
 
         builder.Property(e => e.FirstName).HasMaxLength(100).IsRequired();
         builder.Property(e => e.LastName).HasMaxLength(100).IsRequired();

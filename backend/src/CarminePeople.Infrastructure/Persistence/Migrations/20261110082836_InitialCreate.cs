@@ -987,14 +987,14 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                 table: "Employees",
                 column: "Email",
                 unique: true,
-                filter: "[IsDeleted] = 0");
+                filter: "\"IsDeleted\" = false");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_EmployeeCode",
                 table: "Employees",
                 column: "EmployeeCode",
                 unique: true,
-                filter: "[IsDeleted] = 0");
+                filter: "\"IsDeleted\" = false");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_LocationId",
