@@ -12,8 +12,8 @@ AI HR assistant.
 | Mobile | Flutter (Android primary, iOS-ready), Riverpod, GoRouter, Dio |
 | Admin dashboard | Angular + TypeScript, Angular Material (selective use) |
 | Backend API | ASP.NET Core Web API, Clean Architecture, EF Core Code-First |
-| Database | SQL Server |
-| Cloud | Azure (App Service/Container Apps, Azure SQL, Blob Storage, Key Vault) |
+| Database | PostgreSQL (Supabase-hosted) |
+| Cloud | Render (Docker web services for backend + admin, GitHub-connected auto-deploy) |
 | Notifications | Firebase Cloud Messaging |
 | AI | Decoupled AI service layer (Anthropic), never queries the DB directly |
 
@@ -41,9 +41,9 @@ dotnet run --urls "http://localhost:5083"
 Port 5083 is what the admin dashboard (`api-config.ts`) and the mobile debug build
 expect. Applies EF Core migrations and seeds development data automatically in the
 `Development` environment. The connection string in `appsettings.Development.json`
-points at a local SQL Server Express instance (`localhost\SQLEXPRESS`); change it if
-your SQL Server instance has a different name. See [docs/database.md](docs/database.md) for schema
-and seed details.
+points at a local PostgreSQL instance (`localhost:5432`); change it if your Postgres
+instance uses a different host/port/credentials, or point it at a Supabase project's
+connection string. See [docs/database.md](docs/database.md) for schema and seed details.
 
 **Admin dashboard:**
 ```

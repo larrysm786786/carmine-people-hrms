@@ -13,7 +13,7 @@ location-based attendance, and a future AI assistant.
 /mobile     Flutter app (Android primary, iOS-ready)
 /admin      Angular admin/HR dashboard
 /backend    ASP.NET Core Web API (Clean Architecture)
-/database   SQL Server schema, EF Core migrations, seed scripts
+/database   PostgreSQL schema, EF Core migrations, seed scripts
 /docs       architecture, database, api, security, deployment, ux-guidelines, testing
 ```
 
@@ -27,7 +27,7 @@ backend/
   src/
     CarminePeople.Domain          Entities, enums, value objects, domain events. No dependencies.
     CarminePeople.Application     Use cases (CQRS-style handlers), DTOs, interfaces (IRepository, IEmailSender...), FluentValidation validators.
-    CarminePeople.Infrastructure  EF Core DbContext, repository implementations, external services (Firebase, storage, Azure).
+    CarminePeople.Infrastructure  EF Core DbContext, repository implementations, external services (Firebase, storage).
     CarminePeople.Api             Controllers, middleware, DI wiring, Swagger, API versioning, Serilog.
   tests/
     CarminePeople.UnitTests
@@ -75,24 +75,24 @@ exposing permission-aware "tools" to an LLM. It never queries the database
 directly — it calls backend APIs using the *requesting user's* permission
 context, so it cannot leak another employee's private/salary/document data.
 
-## 7. Cloud (Azure)
+## 7. Cloud (Render + Supabase)
 
-- API: Azure App Service (or Container Apps)
-- Database: Azure SQL
-- File storage: Azure Blob Storage (documents — private containers, SAS-token access, never public URLs)
-- Admin/mobile static hosting: Azure Static Web Apps / App Service as applicable
-- Secrets: Azure Key Vault, never committed to source
+- API: Render web service (Docker runtime), auto-deployed from GitHub on push to `main`
+- Database: Supabase (hosted PostgreSQL)
+- File storage: local disk (documents) to start; swap for Supabase Storage if scale requires it
+- Admin static hosting: Render web service (Docker runtime, nginx-served Angular build)
+- Secrets: Render environment variables, never committed to source
 - Push notifications: Firebase Cloud Messaging (mobile), backend triggers via Firebase Admin SDK
 
 ## 8. Environments
 
-`Development` (LocalDB/local SQL Server, seed data, verbose logging) ->
-`Staging` (Azure, anonymized data) -> `Production` (Azure, secrets via Key Vault,
-minimal logging verbosity, alerting).
+`Development` (local Postgres or Supabase, seed data, verbose logging) ->
+`Staging` (Render + Supabase, anonymized data) -> `Production` (Render + Supabase,
+secrets via Render environment variables, minimal logging verbosity, alerting).
 
 ## 9. Open questions for approval before Phase 1
 
 - Confirm .NET target version (proposed: .NET 8 LTS)
 - Confirm Angular version (proposed: latest stable Angular)
 - Confirm whether iOS build/signing is in scope for Phase 1 or deferred
-- Confirm Azure subscription/resource naming convention
+- Confirm Supabase project/org and Render plan for Staging vs Production

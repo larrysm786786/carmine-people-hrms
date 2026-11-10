@@ -1,15 +1,15 @@
 services:
-  sqlserver:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+  postgres:
+    image: postgres:16
     environment:
-      ACCEPT_EULA: "Y"
-      MSSQL_SA_PASSWORD: "${SQL_SA_PASSWORD:?set SQL_SA_PASSWORD in .env}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}"
+      POSTGRES_DB: "CarminePeopleDb"
     ports:
-      - "1433:1433"
+      - "5432:5432"
     volumes:
-      - sqlserver-data:/var/opt/mssql
+      - postgres-data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -C -Q 'SELECT 1' || exit 1"]
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -20,7 +20,7 @@ services:
       dockerfile: Dockerfile
     environment:
       ASPNETCORE_ENVIRONMENT: "Production"
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=CarminePeopleDb;User Id=sa;Password=${SQL_SA_PASSWORD};TrustServerCertificate=True"
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=CarminePeopleDb;Username=postgres;Password=${POSTGRES_PASSWORD}"
       Jwt__SigningKey: "${JWT_SIGNING_KEY:?set JWT_SIGNING_KEY in .env, at least 32 chars}"
       Jwt__Issuer: "${JWT_ISSUER:-CarminePeople}"
       Jwt__Audience: "${JWT_AUDIENCE:-CarminePeopleClients}"
@@ -34,7 +34,7 @@ services:
     ports:
       - "5080:8080"
     depends_on:
-      sqlserver:
+      postgres:
         condition: service_healthy
 
   admin:
@@ -47,4 +47,4 @@ services:
       - backend
 
 volumes:
-  sqlserver-data:
+  postgres-data:

@@ -26,7 +26,7 @@
 ## Secrets
 
 - No secrets in source control — connection strings, JWT signing keys, Firebase
-  service account, Azure storage keys all via environment variables / Azure Key Vault
+  service account all via environment variables / Render environment variables
 - Separate secrets per environment (Dev/Staging/Prod)
 
 ## File uploads (documents)

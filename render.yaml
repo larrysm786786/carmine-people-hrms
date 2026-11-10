@@ -1,0 +1,39 @@
+services:
+  - type: web
+    name: carmine-people-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      # Supabase connection string (Project Settings > Database > Connection string —
+      # use the pooler connection string). Set this in the Render dashboard; never commit it.
+      - key: ConnectionStrings__DefaultConnection
+        sync: false
+      - key: Jwt__SigningKey
+        sync: false
+      - key: Jwt__Issuer
+        value: CarminePeople
+      - key: Jwt__Audience
+        value: CarminePeopleClients
+      - key: Jwt__AccessTokenMinutes
+        value: "15"
+      - key: Cors__AllowedOrigins__0
+        sync: false
+      - key: Fcm__ServiceAccountJson
+        sync: false
+      - key: Ai__Anthropic__ApiKey
+        sync: false
+
+  - type: web
+    name: carmine-people-admin
+    runtime: docker
+    rootDir: admin
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free

@@ -1,8 +1,8 @@
 # Running Carmine People locally with Docker
 
-This mirrors the target Azure topology from `docs/deployment.md` (App Service/Container
-Apps + Azure SQL + Static Web Apps) using local containers, so the same Dockerfiles
-carry forward to Azure Container Apps/App Service without changes.
+This mirrors the target Render topology from `docs/deployment.md` (Docker web service +
+Supabase Postgres + static site) using local containers, so the same Dockerfiles carry
+forward to Render without changes.
 
 ## Prerequisites
 
@@ -21,37 +21,43 @@ docker compose up --build
 - Backend API: http://localhost:5080 (Swagger only in Development builds — this compose
   file runs `ASPNETCORE_ENVIRONMENT=Production`, so apply migrations explicitly, see below)
 - Admin dashboard: http://localhost:4200
-- SQL Server: localhost:1433 (sa / `SQL_SA_PASSWORD` from `.env`)
+- Postgres: localhost:5432 (postgres / `POSTGRES_PASSWORD` from `.env`)
 
 ## Applying migrations
 
 Per `docs/deployment.md`, this project never auto-migrates on startup outside
-Development/Testing. Apply migrations explicitly as an release step:
+Development/Testing. Apply migrations explicitly as a release step:
 
 ```
 cd backend
 dotnet ef database update \
   --project src/CarminePeople.Infrastructure \
   --startup-project src/CarminePeople.Api \
-  --connection "Server=localhost,1433;Database=CarminePeopleDb;User Id=sa;Password=<SQL_SA_PASSWORD>;TrustServerCertificate=True"
+  --connection "Host=localhost;Port=5432;Database=CarminePeopleDb;Username=postgres;Password=<POSTGRES_PASSWORD>"
 ```
+
+Against Supabase, swap the `--connection` value for the connection string from the
+Supabase dashboard (Project Settings > Database > Connection string).
 
 ## CI
 
 - `.github/workflows/backend-ci.yml` — builds the backend, runs unit tests, runs
-  integration tests against a SQL Server service container
+  integration tests against a Postgres service container
 - `.github/workflows/admin-ci.yml` — builds the Angular admin app
 - `.github/workflows/mobile-ci.yml` — analyzes, tests, and builds a debug APK for the
   Flutter app
 
-## Path to Azure
+## Path to Render + Supabase
 
-The Dockerfiles here are what `backend`/`admin` App Service or Container Apps
-deployments would build directly — no separate "cloud" Dockerfile is needed. What
-changes for Azure (per `docs/deployment.md`) is only *where* config comes from:
+The Dockerfiles here are what Render's backend web service builds directly — no
+separate "cloud" Dockerfile is needed. See `render.yaml` at the repo root for the
+Render Blueprint. What changes for a deployed environment (per `docs/deployment.md`)
+is only *where* config comes from:
 
-- `ConnectionStrings__DefaultConnection` → Azure SQL connection string via Key Vault reference
-- `Jwt__SigningKey` → Key Vault reference, never an App Service plain setting
-- SQL Server container → Azure SQL Database
-- nginx-served admin container → Azure Static Web Apps (or keep the same container on
-  App Service if a static host isn't provisioned yet)
+- `ConnectionStrings__DefaultConnection` → Supabase Postgres connection string, set as a
+  Render environment variable (never committed)
+- `Jwt__SigningKey` → a Render environment variable (`sync: false` in `render.yaml`),
+  never committed
+- Local Postgres container → Supabase-hosted Postgres
+- nginx-served admin container → Render static site (or keep the same container as a
+  Render Docker web service if you'd rather not switch to a static build)

@@ -1,17 +1,17 @@
 # Carmine People — Database Design (Phase 0)
 
-SQL Server, EF Core Code-First migrations. All tables include standard audit
-columns unless noted otherwise:
+PostgreSQL (Supabase-hosted), EF Core Code-First migrations via the Npgsql provider.
+All tables include standard audit columns unless noted otherwise:
 
 ```
-CreatedAt   datetime2   not null
-CreatedBy   uniqueidentifier  (FK -> Employees.Id, nullable for system/seed)
-UpdatedAt   datetime2   null
-UpdatedBy   uniqueidentifier  null
-IsDeleted   bit         not null default 0   -- soft delete
+CreatedAt   timestamptz   not null
+CreatedBy   uuid          (FK -> Employees.Id, nullable for system/seed)
+UpdatedAt   timestamptz   null
+UpdatedBy   uuid          null
+IsDeleted   boolean       not null default false   -- soft delete
 ```
 
-Primary keys: `uniqueidentifier` (GUID), generated server-side.
+Primary keys: `uuid` (GUID), generated client-side (`Guid.NewGuid()`).
 
 ## Core tables
 

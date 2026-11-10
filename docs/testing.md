@@ -6,7 +6,7 @@
   validators, domain logic (working-hours calculation, leave day-count
   calculation, geofence check, permission evaluation) — isolated from EF Core/DB
 - **Integration tests** (`CarminePeople.IntegrationTests`): full request pipeline
-  against a test database (e.g. SQL Server in a container, or EF Core InMemory
+  against a test database (Postgres in a container, or EF Core InMemory
   where acceptable), covering auth, attendance, breaks, leave, approvals, permissions
 
 ## Required coverage areas (from roadmap)
@@ -49,5 +49,5 @@ development-only and never deployed to Staging/Production with real-looking valu
 
 ## Open questions for approval
 
-- Confirm integration test DB strategy (Testcontainers SQL Server vs EF Core InMemory vs LocalDB)
+- Confirm integration test DB strategy (Testcontainers Postgres vs EF Core InMemory vs local Postgres)
 - Confirm minimum coverage threshold to enforce in CI, if any
