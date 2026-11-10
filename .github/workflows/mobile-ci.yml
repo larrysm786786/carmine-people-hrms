@@ -37,5 +37,11 @@ jobs:
       - name: Run tests
         run: flutter test
 
-      - name: Build APK (debug)
-        run: flutter build apk --debug
+      - name: Build APK (release)
+        run: flutter build apk --release --dart-define=API_BASE_URL=https://carmine-people-api.onrender.com/api/v1
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: carmine-people-mobile
+          path: mobile/build/app/outputs/flutter-apk/app-release.apk
