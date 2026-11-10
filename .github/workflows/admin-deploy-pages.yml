@@ -1,3 +1,4 @@
+# Re-run after enabling Pages (Settings > Pages > Source: GitHub Actions)
 name: Deploy admin to GitHub Pages
 
 on:
