@@ -62,6 +62,7 @@ builder.Services.AddScoped<CarminePeople.Application.Organization.Services.Organ
 builder.Services.AddScoped<CarminePeople.Application.Roles.Services.RoleService>();
 builder.Services.AddHostedService<CarminePeople.Api.BackgroundJobs.ForgottenCheckoutJob>();
 builder.Services.AddHostedService<CarminePeople.Api.BackgroundJobs.AttendanceReminderJob>();
+builder.Services.AddHostedService<CarminePeople.Api.BackgroundJobs.CheckoutReminderJob>();
 builder.Services.AddHostedService<CarminePeople.Api.BackgroundJobs.MonthlyAttendanceReportJob>();
 builder.Services.AddHostedService<CarminePeople.Api.BackgroundJobs.MonthlySalaryJob>();
 builder.Services.AddHostedService<CarminePeople.Api.BackgroundJobs.WorkHourShortfallJob>();
