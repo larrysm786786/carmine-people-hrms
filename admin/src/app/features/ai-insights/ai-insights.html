@@ -10,7 +10,11 @@
       }
       @for (message of messages(); track $index) {
         <div class="bubble" [class.user]="message.role === 'user'">
-          {{ message.content }}
+          @if (message.role === 'user') {
+            {{ message.content }}
+          } @else {
+            <span [innerHTML]="formatMessage(message.content)"></span>
+          }
         </div>
       }
       <div #scrollAnchor></div>

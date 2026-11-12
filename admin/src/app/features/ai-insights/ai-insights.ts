@@ -27,6 +27,13 @@ export class AiInsights {
     this.checkConfigured();
   }
 
+  // Minimal, safe markdown subset for AI replies: **bold** only. Escape first so the AI's
+  // own output can never inject markup — [innerHTML] only ever sees the <strong> tags added here.
+  formatMessage(content: string): string {
+    const escaped = content.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    return escaped.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  }
+
   async checkConfigured(): Promise<void> {
     this.isConfigured.set(await this.aiAssistantService.isConfigured());
   }

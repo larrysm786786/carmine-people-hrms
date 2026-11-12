@@ -37,10 +37,18 @@ h1 {
 
 .bubble {
   max-width: 75%;
-  padding: 10px 14px;
-  border-radius: var(--app-radius-md);
+  min-height: 20px;
+  padding: 10px 16px;
+  border-radius: 14px;
+  line-height: 1.5;
+  white-space: pre-line; // AI replies use \n for line breaks/lists — preserve them
+  word-break: break-word;
   background: var(--mat-sys-surface-container, #f7f7f7);
   align-self: flex-start;
+
+  strong {
+    font-weight: 700;
+  }
 
   &.user {
     background: var(--mat-sys-primary, #cd0040);
