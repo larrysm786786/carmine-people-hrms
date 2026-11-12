@@ -28,6 +28,7 @@ import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
+import '../attendance_support/geofence_radius_monitor.dart';
 import '../attendance_support/wifi_office_connection_monitor.dart';
 import '../auth_session/auth_notifier.dart';
 import '../notifications/fcm_service.dart';
@@ -40,6 +41,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     if (next.valueOrNull?.isAuthenticated ?? false) {
       ref.read(fcmServiceProvider).initOnce();
       ref.read(wifiOfficeConnectionMonitorProvider).start();
+      ref.read(geofenceRadiusMonitorProvider).start();
     }
   });
 
