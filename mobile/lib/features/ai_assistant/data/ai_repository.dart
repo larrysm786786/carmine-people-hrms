@@ -9,11 +9,13 @@ class AiRepository {
 
   Future<bool> fetchStatus() async {
     final data = await _client.get('/ai/status');
-    return data?['available'] as bool? ?? false;
+    return data?['configured'] as bool? ?? false;
   }
 
-  Future<String> sendMessage(String message) async {
-    final data = await _client.post('/ai/chat', data: {'message': message});
+  // history: prior turns as {"role": "user" | "assistant", "content": "..."} — required by
+  // the backend (AiChatRequest.History), which is not nullable/defaulted there.
+  Future<String> sendMessage(String message, List<Map<String, String>> history) async {
+    final data = await _client.post('/ai/chat', data: {'message': message, 'history': history});
     return data?['reply'] as String? ?? '';
   }
 }

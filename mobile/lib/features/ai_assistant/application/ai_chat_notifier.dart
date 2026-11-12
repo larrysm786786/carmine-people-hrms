@@ -16,7 +16,10 @@ class AiChatNotifier extends AsyncNotifier<List<ChatMessage>> {
     final current = state.valueOrNull ?? [];
     state = AsyncData([...current, ChatMessage(text: message, fromUser: true)]);
     final result = await AsyncValue.guard(() async {
-      final reply = await ref.read(aiRepositoryProvider).sendMessage(message);
+      final history = current
+          .map((m) => {'role': m.fromUser ? 'user' : 'assistant', 'content': m.text})
+          .toList();
+      final reply = await ref.read(aiRepositoryProvider).sendMessage(message, history);
       return [
         ...current,
         ChatMessage(text: message, fromUser: true),
