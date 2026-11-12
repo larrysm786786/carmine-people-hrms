@@ -69,16 +69,11 @@ for the Android emulator.
 
 ## Development seed accounts
 
-`DevelopmentSeeder.cs` seeds these accounts automatically when the backend
-starts against an empty database in the `Development` environment. Never
-used in Staging/Production. All share the password `Passw0rd!`.
-
-| Role | Email |
-|---|---|
-| SuperAdmin | `superadmin@carminepeople.dev` |
-| HRAdmin | `hradmin@carminepeople.dev` |
-| Manager | `manager1@carminepeople.dev`, `manager2@carminepeople.dev` |
-| Employee | `employee1@carminepeople.dev` … `employee5@carminepeople.dev` |
+`DevelopmentSeeder.cs` seeds a SuperAdmin, an HRAdmin, two Managers, and five
+Employees automatically when the backend starts against an empty database in
+the `Development` environment. Never used in Staging/Production. See the
+seeder source for the generated email addresses, and set your own password
+via `IPasswordHasher` rather than relying on a documented default.
 
 ## Testing
 
