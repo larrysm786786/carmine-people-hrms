@@ -35,6 +35,10 @@
     "prettier": "^3.8.1",
     "typescript": "~5.9.2",
     "typescript-eslint": "8.59.2",
-    "vitest": "^4.0.8"
+    "vitest": "^4.1.11"
+  },
+  "overrides": {
+    "vite": "^7.3.7",
+    "zod": "^4.6.6"
   }
 }
