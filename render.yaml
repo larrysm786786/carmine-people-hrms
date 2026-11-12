@@ -31,7 +31,7 @@ services:
         value: https://larrysm786786.github.io
       - key: Fcm__ServiceAccountJson
         sync: false
-      - key: Ai__Anthropic__ApiKey
+      - key: Ai__Groq__ApiKey
         sync: false
 
   - type: web

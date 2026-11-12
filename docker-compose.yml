@@ -28,9 +28,9 @@ services:
       Cors__AllowedOrigins__0: "${CORS_ALLOWED_ORIGIN_0:-http://localhost:4200}"
       DocumentStorage__RootPath: "${STORAGE_ROOT_PATH:-App_Data/documents}"
       Fcm__ServiceAccountJson: "${FCM_SERVICE_ACCOUNT_JSON:-}"
-      Ai__Anthropic__ApiKey: "${AI_ANTHROPIC_API_KEY:-}"
-      Ai__Anthropic__Model: "${AI_ANTHROPIC_MODEL:-claude-sonnet-4-5-20250929}"
-      Ai__Anthropic__MaxTokens: "${AI_ANTHROPIC_MAX_TOKENS:-1024}"
+      Ai__Groq__ApiKey: "${AI_GROQ_API_KEY:-}"
+      Ai__Groq__Model: "${AI_GROQ_MODEL:-openai/gpt-oss-120b}"
+      Ai__Groq__MaxTokens: "${AI_GROQ_MAX_TOKENS:-1024}"
     ports:
       - "5080:8080"
     depends_on:

@@ -66,11 +66,11 @@ builder.Services.AddHostedService<CarminePeople.Api.BackgroundJobs.MonthlyAttend
 builder.Services.AddHostedService<CarminePeople.Api.BackgroundJobs.MonthlySalaryJob>();
 builder.Services.AddHostedService<CarminePeople.Api.BackgroundJobs.WorkHourShortfallJob>();
 
-// AI HR assistant (Anthropic Claude). Ai:Anthropic:ApiKey must be set for real
-// responses; until then AiAssistantService.IsConfigured is false and the
-// controller returns a friendly "not configured yet" message instead of calling out.
-builder.Services.Configure<CarminePeople.Infrastructure.Ai.AnthropicOptions>(builder.Configuration.GetSection("Ai:Anthropic"));
-builder.Services.AddHttpClient<CarminePeople.Application.Common.Interfaces.IAiClient, CarminePeople.Infrastructure.Ai.AnthropicAiClient>();
+// AI HR assistant (Groq). Ai:Groq:ApiKey must be set for real responses; until
+// then AiAssistantService.IsConfigured is false and the controller returns a
+// friendly "not configured yet" message instead of calling out.
+builder.Services.Configure<CarminePeople.Infrastructure.Ai.GroqOptions>(builder.Configuration.GetSection("Ai:Groq"));
+builder.Services.AddHttpClient<CarminePeople.Application.Common.Interfaces.IAiClient, CarminePeople.Infrastructure.Ai.GroqAiClient>();
 builder.Services.AddScoped<CarminePeople.Application.Ai.Services.AiAssistantService>();
 
 // Validation
@@ -175,8 +175,8 @@ builder.Services.AddRateLimiter(options =>
             QueueLimit = 0,
         });
     });
-    // AI chat proxies a paid Anthropic API call per request — a tighter, dedicated limit
-    // caps worst-case cost exposure independent of the general per-IP limiter below.
+    // AI chat proxies a Groq API call per request — a tighter, dedicated limit
+    // caps worst-case cost/quota exposure independent of the general per-IP limiter below.
     options.AddFixedWindowLimiter("ai", limiterOptions =>
     {
         limiterOptions.Window = TimeSpan.FromMinutes(1);

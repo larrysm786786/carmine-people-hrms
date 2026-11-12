@@ -15,7 +15,7 @@ AI HR assistant.
 | Database | PostgreSQL (Supabase-hosted) |
 | Cloud | Render (Docker web services for backend + admin, GitHub-connected auto-deploy) |
 | Notifications | Firebase Cloud Messaging |
-| AI | Decoupled AI service layer (Anthropic), never queries the DB directly |
+| AI | Decoupled AI service layer (Groq), never queries the DB directly |
 
 ## Repository layout
 
