@@ -120,6 +120,15 @@ public class EmployeesController : ControllerBase
         return Ok(new { success = true, data = result.Data });
     }
 
+    [HttpPut("{id:guid}/password")]
+    [Authorize(Policy = Permissions.EmployeeManage)]
+    public async Task<IActionResult> SetPassword(Guid id, [FromBody] SetEmployeePasswordRequest request, CancellationToken ct)
+    {
+        var result = await _employeeService.SetPasswordAsync(id, request, User.GetEmployeeId(), ct);
+        if (!result.Success) return NotFound(Envelope(result.ErrorCode!, result.ErrorMessage!));
+        return Ok(new { success = true, data = (object?)null });
+    }
+
     [HttpDelete("{id:guid}")]
     [Authorize(Policy = Permissions.EmployeeManage)]
     public async Task<IActionResult> Delete(Guid id, CancellationToken ct)

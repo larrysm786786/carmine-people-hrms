@@ -26,14 +26,25 @@ public class UpdateEmployeeRequestValidator : AbstractValidator<UpdateEmployeeRe
 {
     public UpdateEmployeeRequestValidator()
     {
+        RuleFor(x => x.EmployeeCode).NotEmpty().MaximumLength(20);
         RuleFor(x => x.FirstName).NotEmpty().MaximumLength(100);
         RuleFor(x => x.LastName).NotEmpty().MaximumLength(100);
+        RuleFor(x => x.Email).NotEmpty().EmailAddress();
         RuleFor(x => x.PhoneNumber).MaximumLength(20).When(x => x.PhoneNumber != null);
         RuleFor(x => x.DepartmentId).NotEmpty();
         RuleFor(x => x.DesignationId).NotEmpty();
         RuleFor(x => x.LocationId).NotEmpty();
         RuleFor(x => x.RoleId).NotEmpty();
+        RuleFor(x => x.DateOfJoining).NotEmpty();
         RuleFor(x => x.EmploymentStatus).IsInEnum();
+    }
+}
+
+public class SetEmployeePasswordRequestValidator : AbstractValidator<SetEmployeePasswordRequest>
+{
+    public SetEmployeePasswordRequestValidator()
+    {
+        RuleFor(x => x.NewPassword).MustBeAStrongPassword();
     }
 }
 

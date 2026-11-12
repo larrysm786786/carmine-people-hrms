@@ -137,21 +137,43 @@ public class EmployeeService
             }
         }
 
+        if (!string.Equals(employee.Email, request.Email, StringComparison.OrdinalIgnoreCase)
+            && await _db.Employees.AnyAsync(e => e.Id != id && e.Email == request.Email, ct))
+        {
+            return Result<EmployeeDetailDto>.Fail("EMAIL_TAKEN", "An employee with this email already exists.");
+        }
+        if (!string.Equals(employee.EmployeeCode, request.EmployeeCode, StringComparison.OrdinalIgnoreCase)
+            && await _db.Employees.AnyAsync(e => e.Id != id && e.EmployeeCode == request.EmployeeCode, ct))
+        {
+            return Result<EmployeeDetailDto>.Fail("CODE_TAKEN", "An employee with this employee code already exists.");
+        }
+
         var previousRoleId = employee.RoleId;
 
+        employee.EmployeeCode = request.EmployeeCode;
         employee.FirstName = request.FirstName;
         employee.LastName = request.LastName;
+        employee.Email = request.Email;
         employee.PhoneNumber = request.PhoneNumber;
         employee.DepartmentId = request.DepartmentId;
         employee.DesignationId = request.DesignationId;
         employee.LocationId = request.LocationId;
         employee.ManagerId = request.ManagerId;
         employee.RoleId = request.RoleId;
+        employee.DateOfJoining = request.DateOfJoining;
         employee.DateOfBirth = request.DateOfBirth;
         employee.EmploymentStatus = request.EmploymentStatus;
         employee.UpdatedBy = actorId;
 
-        await _db.SaveChangesAsync(ct);
+        try
+        {
+            await _db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateException)
+        {
+            // Same race as CreateAsync: the AnyAsync checks above aren't atomic with the save.
+            return Result<EmployeeDetailDto>.Fail("EMAIL_OR_CODE_TAKEN", "An employee with this email or employee code already exists.");
+        }
         await _auditLogger.LogAsync(actorId, "employee.updated", "Employee", employee.Id.ToString(), new { employee.EmploymentStatus }, ct);
         if (previousRoleId != request.RoleId)
         {
@@ -159,6 +181,22 @@ public class EmployeeService
         }
 
         return await GetByIdAsync(employee.Id, ct);
+    }
+
+    // Admin-initiated password set — distinct from the self-service forgot/reset-password
+    // flow (AuthService), which needs a working SMTP relay this deployment may not have
+    // configured. Lets HR/SuperAdmin hand an employee working credentials directly.
+    public async Task<Result<bool>> SetPasswordAsync(Guid id, SetEmployeePasswordRequest request, Guid actorId, CancellationToken ct)
+    {
+        var employee = await _db.Employees.FirstOrDefaultAsync(e => e.Id == id, ct);
+        if (employee is null) return Result<bool>.Fail("NOT_FOUND", "Employee not found.");
+
+        employee.PasswordHash = _passwordHasher.Hash(request.NewPassword);
+        employee.UpdatedBy = actorId;
+        await _db.SaveChangesAsync(ct);
+        await _auditLogger.LogAsync(actorId, "employee.password_set", "Employee", employee.Id.ToString(), null, ct);
+
+        return Result<bool>.Ok(true);
     }
 
     // Walks up the proposed manager's own chain of command looking for the employee being

@@ -205,14 +205,17 @@ export class Employees {
       try {
         const detail = await this.employeeService.getById(employee.id);
         await this.employeeService.update(employee.id, {
+          employeeCode: detail.employeeCode,
           firstName: detail.firstName,
           lastName: detail.lastName,
+          email: detail.email,
           phoneNumber: detail.phoneNumber,
           departmentId: detail.departmentId,
           designationId: detail.designationId,
           locationId: detail.locationId,
           managerId: detail.managerId,
           roleId: detail.roleId,
+          dateOfJoining: detail.dateOfJoining,
           dateOfBirth: detail.dateOfBirth,
           employmentStatus: 1, // Inactive
         });

@@ -20,9 +20,11 @@ public record CreateEmployeeRequest(
     DateTime DateOfJoining, DateTime? DateOfBirth);
 
 public record UpdateEmployeeRequest(
-    string FirstName, string LastName, string? PhoneNumber,
+    string EmployeeCode, string FirstName, string LastName, string Email, string? PhoneNumber,
     Guid DepartmentId, Guid DesignationId, Guid LocationId, Guid? ManagerId, Guid RoleId,
-    DateTime? DateOfBirth, EmploymentStatus EmploymentStatus);
+    DateTime DateOfJoining, DateTime? DateOfBirth, EmploymentStatus EmploymentStatus);
+
+public record SetEmployeePasswordRequest(string NewPassword);
 
 // Limited self-service update: an employee may update their own contact details,
 // date of birth, and emergency contact, but not org fields (department/role/etc.)

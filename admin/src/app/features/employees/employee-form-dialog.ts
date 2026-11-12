@@ -62,6 +62,7 @@ export class EmployeeFormDialog {
   lastName = '';
   email = '';
   password = '';
+  newPassword = '';
   phoneNumber = '';
   departmentId = '';
   designationId = '';
@@ -136,17 +137,23 @@ export class EmployeeFormDialog {
     try {
       if (this.isEditMode) {
         const detail: EmployeeDetail = await this.employeeService.update(this.data.employeeId!, {
+          employeeCode: this.employeeCode,
           firstName: this.firstName,
           lastName: this.lastName,
+          email: this.email,
           phoneNumber: this.phoneNumber || null,
           departmentId: this.departmentId,
           designationId: this.designationId,
           locationId: this.locationId,
           managerId: this.managerId || null,
           roleId: this.roleId,
+          dateOfJoining: this.dateOfJoining,
           dateOfBirth: this.dateOfBirth || null,
           employmentStatus: this.employmentStatus,
         });
+        if (this.newPassword.trim()) {
+          await this.employeeService.setPassword(this.data.employeeId!, this.newPassword.trim());
+        }
         if (this.canManageSalary && this.monthlySalary !== null) {
           await this.payrollService.setMonthlySalary(this.data.employeeId!, this.monthlySalary);
         }

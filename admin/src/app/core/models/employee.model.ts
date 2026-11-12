@@ -51,14 +51,17 @@ export interface EmployeeDetail {
 }
 
 export interface UpdateEmployeeRequest {
+  employeeCode: string;
   firstName: string;
   lastName: string;
+  email: string;
   phoneNumber: string | null;
   departmentId: string;
   designationId: string;
   locationId: string;
   managerId: string | null;
   roleId: string;
+  dateOfJoining: string;
   dateOfBirth: string | null;
   employmentStatus: number;
 }

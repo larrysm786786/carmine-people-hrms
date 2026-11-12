@@ -61,6 +61,13 @@ export class EmployeeService {
     return response.data;
   }
 
+  async setPassword(id: string, newPassword: string): Promise<void> {
+    const response = await firstValueFrom(
+      this.http.put<ApiEnvelope<null>>(`${API_BASE_URL}/employees/${id}/password`, { newPassword }),
+    );
+    if (!response.success) throw new Error(response.error.message);
+  }
+
   async delete(id: string): Promise<void> {
     const response = await firstValueFrom(this.http.delete<ApiEnvelope<null>>(`${API_BASE_URL}/employees/${id}`));
     if (!response.success) throw new Error(response.error.message);
