@@ -45,6 +45,7 @@ export class Shell {
     { label: 'Leave', icon: 'beach_access', route: '/leave' },
     { label: 'Organization', icon: 'apartment', route: '/organization' },
     { label: 'Holidays', icon: 'celebration', route: '/holidays' },
+    { label: 'Assets', icon: 'inventory_2', route: '/assets' },
     { label: 'Announcements', icon: 'campaign', route: '/announcements' },
     { label: 'Reports', icon: 'summarize', route: '/reports' },
     { label: 'Audit log', icon: 'fact_check', route: '/audit' },

@@ -1,0 +1,88 @@
+<h1>Assets</h1>
+
+<mat-card class="filters-card">
+  <div class="add-row wrap">
+    <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput [(ngModel)]="newName" placeholder="e.g. Dell Latitude 5420" /></mat-form-field>
+    <mat-form-field appearance="outline"><mat-label>Category</mat-label><input matInput [(ngModel)]="newCategory" placeholder="e.g. Laptop" /></mat-form-field>
+    <mat-form-field appearance="outline"><mat-label>Serial number</mat-label><input matInput [(ngModel)]="newSerialNumber" /></mat-form-field>
+    <mat-form-field appearance="outline"><mat-label>Notes</mat-label><input matInput [(ngModel)]="newNotes" /></mat-form-field>
+    <button mat-flat-button color="primary" (click)="add()">Add</button>
+  </div>
+</mat-card>
+
+<div class="table-scroll">
+<table mat-table [dataSource]="assets()">
+  <ng-container matColumnDef="category">
+    <th mat-header-cell *matHeaderCellDef>Category</th>
+    <td mat-cell *matCellDef="let a">{{ a.category }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="name">
+    <th mat-header-cell *matHeaderCellDef>Name</th>
+    <td mat-cell *matCellDef="let a">{{ a.name }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="serialNumber">
+    <th mat-header-cell *matHeaderCellDef>Serial #</th>
+    <td mat-cell *matCellDef="let a">{{ a.serialNumber || '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="assignedTo">
+    <th mat-header-cell *matHeaderCellDef>Assigned to</th>
+    <td mat-cell *matCellDef="let a">{{ a.assignedToEmployeeName || '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let a">
+      <mat-chip [class]="a.status === 3 ? 'status-chip--danger' : (a.status === 2 ? 'status-chip--warning' : '')">
+        {{ statusLabels[a.status] }}
+      </mat-chip>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let a">
+      @if (a.status !== 3) {
+        @if (a.assignedToEmployeeId) {
+          <button mat-button (click)="unassign(a.id)">Unassign</button>
+        } @else {
+          <button mat-button (click)="toggleAssign(a.id)">Assign</button>
+        }
+        @if (a.status !== 2) {
+          <button mat-icon-button matTooltip="Mark under repair" (click)="markUnderRepair(a)"><mat-icon>build</mat-icon></button>
+        } @else {
+          <button mat-icon-button matTooltip="Mark available" (click)="restore(a)"><mat-icon>check_circle</mat-icon></button>
+        }
+        <button mat-icon-button matTooltip="Retire" (click)="retire(a)"><mat-icon>archive</mat-icon></button>
+      } @else {
+        <button mat-button (click)="restore(a)">Restore</button>
+      }
+      <button mat-icon-button color="warn" matTooltip="Delete" (click)="remove(a.id)"><mat-icon>delete</mat-icon></button>
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+</div>
+
+@if (!isLoading() && assets().length === 0) {
+  <p class="empty">No assets added yet. Add the first one above.</p>
+}
+
+@if (assignTargetId()) {
+  <mat-card class="assign-panel">
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Assign to employee</mat-label>
+      <mat-select [(ngModel)]="assignEmployeeId">
+        @for (e of employees(); track e.id) {
+          <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }} ({{ e.employeeCode }})</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <button mat-flat-button color="primary" (click)="confirmAssign(assignTargetId()!)">Confirm</button>
+    <button mat-button (click)="toggleAssign(assignTargetId()!)">Cancel</button>
+  </mat-card>
+}

@@ -1,0 +1,54 @@
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.filters-card {
+  margin-bottom: 16px;
+  padding: 16px;
+}
+
+.add-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  &.wrap {
+    flex-wrap: wrap;
+  }
+
+  mat-form-field {
+    width: 200px;
+  }
+
+  button {
+    height: 56px;
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.assign-panel {
+  margin-top: 16px;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  mat-form-field {
+    width: 280px;
+  }
+}

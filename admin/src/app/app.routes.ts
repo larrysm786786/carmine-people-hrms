@@ -17,6 +17,7 @@ export const routes: Routes = [
       { path: 'leave', loadComponent: () => import('./features/leave/leave').then((m) => m.Leave) },
       { path: 'organization', loadComponent: () => import('./features/organization/organization').then((m) => m.Organization) },
       { path: 'holidays', loadComponent: () => import('./features/holidays/holidays').then((m) => m.Holidays) },
+      { path: 'assets', loadComponent: () => import('./features/assets/assets').then((m) => m.Assets) },
       { path: 'announcements', loadComponent: () => import('./features/announcements/announcements').then((m) => m.Announcements) },
       { path: 'reports', loadComponent: () => import('./features/reports/reports').then((m) => m.Reports) },
       { path: 'audit', loadComponent: () => import('./features/audit/audit').then((m) => m.Audit) },

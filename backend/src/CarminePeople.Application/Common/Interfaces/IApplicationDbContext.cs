@@ -37,6 +37,7 @@ public interface IApplicationDbContext
     DbSet<AuditLog> AuditLogs { get; }
     DbSet<PasswordResetToken> PasswordResetTokens { get; }
     DbSet<BrandingSettings> BrandingSettings { get; }
+    DbSet<Asset> Assets { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
