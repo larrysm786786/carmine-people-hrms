@@ -29,7 +29,9 @@
           <th mat-header-cell *matHeaderCellDef>Name</th>
           <td mat-cell *matCellDef="let d">
             @if (editingDepartmentId === d.id) {
-              <input matInput [(ngModel)]="editDepartment.name" style="width: 140px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 140px">
+                <input matInput [(ngModel)]="editDepartment.name" />
+              </mat-form-field>
             } @else {
               {{ d.name }}
             }
@@ -39,7 +41,9 @@
           <th mat-header-cell *matHeaderCellDef>Code</th>
           <td mat-cell *matCellDef="let d">
             @if (editingDepartmentId === d.id) {
-              <input matInput [(ngModel)]="editDepartment.code" style="width: 80px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 80px">
+                <input matInput [(ngModel)]="editDepartment.code" />
+              </mat-form-field>
             } @else {
               {{ d.code || '—' }}
             }
@@ -49,12 +53,14 @@
           <th mat-header-cell *matHeaderCellDef>Manager</th>
           <td mat-cell *matCellDef="let d">
             @if (editingDepartmentId === d.id) {
-              <mat-select [(ngModel)]="editDepartment.managerId" style="width: 160px">
-                <mat-option value="">None</mat-option>
-                @for (e of employees(); track e.id) {
-                  <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }}</mat-option>
-                }
-              </mat-select>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 160px">
+                <mat-select [(ngModel)]="editDepartment.managerId">
+                  <mat-option value="">None</mat-option>
+                  @for (e of employees(); track e.id) {
+                    <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
             } @else {
               {{ d.managerName || '—' }}
             }
@@ -117,7 +123,9 @@
           <th mat-header-cell *matHeaderCellDef>Title</th>
           <td mat-cell *matCellDef="let d">
             @if (editingDesignationId === d.id) {
-              <input matInput [(ngModel)]="editDesignation.title" style="width: 140px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 140px">
+                <input matInput [(ngModel)]="editDesignation.title" />
+              </mat-form-field>
             } @else {
               {{ d.title }}
             }
@@ -127,7 +135,9 @@
           <th mat-header-cell *matHeaderCellDef>Description</th>
           <td mat-cell *matCellDef="let d">
             @if (editingDesignationId === d.id) {
-              <input matInput [(ngModel)]="editDesignation.description" style="width: 160px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 160px">
+                <input matInput [(ngModel)]="editDesignation.description" />
+              </mat-form-field>
             } @else {
               {{ d.description || '—' }}
             }
@@ -137,11 +147,13 @@
           <th mat-header-cell *matHeaderCellDef>Department</th>
           <td mat-cell *matCellDef="let d">
             @if (editingDesignationId === d.id) {
-              <mat-select [(ngModel)]="editDesignation.departmentId" style="width: 140px">
-                @for (dept of departments(); track dept.id) {
-                  <mat-option [value]="dept.id">{{ dept.name }}</mat-option>
-                }
-              </mat-select>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 140px">
+                <mat-select [(ngModel)]="editDesignation.departmentId">
+                  @for (dept of departments(); track dept.id) {
+                    <mat-option [value]="dept.id">{{ dept.name }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
             } @else {
               {{ d.departmentName }}
             }
@@ -201,7 +213,9 @@
           <th mat-header-cell *matHeaderCellDef>Name</th>
           <td mat-cell *matCellDef="let l">
             @if (editingLocationId === l.id) {
-              <input matInput [(ngModel)]="editLocation.name" style="width: 120px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 120px">
+                <input matInput [(ngModel)]="editLocation.name" />
+              </mat-form-field>
             } @else {
               {{ l.name }}
             }
@@ -211,7 +225,9 @@
           <th mat-header-cell *matHeaderCellDef>Office WiFi</th>
           <td mat-cell *matCellDef="let l">
             @if (editingLocationId === l.id) {
-              <input matInput [(ngModel)]="editLocation.officeWifiSsid" style="width: 120px" placeholder="Optional" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 120px">
+                <input matInput [(ngModel)]="editLocation.officeWifiSsid" placeholder="Optional" />
+              </mat-form-field>
             } @else {
               {{ l.officeWifiSsid || '—' }}
             }
@@ -221,7 +237,9 @@
           <th mat-header-cell *matHeaderCellDef>Address</th>
           <td mat-cell *matCellDef="let l">
             @if (editingLocationId === l.id) {
-              <input matInput [(ngModel)]="editLocation.address" style="width: 160px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 160px">
+                <input matInput [(ngModel)]="editLocation.address" />
+              </mat-form-field>
             } @else {
               {{ l.address || '—' }}
             }
@@ -231,8 +249,12 @@
           <th mat-header-cell *matHeaderCellDef>Coordinates</th>
           <td mat-cell *matCellDef="let l">
             @if (editingLocationId === l.id) {
-              <input matInput type="number" [(ngModel)]="editLocation.latitude" style="width: 80px" />
-              <input matInput type="number" [(ngModel)]="editLocation.longitude" style="width: 80px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 90px">
+                <input matInput type="number" [(ngModel)]="editLocation.latitude" />
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 90px">
+                <input matInput type="number" [(ngModel)]="editLocation.longitude" />
+              </mat-form-field>
             } @else {
               {{ l.latitude }}, {{ l.longitude }}
             }
@@ -242,7 +264,9 @@
           <th mat-header-cell *matHeaderCellDef>Geofence</th>
           <td mat-cell *matCellDef="let l">
             @if (editingLocationId === l.id) {
-              <input matInput type="number" [(ngModel)]="editLocation.geofenceRadiusMeters" style="width: 70px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 80px">
+                <input matInput type="number" [(ngModel)]="editLocation.geofenceRadiusMeters" />
+              </mat-form-field>
             } @else {
               {{ l.geofenceRadiusMeters }}m
             }
@@ -305,7 +329,9 @@
           <th mat-header-cell *matHeaderCellDef>Name</th>
           <td mat-cell *matCellDef="let s">
             @if (editingShiftId === s.id) {
-              <input matInput [(ngModel)]="editShift.name" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 140px">
+                <input matInput [(ngModel)]="editShift.name" />
+              </mat-form-field>
             } @else {
               {{ s.name }}
             }
@@ -315,11 +341,13 @@
           <th mat-header-cell *matHeaderCellDef>Type</th>
           <td mat-cell *matCellDef="let s">
             @if (editingShiftId === s.id) {
-              <mat-select [(ngModel)]="editShift.type">
-                @for (label of shiftTypeLabels; track label; let i = $index) {
-                  <mat-option [value]="i">{{ label }}</mat-option>
-                }
-              </mat-select>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 120px">
+                <mat-select [(ngModel)]="editShift.type">
+                  @for (label of shiftTypeLabels; track label; let i = $index) {
+                    <mat-option [value]="i">{{ label }}</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
             } @else {
               {{ shiftTypeLabels[s.type] }}
             }
@@ -329,8 +357,12 @@
           <th mat-header-cell *matHeaderCellDef>Time</th>
           <td mat-cell *matCellDef="let s">
             @if (editingShiftId === s.id) {
-              <input matInput [(ngModel)]="editShift.startTime" style="width: 70px" /> -
-              <input matInput [(ngModel)]="editShift.endTime" style="width: 70px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 80px">
+                <input matInput [(ngModel)]="editShift.startTime" />
+              </mat-form-field> -
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 80px">
+                <input matInput [(ngModel)]="editShift.endTime" />
+              </mat-form-field>
             } @else {
               {{ s.startTime }} - {{ s.endTime }}
             }
@@ -340,7 +372,9 @@
           <th mat-header-cell *matHeaderCellDef>Grace (min)</th>
           <td mat-cell *matCellDef="let s">
             @if (editingShiftId === s.id) {
-              <input matInput type="number" [(ngModel)]="editShift.gracePeriodMinutes" style="width: 60px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 70px">
+                <input matInput type="number" [(ngModel)]="editShift.gracePeriodMinutes" />
+              </mat-form-field>
             } @else {
               {{ s.gracePeriodMinutes }}
             }
@@ -350,7 +384,9 @@
           <th mat-header-cell *matHeaderCellDef>Break (min)</th>
           <td mat-cell *matCellDef="let s">
             @if (editingShiftId === s.id) {
-              <input matInput type="number" [(ngModel)]="editShift.breakMinutes" style="width: 60px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 70px">
+                <input matInput type="number" [(ngModel)]="editShift.breakMinutes" />
+              </mat-form-field>
             } @else {
               {{ s.breakMinutes }}
             }
@@ -364,7 +400,9 @@
           <th mat-header-cell *matHeaderCellDef>Required work (min)</th>
           <td mat-cell *matCellDef="let s">
             @if (editingShiftId === s.id) {
-              <input matInput type="number" [(ngModel)]="editShift.requiredWorkMinutes" style="width: 70px" />
+              <mat-form-field appearance="outline" subscriptSizing="dynamic" style="width: 80px">
+                <input matInput type="number" [(ngModel)]="editShift.requiredWorkMinutes" />
+              </mat-form-field>
             } @else {
               {{ s.requiredWorkMinutes }}
             }
