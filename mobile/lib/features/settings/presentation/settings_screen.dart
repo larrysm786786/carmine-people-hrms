@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/auth_session/biometric_service.dart';
 import '../../../core/network/api_client.dart';
@@ -7,6 +8,7 @@ import '../../../core/network/api_config.dart';
 import '../../../core/network/api_exception.dart';
 import '../../../core/storage/token_storage.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../core/update/update_check_service.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -22,6 +24,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _testFailed = false;
   bool _biometricEnabled = false;
   bool _biometricAvailable = false;
+  bool _checkingUpdate = false;
+  AppUpdateInfo? _updateInfo;
+  String? _updateCheckError;
 
   @override
   void initState() {
@@ -52,6 +57,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
     await ref.read(tokenStorageProvider).setBiometricEnabled(value);
     if (mounted) setState(() => _biometricEnabled = value);
+  }
+
+  Future<void> _checkForUpdate() async {
+    setState(() {
+      _checkingUpdate = true;
+      _updateCheckError = null;
+    });
+    try {
+      final info = await ref.read(updateCheckServiceProvider).checkForUpdate();
+      if (mounted) setState(() => _updateInfo = info);
+    } catch (_) {
+      if (mounted) _updateCheckError = 'Unable to check for updates right now.';
+    } finally {
+      if (mounted) setState(() => _checkingUpdate = false);
+    }
+  }
+
+  Future<void> _downloadUpdate(String url) async {
+    final uri = Uri.parse(url);
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
   @override
@@ -153,6 +178,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 ),
               ],
             ),
+            const Divider(height: 32),
+            Text('App Update', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            if (_updateInfo != null) ...[
+              Text('Current version: ${_updateInfo!.currentVersion}', style: TextStyle(color: AppColors.muted)),
+              const SizedBox(height: 4),
+              Text(
+                _updateInfo!.updateAvailable ? 'New version available: ${_updateInfo!.latestVersion}' : "You're up to date.",
+                style: TextStyle(
+                  color: _updateInfo!.updateAvailable ? AppColors.carmine : AppColors.muted,
+                  fontWeight: _updateInfo!.updateAvailable ? FontWeight.bold : FontWeight.normal,
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            if (_updateCheckError != null) ...[
+              Text(_updateCheckError!, style: TextStyle(color: AppColors.carmine)),
+              const SizedBox(height: 12),
+            ],
+            if (_updateInfo?.updateAvailable == true)
+              FilledButton.icon(
+                onPressed: () => _downloadUpdate(_updateInfo!.downloadUrl!),
+                icon: const Icon(Icons.download),
+                label: const Text('Download Update'),
+              )
+            else
+              OutlinedButton(
+                onPressed: _checkingUpdate ? null : _checkForUpdate,
+                child: _checkingUpdate
+                    ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                    : const Text('Check for Update'),
+              ),
           ],
         ),
       ),

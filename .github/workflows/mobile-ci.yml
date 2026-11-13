@@ -12,6 +12,9 @@ on:
       - "mobile/**"
       - ".github/workflows/mobile-ci.yml"
 
+permissions:
+  contents: write
+
 jobs:
   analyze-and-build:
     runs-on: ubuntu-latest
@@ -45,3 +48,22 @@ jobs:
         with:
           name: carmine-people-mobile
           path: mobile/build/app/outputs/flutter-apk/app-release.apk
+
+      # Workflow artifacts (above) require a GitHub login and expire after 90 days — useless
+      # for handing employees a direct download link. A GitHub Release's asset is a public,
+      # permanent URL, which is what the in-app "check for update" feature
+      # (lib/core/update/update_check_service.dart) polls via the public releases/latest API.
+      # Tag carries the full pubspec version (name+build) so the app can compare its own
+      # build number against it without needing any backend involvement.
+      - name: Create GitHub Release with APK
+        if: github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | sed 's/version: *//')
+          TAG="app-v${VERSION}"
+          cp build/app/outputs/flutter-apk/app-release.apk "carmine-people-${VERSION}.apk"
+          gh release create "$TAG" "carmine-people-${VERSION}.apk" \
+            --title "Carmine People $VERSION" \
+            --notes "Automated build from commit ${{ github.sha }}." \
+            --repo "${{ github.repository }}"
