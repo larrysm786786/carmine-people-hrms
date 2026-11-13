@@ -251,6 +251,19 @@ mat-card .mat-mdc-row {
   --mat-form-field-outlined-focus-outline-width: 2px;
   --mat-form-field-outlined-container-shape: var(--app-radius-sm);
   --mat-form-field-outlined-disabled-outline-color: #00000033;
+  // Default outlined-field height runs noticeably taller than the 40px buttons sitting next
+  // to it in the same filter row — shrink the container and its internal padding to match.
+  --mat-form-field-container-height: 44px;
+  --mat-form-field-container-vertical-padding: 10px;
+  font-size: 14px;
+}
+.mat-mdc-text-field-wrapper {
+  height: 44px !important;
+}
+.mat-mdc-form-field-infix {
+  min-height: 24px !important;
+  padding-top: 10px !important;
+  padding-bottom: 10px !important;
 }
 
 // Shared "filters bar" card wrapper — every list page's filter/add-row controls sit inside
