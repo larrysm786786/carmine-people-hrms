@@ -19,4 +19,9 @@ public class BrandingSettings : AuditableEntity
     // for display — never a per-request override, since attendance/leave dates must mean
     // the same calendar day for everyone at the company regardless of the viewing client.
     public string TimeZoneId { get; set; } = "UTC";
+
+    // Company-wide late-arrival policy: within a calendar month, this many late check-ins are
+    // a free warning, the next one is a half-day pay cut, then the cycle repeats for the rest
+    // of the month — see AttendanceLatePolicyCalculator.
+    public int FreeLatesBeforeHalfDay { get; set; } = 2;
 }

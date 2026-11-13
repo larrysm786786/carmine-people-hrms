@@ -14,6 +14,7 @@ export interface Branding {
   colorWhite: string;
   gradientCss: string;
   timeZoneId: string;
+  freeLatesBeforeHalfDay: number;
 }
 
 // A small set of common IANA time zones for the settings dropdown — the backend accepts
@@ -42,6 +43,7 @@ const DEFAULT_BRANDING: Branding = {
   colorWhite: '#ffffff',
   gradientCss: 'linear-gradient(90deg, #cd0040 0%, #3a1420 52%, #000000 100%)',
   timeZoneId: 'UTC',
+  freeLatesBeforeHalfDay: 2,
 };
 
 @Injectable({ providedIn: 'root' })

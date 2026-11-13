@@ -17,7 +17,8 @@ public record BrandingDto(
     string ColorBlack,
     string ColorWhite,
     string GradientCss,
-    string TimeZoneId);
+    string TimeZoneId,
+    int FreeLatesBeforeHalfDay);
 
 public record UpdateBrandingRequest(
     string CompanyName,
@@ -28,7 +29,8 @@ public record UpdateBrandingRequest(
     string ColorBlack,
     string ColorWhite,
     string GradientCss,
-    string TimeZoneId);
+    string TimeZoneId,
+    int FreeLatesBeforeHalfDay);
 
 [ApiController]
 [ApiVersion("1.0")]
@@ -52,7 +54,7 @@ public class BrandingController : ControllerBase
         return Ok(new
         {
             success = true,
-            data = new BrandingDto(b.CompanyName, b.AppName, b.LogoUrl, b.ColorGray, b.ColorPrimary, b.ColorBlack, b.ColorWhite, b.GradientCss, b.TimeZoneId)
+            data = new BrandingDto(b.CompanyName, b.AppName, b.LogoUrl, b.ColorGray, b.ColorPrimary, b.ColorBlack, b.ColorWhite, b.GradientCss, b.TimeZoneId, b.FreeLatesBeforeHalfDay)
         });
     }
 
@@ -67,6 +69,11 @@ public class BrandingController : ControllerBase
         catch (TimeZoneNotFoundException)
         {
             return BadRequest(new { success = false, error = new { code = "INVALID_TIMEZONE", message = $"'{request.TimeZoneId}' is not a recognized time zone ID." } });
+        }
+
+        if (request.FreeLatesBeforeHalfDay < 1)
+        {
+            return BadRequest(new { success = false, error = new { code = "INVALID_FREE_LATES", message = "Free lates before half-day cut must be at least 1." } });
         }
 
         var b = await _db.BrandingSettings.FirstOrDefaultAsync(ct);
@@ -85,12 +92,13 @@ public class BrandingController : ControllerBase
         b.ColorWhite = request.ColorWhite;
         b.GradientCss = request.GradientCss;
         b.TimeZoneId = request.TimeZoneId;
+        b.FreeLatesBeforeHalfDay = request.FreeLatesBeforeHalfDay;
 
         await _db.SaveChangesAsync(ct);
         return Ok(new
         {
             success = true,
-            data = new BrandingDto(b.CompanyName, b.AppName, b.LogoUrl, b.ColorGray, b.ColorPrimary, b.ColorBlack, b.ColorWhite, b.GradientCss, b.TimeZoneId)
+            data = new BrandingDto(b.CompanyName, b.AppName, b.LogoUrl, b.ColorGray, b.ColorPrimary, b.ColorBlack, b.ColorWhite, b.GradientCss, b.TimeZoneId, b.FreeLatesBeforeHalfDay)
         });
     }
 }

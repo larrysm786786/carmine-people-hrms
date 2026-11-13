@@ -52,6 +52,13 @@
       <mat-hint>All timestamps are stored in UTC; this controls how dates/times are displayed.</mat-hint>
     </mat-form-field>
 
+    <h3>Attendance policy</h3>
+    <mat-form-field appearance="outline" subscriptSizing="dynamic">
+      <mat-label>Free lates before half-day cut</mat-label>
+      <input matInput type="number" min="0" [ngModel]="brandingForm().freeLatesBeforeHalfDay" (ngModelChange)="updateBrandingField('freeLatesBeforeHalfDay', $event)" />
+      <mat-hint>Each month, this many late check-ins are a warning only; the next one cuts half a day's pay, then the cycle repeats.</mat-hint>
+    </mat-form-field>
+
     <button mat-flat-button color="primary" [disabled]="brandingSaving()" (click)="saveBranding()">
       @if (brandingSaving()) {
         Saving...

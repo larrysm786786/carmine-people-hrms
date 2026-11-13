@@ -272,6 +272,9 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("FreeLatesBeforeHalfDay")
+                        .HasColumnType("integer");
+
                     b.Property<string>("GradientCss")
                         .IsRequired()
                         .HasColumnType("text");

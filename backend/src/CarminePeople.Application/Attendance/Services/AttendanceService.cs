@@ -116,11 +116,14 @@ public class AttendanceService
             isLate = checkInAt > graceDeadline;
         }
 
-        // Cyclical late policy: the 1st/2nd late arrival this month is a free warning (Status
-        // stays Late), the 3rd is a half-day, then the cycle repeats for the rest of the month.
+        // Cyclical late policy: the first N late arrivals this month (N = company-configurable
+        // BrandingSettings.FreeLatesBeforeHalfDay) are a free warning (Status stays Late), the
+        // next is a half-day, then the cycle repeats for the rest of the month.
         var status = AttendanceStatus.Present;
         if (isLate)
         {
+            var freeLatesBeforeHalfDay = (await _db.BrandingSettings.FirstOrDefaultAsync(ct))?.FreeLatesBeforeHalfDay ?? 2;
+
             var counter = await _db.EmployeeMonthlyLateCounters.FirstOrDefaultAsync(
                 c => c.EmployeeId == employeeId && c.Year == today.Year && c.Month == today.Month, ct);
             if (counter is null)
@@ -130,7 +133,7 @@ public class AttendanceService
             }
             counter.LateCount++;
 
-            status = AttendanceLatePolicyCalculator.IsHalfDayOccurrence(counter.LateCount)
+            status = AttendanceLatePolicyCalculator.IsHalfDayOccurrence(counter.LateCount, freeLatesBeforeHalfDay)
                 ? AttendanceStatus.HalfDay
                 : AttendanceStatus.Late;
         }
