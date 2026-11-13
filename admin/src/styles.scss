@@ -252,18 +252,26 @@ mat-card .mat-mdc-row {
   --mat-form-field-outlined-container-shape: var(--app-radius-sm);
   --mat-form-field-outlined-disabled-outline-color: #00000033;
   // Default outlined-field height runs noticeably taller than the buttons sitting next to it
-  // in the same filter row — match the 40px buttons exactly.
+  // in the same filter row — match the 40px buttons exactly. Flex-centering the wrapper/flex
+  // layer (rather than relying on Material's padding-based label-transform math, which the
+  // forced height throws off) is what actually keeps the label/input centered in the box.
   --mat-form-field-container-height: 40px;
-  --mat-form-field-container-vertical-padding: 8px;
+  --mat-form-field-container-vertical-padding: 0px;
   font-size: 14px;
 }
 .mat-mdc-text-field-wrapper {
   height: 40px !important;
 }
+.mat-mdc-form-field-flex {
+  height: 100% !important;
+  align-items: center !important;
+}
 .mat-mdc-form-field-infix {
-  min-height: 24px !important;
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  min-height: 0 !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }
 
 // Shared "filters bar" card wrapper — every list page's filter/add-row controls sit inside
