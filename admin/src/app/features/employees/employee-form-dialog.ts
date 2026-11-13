@@ -72,14 +72,9 @@ export class EmployeeFormDialog {
   locationId = '';
   managerId = '';
   roleId = '';
-  dateOfJoining = '';
-  dateOfBirth = '';
+  dateOfJoiningDate: Date | null = null;
+  dateOfBirthDate: Date | null = null;
   employmentStatus = 0;
-
-  get dateOfJoiningDate(): Date | null { return isoToDate(this.dateOfJoining); }
-  set dateOfJoiningDate(value: Date | null) { this.dateOfJoining = dateToIso(value); }
-  get dateOfBirthDate(): Date | null { return isoToDate(this.dateOfBirth); }
-  set dateOfBirthDate(value: Date | null) { this.dateOfBirth = dateToIso(value); }
   monthlySalary: number | null = null;
 
   constructor() {
@@ -113,15 +108,15 @@ export class EmployeeFormDialog {
         this.locationId = detail.locationId;
         this.managerId = detail.managerId ?? '';
         this.roleId = detail.roleId;
-        this.dateOfJoining = detail.dateOfJoining.slice(0, 10);
-        this.dateOfBirth = detail.dateOfBirth?.slice(0, 10) ?? '';
+        this.dateOfJoiningDate = isoToDate(detail.dateOfJoining);
+        this.dateOfBirthDate = isoToDate(detail.dateOfBirth);
         this.employmentStatus = detail.employmentStatus;
         if (this.canManageSalary) {
           this.monthlySalary = await this.payrollService.getMonthlySalary(this.data.employeeId);
         }
         await this.loadDesignations();
       } else {
-        this.dateOfJoining = new Date().toISOString().slice(0, 10);
+        this.dateOfJoiningDate = new Date();
       }
     } catch (err) {
       this.loadErrorMessage.set(errorMessage(err) ?? 'Unable to load employee data.');
@@ -155,8 +150,8 @@ export class EmployeeFormDialog {
           locationId: this.locationId,
           managerId: this.managerId || null,
           roleId: this.roleId,
-          dateOfJoining: this.dateOfJoining,
-          dateOfBirth: this.dateOfBirth || null,
+          dateOfJoining: dateToIso(this.dateOfJoiningDate),
+          dateOfBirth: dateToIso(this.dateOfBirthDate) || null,
           employmentStatus: this.employmentStatus,
         });
         if (this.newPassword.trim()) {
@@ -179,8 +174,8 @@ export class EmployeeFormDialog {
           locationId: this.locationId,
           managerId: this.managerId || null,
           roleId: this.roleId,
-          dateOfJoining: this.dateOfJoining,
-          dateOfBirth: this.dateOfBirth || null,
+          dateOfJoining: dateToIso(this.dateOfJoiningDate),
+          dateOfBirth: dateToIso(this.dateOfBirthDate) || null,
         });
         this.dialogRef.close(detail);
       }

@@ -1,5 +1,5 @@
 import { errorMessage } from '../../core/utils/error-message';
-import { dateToIso, isoToDate } from '../../core/utils/date-format';
+import { dateToIso } from '../../core/utils/date-format';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -29,11 +29,8 @@ export class Holidays {
 
   newName = '';
   newDescription = '';
-  newDate = '';
+  newDateAsDate: Date | null = null;
   newIsOptional = false;
-
-  get newDateAsDate(): Date | null { return isoToDate(this.newDate); }
-  set newDateAsDate(value: Date | null) { this.newDate = dateToIso(value); }
 
   constructor() {
     this.load();
@@ -50,12 +47,12 @@ export class Holidays {
   }
 
   async add(): Promise<void> {
-    if (!this.newName.trim() || !this.newDate) return;
+    if (!this.newName.trim() || !this.newDateAsDate) return;
     try {
-      await this.holidayService.create(this.newName.trim(), this.newDescription.trim() || null, this.newDate, this.newIsOptional);
+      await this.holidayService.create(this.newName.trim(), this.newDescription.trim() || null, dateToIso(this.newDateAsDate), this.newIsOptional);
       this.newName = '';
       this.newDescription = '';
-      this.newDate = '';
+      this.newDateAsDate = null;
       this.newIsOptional = false;
       await this.load();
       this.toast.success('Holiday added.');

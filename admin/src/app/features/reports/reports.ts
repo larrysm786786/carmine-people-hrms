@@ -1,5 +1,5 @@
 import { errorMessage } from '../../core/utils/error-message';
-import { dateToIso, isoToDate } from '../../core/utils/date-format';
+import { dateToIso } from '../../core/utils/date-format';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -57,14 +57,8 @@ export class Reports {
   readonly errorMessage = signal<string | null>(null);
   readonly hasRun = signal(false);
 
-  from = '';
-  to = '';
-
-  get fromDate(): Date | null { return isoToDate(this.from); }
-  set fromDate(value: Date | null) { this.from = dateToIso(value); }
-  get toDate(): Date | null { return isoToDate(this.to); }
-  set toDate(value: Date | null) { this.to = dateToIso(value); }
-
+  fromDate: Date | null = null;
+  toDate: Date | null = null;
   departmentId = '';
   employeeId = '';
   status: number | '' = '';
@@ -95,8 +89,8 @@ export class Reports {
 
   private buildQuery(): ReportQuery {
     return {
-      from: this.from || undefined,
-      to: this.to || undefined,
+      from: dateToIso(this.fromDate) || undefined,
+      to: dateToIso(this.toDate) || undefined,
       departmentId: this.departmentId || undefined,
       employeeId: this.employeeId || undefined,
       status: this.status === '' ? undefined : this.status,

@@ -1,5 +1,5 @@
 import { errorMessage } from '../../core/utils/error-message';
-import { dateToIso, isoToDate } from '../../core/utils/date-format';
+import { dateToIso } from '../../core/utils/date-format';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -33,14 +33,8 @@ export class Attendance {
   readonly statusLabels = ATTENDANCE_STATUS_LABELS;
   readonly employees = signal<EmployeeListItem[]>([]);
 
-  from = '';
-  to = '';
-
-  get fromDate(): Date | null { return isoToDate(this.from); }
-  set fromDate(value: Date | null) { this.from = dateToIso(value); }
-  get toDate(): Date | null { return isoToDate(this.to); }
-  set toDate(value: Date | null) { this.to = dateToIso(value); }
-
+  fromDate: Date | null = null;
+  toDate: Date | null = null;
   status: number | null = null;
   employeeId = '';
   page = 1;
@@ -66,8 +60,8 @@ export class Attendance {
     this.errorMessage.set(null);
     try {
       const result = await this.attendanceService.getList({
-        from: this.from || undefined,
-        to: this.to || undefined,
+        from: dateToIso(this.fromDate) || undefined,
+        to: dateToIso(this.toDate) || undefined,
         status: this.status ?? undefined,
         employeeId: this.employeeId || undefined,
         page: this.page,
@@ -88,8 +82,8 @@ export class Attendance {
   }
 
   clearFilters(): void {
-    this.from = '';
-    this.to = '';
+    this.fromDate = null;
+    this.toDate = null;
     this.status = null;
     this.employeeId = '';
     this.onFilterChange();

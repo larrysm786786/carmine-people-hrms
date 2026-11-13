@@ -1,5 +1,4 @@
 import { errorMessage } from '../../core/utils/error-message';
-import { dateToIso, isoToDate } from '../../core/utils/date-format';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -74,10 +73,7 @@ export class Organization {
 
   assignEmployeeId = '';
   assignShiftId = '';
-  assignEffectiveFrom = new Date().toISOString().slice(0, 10);
-
-  get assignEffectiveFromDate(): Date | null { return isoToDate(this.assignEffectiveFrom); }
-  set assignEffectiveFromDate(value: Date | null) { this.assignEffectiveFrom = dateToIso(value); }
+  assignEffectiveFromDate: Date | null = new Date();
 
   private readonly employeeService = inject(EmployeeService);
 
@@ -323,7 +319,7 @@ export class Organization {
   async assignShift(): Promise<void> {
     if (!this.assignEmployeeId || !this.assignShiftId) return;
     try {
-      await this.organizationService.assignShift(this.assignEmployeeId, this.assignShiftId, new Date(this.assignEffectiveFrom).toISOString());
+      await this.organizationService.assignShift(this.assignEmployeeId, this.assignShiftId, (this.assignEffectiveFromDate ?? new Date()).toISOString());
       this.employeeShifts.set(await this.organizationService.getEmployeeShifts());
       this.assignEmployeeId = '';
       this.assignShiftId = '';
