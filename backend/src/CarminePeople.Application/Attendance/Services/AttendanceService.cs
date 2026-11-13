@@ -41,30 +41,30 @@ public class AttendanceService
             return Result<AttendanceRecordDto>.Fail("EMPLOYEE_INACTIVE", "Your employment status does not permit check-in.");
         }
 
-        // A GPS reading with >100m of reported uncertainty can't reliably confirm presence
-        // within any reasonably-sized office geofence — reject before even comparing distance,
-        // since a low-accuracy fix passing the geofence check would be a false positive, not a
-        // real confirmation the employee is on-site.
-        if (request.AccuracyMeters > MaxAcceptableGpsAccuracyMeters)
-        {
-            return Result<AttendanceRecordDto>.Fail("POOR_GPS_ACCURACY", "Your location signal is too imprecise to check in. Move to an open area and try again.");
-        }
+        // Office WiFi and GPS geofence are two independent ways to prove presence — either one
+        // is enough, not both. A location with no SSID configured has no WiFi path at all
+        // (IsAllowed would trivially return true for "not restricted", which would wrongly
+        // satisfy an OR here, so that path is only considered when an SSID is actually set).
+        var isOnOfficeWifi = !string.IsNullOrWhiteSpace(employee.Location.OfficeWifiSsid)
+            && OfficeWifiMatcher.IsAllowed(employee.Location.OfficeWifiSsid, request.WifiSsid);
 
-        var distance = GeoDistanceCalculator.DistanceMeters(
-            request.Latitude, request.Longitude, employee.Location.Latitude, employee.Location.Longitude);
-        if (distance > employee.Location.GeofenceRadiusMeters)
+        if (!isOnOfficeWifi)
         {
-            return Result<AttendanceRecordDto>.Fail("OUTSIDE_GEOFENCE", "Check-in location is outside the allowed geofence.");
-        }
+            // Not confirmed via WiFi — fall back to GPS. A reading with >100m of reported
+            // uncertainty can't reliably confirm presence within any reasonably-sized office
+            // geofence — reject before even comparing distance, since a low-accuracy fix
+            // passing the geofence check would be a false positive, not a real confirmation.
+            if (request.AccuracyMeters > MaxAcceptableGpsAccuracyMeters)
+            {
+                return Result<AttendanceRecordDto>.Fail("POOR_GPS_ACCURACY", "Your location signal is too imprecise to check in. Connect to the office WiFi, or move to an open area and try again.");
+            }
 
-        // When a location has office WiFi SSID(s) configured, check-in requires being
-        // connected to one of them — GPS alone can be spoofed or imprecise indoors, so this is
-        // an additional confirmation layer, not a replacement for the geofence check above.
-        // A location with no SSID configured (OfficeWifiSsid is null) skips this check
-        // entirely, preserving existing behavior for locations that haven't set one up.
-        if (!OfficeWifiMatcher.IsAllowed(employee.Location.OfficeWifiSsid, request.WifiSsid))
-        {
-            return Result<AttendanceRecordDto>.Fail("WRONG_WIFI", "You must be connected to the office WiFi network to check in.");
+            var distance = GeoDistanceCalculator.DistanceMeters(
+                request.Latitude, request.Longitude, employee.Location.Latitude, employee.Location.Longitude);
+            if (distance > employee.Location.GeofenceRadiusMeters)
+            {
+                return Result<AttendanceRecordDto>.Fail("OUTSIDE_GEOFENCE", "Check-in location is outside the allowed geofence. Connect to the office WiFi, or move closer, and try again.");
+            }
         }
 
         var today = await _clock.TodayAsync(ct);
