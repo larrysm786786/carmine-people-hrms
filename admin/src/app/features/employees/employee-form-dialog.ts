@@ -1,4 +1,5 @@
 import { errorMessage } from '../../core/utils/error-message';
+import { dateToIso, isoToDate } from '../../core/utils/date-format';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
@@ -7,6 +8,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AuthService } from '../../core/services/auth.service';
 import { EmployeeService } from '../../core/services/employee.service';
 import { OrganizationService, Department, Designation, Location } from '../../core/services/organization.service';
@@ -28,6 +30,7 @@ export interface EmployeeFormDialogData {
     MatSelectModule,
     MatButtonModule,
     MatProgressSpinnerModule,
+    MatDatepickerModule,
   ],
   templateUrl: './employee-form-dialog.html',
   styleUrl: './employee-form-dialog.scss',
@@ -72,6 +75,11 @@ export class EmployeeFormDialog {
   dateOfJoining = '';
   dateOfBirth = '';
   employmentStatus = 0;
+
+  get dateOfJoiningDate(): Date | null { return isoToDate(this.dateOfJoining); }
+  set dateOfJoiningDate(value: Date | null) { this.dateOfJoining = dateToIso(value); }
+  get dateOfBirthDate(): Date | null { return isoToDate(this.dateOfBirth); }
+  set dateOfBirthDate(value: Date | null) { this.dateOfBirth = dateToIso(value); }
   monthlySalary: number | null = null;
 
   constructor() {

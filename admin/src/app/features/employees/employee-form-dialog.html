@@ -94,12 +94,16 @@
 
       <mat-form-field appearance="outline">
         <mat-label>Date of joining</mat-label>
-        <input matInput type="date" [(ngModel)]="dateOfJoining" required />
+        <input matInput [matDatepicker]="joiningPicker" [(ngModel)]="dateOfJoiningDate" required />
+        <mat-datepicker-toggle matIconSuffix [for]="joiningPicker"></mat-datepicker-toggle>
+        <mat-datepicker #joiningPicker></mat-datepicker>
       </mat-form-field>
 
       <mat-form-field appearance="outline">
         <mat-label>Date of birth</mat-label>
-        <input matInput type="date" [(ngModel)]="dateOfBirth" />
+        <input matInput [matDatepicker]="dobPicker" [(ngModel)]="dateOfBirthDate" />
+        <mat-datepicker-toggle matIconSuffix [for]="dobPicker"></mat-datepicker-toggle>
+        <mat-datepicker #dobPicker></mat-datepicker>
       </mat-form-field>
 
       @if (isEditMode) {

@@ -4,7 +4,12 @@
   <div class="add-row">
     <mat-form-field appearance="outline"><mat-label>Name</mat-label><input matInput [(ngModel)]="newName" /></mat-form-field>
     <mat-form-field appearance="outline"><mat-label>Description</mat-label><input matInput [(ngModel)]="newDescription" /></mat-form-field>
-    <mat-form-field appearance="outline"><mat-label>Date</mat-label><input matInput type="date" [(ngModel)]="newDate" /></mat-form-field>
+    <mat-form-field appearance="outline">
+      <mat-label>Date</mat-label>
+      <input matInput [matDatepicker]="holidayPicker" [(ngModel)]="newDateAsDate" />
+      <mat-datepicker-toggle matIconSuffix [for]="holidayPicker"></mat-datepicker-toggle>
+      <mat-datepicker #holidayPicker></mat-datepicker>
+    </mat-form-field>
     <mat-checkbox [(ngModel)]="newIsOptional">Optional</mat-checkbox>
     <button mat-flat-button color="primary" (click)="add()">Add</button>
   </div>

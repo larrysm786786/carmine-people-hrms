@@ -1,4 +1,5 @@
 import { errorMessage } from '../../core/utils/error-message';
+import { dateToIso, isoToDate } from '../../core/utils/date-format';
 import { Component, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
@@ -8,6 +9,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ReportService, ReportType, ReportQuery } from '../../core/services/report.service';
 import { OrganizationService, Department } from '../../core/services/organization.service';
 import { EmployeeService } from '../../core/services/employee.service';
@@ -34,7 +36,7 @@ const REPORT_TABS: ReportTab[] = [
 
 @Component({
   selector: 'app-reports',
-  imports: [FormsModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatTableModule, MatCardModule],
+  imports: [FormsModule, MatTabsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatTableModule, MatCardModule, MatDatepickerModule],
   templateUrl: './reports.html',
   styleUrl: './reports.scss',
 })
@@ -57,6 +59,12 @@ export class Reports {
 
   from = '';
   to = '';
+
+  get fromDate(): Date | null { return isoToDate(this.from); }
+  set fromDate(value: Date | null) { this.from = dateToIso(value); }
+  get toDate(): Date | null { return isoToDate(this.to); }
+  set toDate(value: Date | null) { this.to = dateToIso(value); }
+
   departmentId = '';
   employeeId = '';
   status: number | '' = '';

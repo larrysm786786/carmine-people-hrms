@@ -10,11 +10,15 @@
   <div class="filters-row">
     <mat-form-field appearance="outline">
       <mat-label>From</mat-label>
-      <input matInput type="date" [(ngModel)]="from" />
+      <input matInput [matDatepicker]="fromPicker" [(ngModel)]="fromDate" />
+      <mat-datepicker-toggle matIconSuffix [for]="fromPicker"></mat-datepicker-toggle>
+      <mat-datepicker #fromPicker></mat-datepicker>
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>To</mat-label>
-      <input matInput type="date" [(ngModel)]="to" />
+      <input matInput [matDatepicker]="toPicker" [(ngModel)]="toDate" />
+      <mat-datepicker-toggle matIconSuffix [for]="toPicker"></mat-datepicker-toggle>
+      <mat-datepicker #toPicker></mat-datepicker>
     </mat-form-field>
     <mat-form-field appearance="outline">
       <mat-label>Department</mat-label>

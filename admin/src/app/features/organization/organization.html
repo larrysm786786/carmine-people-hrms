@@ -409,7 +409,9 @@
         </mat-form-field>
         <mat-form-field appearance="outline">
           <mat-label>Effective from</mat-label>
-          <input matInput type="date" [(ngModel)]="assignEffectiveFrom" />
+          <input matInput [matDatepicker]="effectiveFromPicker" [(ngModel)]="assignEffectiveFromDate" />
+          <mat-datepicker-toggle matIconSuffix [for]="effectiveFromPicker"></mat-datepicker-toggle>
+          <mat-datepicker #effectiveFromPicker></mat-datepicker>
         </mat-form-field>
         <button mat-flat-button color="primary" (click)="assignShift()">Assign</button>
       </div>

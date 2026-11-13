@@ -1,4 +1,5 @@
 import { errorMessage } from '../../core/utils/error-message';
+import { dateToIso, isoToDate } from '../../core/utils/date-format';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -8,12 +9,13 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { HolidayService, Holiday } from '../../core/services/holiday.service';
 import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-holidays',
-  imports: [FormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule],
+  imports: [FormsModule, MatTableModule, MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, MatCardModule, MatDatepickerModule],
   templateUrl: './holidays.html',
   styleUrl: './holidays.scss',
 })
@@ -29,6 +31,9 @@ export class Holidays {
   newDescription = '';
   newDate = '';
   newIsOptional = false;
+
+  get newDateAsDate(): Date | null { return isoToDate(this.newDate); }
+  set newDateAsDate(value: Date | null) { this.newDate = dateToIso(value); }
 
   constructor() {
     this.load();

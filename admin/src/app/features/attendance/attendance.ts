@@ -1,4 +1,5 @@
 import { errorMessage } from '../../core/utils/error-message';
+import { dateToIso, isoToDate } from '../../core/utils/date-format';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MatTableModule } from '@angular/material/table';
@@ -9,13 +10,14 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import { AttendanceService, AttendanceRecord, ATTENDANCE_STATUS_LABELS } from '../../core/services/attendance.service';
 import { EmployeeService } from '../../core/services/employee.service';
 import { EmployeeListItem } from '../../core/models/employee.model';
 
 @Component({
   selector: 'app-attendance',
-  imports: [FormsModule, MatTableModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatPaginatorModule, MatCardModule],
+  imports: [FormsModule, MatTableModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatPaginatorModule, MatCardModule, MatDatepickerModule],
   templateUrl: './attendance.html',
   styleUrl: './attendance.scss',
 })
@@ -33,6 +35,12 @@ export class Attendance {
 
   from = '';
   to = '';
+
+  get fromDate(): Date | null { return isoToDate(this.from); }
+  set fromDate(value: Date | null) { this.from = dateToIso(value); }
+  get toDate(): Date | null { return isoToDate(this.to); }
+  set toDate(value: Date | null) { this.to = dateToIso(value); }
+
   status: number | null = null;
   employeeId = '';
   page = 1;

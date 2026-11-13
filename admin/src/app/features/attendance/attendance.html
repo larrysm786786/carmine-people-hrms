@@ -14,12 +14,16 @@
 
     <mat-form-field appearance="outline">
       <mat-label>From</mat-label>
-      <input matInput type="date" [(ngModel)]="from" (ngModelChange)="onFilterChange()" />
+      <input matInput [matDatepicker]="attFromPicker" [(ngModel)]="fromDate" (ngModelChange)="onFilterChange()" />
+      <mat-datepicker-toggle matIconSuffix [for]="attFromPicker"></mat-datepicker-toggle>
+      <mat-datepicker #attFromPicker></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="outline">
       <mat-label>To</mat-label>
-      <input matInput type="date" [(ngModel)]="to" (ngModelChange)="onFilterChange()" />
+      <input matInput [matDatepicker]="attToPicker" [(ngModel)]="toDate" (ngModelChange)="onFilterChange()" />
+      <mat-datepicker-toggle matIconSuffix [for]="attToPicker"></mat-datepicker-toggle>
+      <mat-datepicker #attToPicker></mat-datepicker>
     </mat-form-field>
 
     <mat-form-field appearance="outline">

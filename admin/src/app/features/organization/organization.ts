@@ -1,4 +1,5 @@
 import { errorMessage } from '../../core/utils/error-message';
+import { dateToIso, isoToDate } from '../../core/utils/date-format';
 import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -10,6 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 import {
   OrganizationService,
   Department,
@@ -36,6 +38,7 @@ import { ToastService } from '../../core/services/toast.service';
     MatInputModule,
     MatSelectModule,
     MatCheckboxModule,
+    MatDatepickerModule,
   ],
   templateUrl: './organization.html',
   styleUrl: './organization.scss',
@@ -72,6 +75,9 @@ export class Organization {
   assignEmployeeId = '';
   assignShiftId = '';
   assignEffectiveFrom = new Date().toISOString().slice(0, 10);
+
+  get assignEffectiveFromDate(): Date | null { return isoToDate(this.assignEffectiveFrom); }
+  set assignEffectiveFromDate(value: Date | null) { this.assignEffectiveFrom = dateToIso(value); }
 
   private readonly employeeService = inject(EmployeeService);
 
