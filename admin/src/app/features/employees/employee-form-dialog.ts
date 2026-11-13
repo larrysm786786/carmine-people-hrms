@@ -1,7 +1,7 @@
 import { errorMessage } from '../../core/utils/error-message';
 import { dateToIso, isoToDate } from '../../core/utils/date-format';
 import { Component, inject, signal } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgForm } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -134,7 +134,11 @@ export class EmployeeFormDialog {
     this.designations.set(this.departmentId ? await this.organizationService.getDesignations(this.departmentId) : []);
   }
 
-  async save(): Promise<void> {
+  async save(form: NgForm): Promise<void> {
+    if (form.invalid) {
+      form.form.markAllAsTouched();
+      return;
+    }
     this.errorMessage.set(null);
     this.isSaving.set(true);
     try {
