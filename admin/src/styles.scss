@@ -1,9 +1,10 @@
 @use '@angular/material' as mat;
 
-// Carmine brand palette — the ONLY colors used anywhere in this app, mirroring the mobile
-// app's design system exactly (mobile/lib/core/theme/app_colors.dart): carmine #CD0040,
-// gray #F7F7F7, white #FFFFFF, muted black #000000 for all text. No gradients, no tints,
-// no dark theme — one flat light theme only, same as the mobile app.
+// Carmine brand palette — the ONLY hues used anywhere in this app, mirroring the mobile app's
+// design system (mobile/lib/core/theme/app_colors.dart): carmine #CD0040 stays the single accent
+// in both themes; everything else (surface/text/divider) is a semantic --app-* token that flips
+// between a light and a dark set below, so component styles never hardcode a literal hex that
+// would look wrong in one of the two themes.
 html {
   height: 100%;
   @include mat.theme(
@@ -17,6 +18,18 @@ html {
     )
   );
 
+  // Semantic app tokens — light theme (default). Dark overrides are the
+  // `:root[data-theme="dark"]` block further down; every rule below should read one of these,
+  // never a literal #ffffff/#f7f7f7/#000000.
+  --app-bg: #f7f7f7;
+  --app-surface: #ffffff;
+  --app-surface-alt: #f7f7f7;
+  --app-text: #000000;
+  --app-text-muted: #00000099;
+  --app-outline: #000000;
+  --app-divider: #0000001f;
+  --app-disabled-outline: #00000033;
+
   // Pin Material's system color tokens to the exact brand hex values so every Material
   // component (buttons, checkboxes, tabs, chips, radios, etc.) renders in the brand palette.
   // mat.theme() auto-generates a FULL M3 tonal palette from mat.$red-palette — dozens of
@@ -28,60 +41,60 @@ html {
   // fall back to those unpinned pink tones even though the "primary" tokens above are correct.
   --mat-sys-primary: #cd0040;
   --mat-sys-on-primary: #ffffff;
-  --mat-sys-primary-container: #f7f7f7;
-  --mat-sys-on-primary-container: #000000;
-  --mat-sys-primary-fixed: #f7f7f7;
-  --mat-sys-primary-fixed-dim: #f7f7f7;
-  --mat-sys-on-primary-fixed: #000000;
-  --mat-sys-on-primary-fixed-variant: #000000;
+  --mat-sys-primary-container: var(--app-surface-alt);
+  --mat-sys-on-primary-container: var(--app-text);
+  --mat-sys-primary-fixed: var(--app-surface-alt);
+  --mat-sys-primary-fixed-dim: var(--app-surface-alt);
+  --mat-sys-on-primary-fixed: var(--app-text);
+  --mat-sys-on-primary-fixed-variant: var(--app-text);
   --mat-sys-secondary: #cd0040;
   --mat-sys-on-secondary: #ffffff;
-  --mat-sys-secondary-container: #f7f7f7;
-  --mat-sys-on-secondary-container: #000000;
-  --mat-sys-secondary-fixed: #f7f7f7;
-  --mat-sys-secondary-fixed-dim: #f7f7f7;
-  --mat-sys-on-secondary-fixed: #000000;
-  --mat-sys-on-secondary-fixed-variant: #000000;
+  --mat-sys-secondary-container: var(--app-surface-alt);
+  --mat-sys-on-secondary-container: var(--app-text);
+  --mat-sys-secondary-fixed: var(--app-surface-alt);
+  --mat-sys-secondary-fixed-dim: var(--app-surface-alt);
+  --mat-sys-on-secondary-fixed: var(--app-text);
+  --mat-sys-on-secondary-fixed-variant: var(--app-text);
   --mat-sys-tertiary: #cd0040;
   --mat-sys-on-tertiary: #ffffff;
-  --mat-sys-tertiary-container: #f7f7f7;
-  --mat-sys-on-tertiary-container: #000000;
-  --mat-sys-tertiary-fixed: #f7f7f7;
-  --mat-sys-tertiary-fixed-dim: #f7f7f7;
-  --mat-sys-on-tertiary-fixed: #000000;
-  --mat-sys-on-tertiary-fixed-variant: #000000;
+  --mat-sys-tertiary-container: var(--app-surface-alt);
+  --mat-sys-on-tertiary-container: var(--app-text);
+  --mat-sys-tertiary-fixed: var(--app-surface-alt);
+  --mat-sys-tertiary-fixed-dim: var(--app-surface-alt);
+  --mat-sys-on-tertiary-fixed: var(--app-text);
+  --mat-sys-on-tertiary-fixed-variant: var(--app-text);
   --mat-sys-error: #cd0040;
   --mat-sys-on-error: #ffffff;
-  --mat-sys-error-container: #f7f7f7;
+  --mat-sys-error-container: var(--app-surface-alt);
   --mat-sys-on-error-container: #cd0040;
-  --mat-sys-surface: #ffffff;
-  --mat-sys-on-surface: #000000;
-  --mat-sys-on-surface-variant: #000000;
-  --mat-sys-surface-container: #f7f7f7;
-  --mat-sys-surface-container-low: #f7f7f7;
-  --mat-sys-surface-container-lowest: #ffffff;
-  --mat-sys-surface-container-high: #f7f7f7;
-  --mat-sys-surface-container-highest: #f7f7f7;
-  --mat-sys-surface-variant: #f7f7f7;
-  --mat-sys-surface-dim: #f7f7f7;
-  --mat-sys-surface-bright: #ffffff;
+  --mat-sys-surface: var(--app-surface);
+  --mat-sys-on-surface: var(--app-text);
+  --mat-sys-on-surface-variant: var(--app-text);
+  --mat-sys-surface-container: var(--app-surface-alt);
+  --mat-sys-surface-container-low: var(--app-surface-alt);
+  --mat-sys-surface-container-lowest: var(--app-surface);
+  --mat-sys-surface-container-high: var(--app-surface-alt);
+  --mat-sys-surface-container-highest: var(--app-surface-alt);
+  --mat-sys-surface-variant: var(--app-surface-alt);
+  --mat-sys-surface-dim: var(--app-surface-alt);
+  --mat-sys-surface-bright: var(--app-surface);
   --mat-sys-surface-tint: #cd0040;
-  --mat-sys-inverse-surface: #000000;
-  --mat-sys-inverse-on-surface: #ffffff;
-  --mat-sys-inverse-primary: #f7f7f7;
-  --mat-sys-outline: #f7f7f7;
-  --mat-sys-outline-variant: #f7f7f7;
+  --mat-sys-inverse-surface: var(--app-text);
+  --mat-sys-inverse-on-surface: var(--app-surface);
+  --mat-sys-inverse-primary: var(--app-surface-alt);
+  --mat-sys-outline: var(--app-surface-alt);
+  --mat-sys-outline-variant: var(--app-surface-alt);
   --mat-sys-scrim: #000000;
   --mat-sys-shadow: #000000;
-  --mat-sys-neutral-variant20: #000000;
-  --mat-sys-neutral10: #000000;
+  --mat-sys-neutral-variant20: var(--app-text);
+  --mat-sys-neutral10: var(--app-text);
 
-  // Status tokens, restricted to the 4 brand colors: danger reuses brand red (the only hue
-  // in the palette that reads as "alert"); success/warning/info all resolve to black, since
-  // a distinct hue can't be spared for each within a strict 4-color constraint — pair these
-  // with an icon/label in the UI to keep the meaning unambiguous.
-  --app-success: #000000;
-  --app-warning: #000000;
+  // Status tokens, restricted to the brand palette: danger reuses brand red (the only hue
+  // that reads as "alert"); success/warning/info all resolve to the theme's text color, since
+  // a distinct hue can't be spared for each within a strict palette — pair these with an
+  // icon/label in the UI to keep the meaning unambiguous.
+  --app-success: var(--app-text);
+  --app-warning: var(--app-text);
   --app-danger: #cd0040;
 
   // Radius/shadow/spacing scale mirrors the mobile app exactly:
@@ -101,6 +114,26 @@ html {
   --app-space-xl: 32px;
 }
 
+// Dark theme — same brand carmine accent, inverted surface/text tokens. Applied via
+// [data-theme="dark"] on <html> (ThemeService, toggled from Settings and persisted in
+// localStorage) rather than prefers-color-scheme, since this is a user-chosen app setting,
+// not something that should silently follow the OS.
+:root[data-theme='dark'] {
+  --app-bg: #121212;
+  --app-surface: #1e1e1e;
+  --app-surface-alt: #2a2a2a;
+  --app-text: #ffffff;
+  --app-text-muted: #ffffff99;
+  --app-outline: #ffffff;
+  --app-divider: #ffffff1f;
+  --app-disabled-outline: #ffffff33;
+
+  --mat-sys-scrim: #000000;
+  --mat-sys-shadow: #000000;
+
+  --app-shadow-card: 0 6px 16px rgba(0, 0, 0, 0.4);
+}
+
 // Shared status-chip color modifiers — applied via [class] binding on mat-chip elements
 // (e.g. leave/attendance status columns) instead of each feature hardcoding its own hex.
 .status-chip--success {
@@ -117,18 +150,19 @@ html {
 }
 
 body {
-  background-color: var(--mat-sys-surface-container, #f7f7f7);
-  color: var(--mat-sys-on-surface);
+  background-color: var(--app-bg);
+  color: var(--app-text);
   font: var(--mat-sys-body-medium);
   margin: 0;
   height: 100%;
 }
 
 // Global "premium card" look for every mat-card in the app — mirrors mobile's PremiumCard
-// exactly (white surface, 20px radius, one flat shadow, no elevation tint, no gradient) —
-// so every feature gets the mobile look for free without re-declaring it per component.
+// exactly (surface color, 20px radius, one flat shadow, no elevation tint, no gradient) — so
+// every feature gets the mobile look for free without re-declaring it per component.
 mat-card.mat-mdc-card {
-  background: #ffffff;
+  background: var(--app-surface);
+  color: var(--app-text);
   border-radius: var(--app-radius-lg);
   box-shadow: var(--app-shadow-card) !important;
   border: none;
@@ -146,8 +180,8 @@ mat-card.mat-mdc-card {
 }
 
 // Flat, borderless data tables — no header shading, no alternating-row tint, no gradient;
-// a plain white surface with a hairline gray divider between rows, closest table-shaped
-// equivalent to how mobile renders lists as stacked flat PremiumCard rows.
+// a plain surface with a hairline divider between rows, closest table-shaped equivalent to
+// how mobile renders lists as stacked flat PremiumCard rows.
 //
 // The card/shadow/radius/background only apply when the table stands alone (a direct page
 // child) — a table nested inside mat-card (most feature pages wrap their table in one) stays
@@ -156,7 +190,7 @@ mat-card.mat-mdc-card {
 table.mat-mdc-table {
   border-radius: var(--app-radius-lg);
   overflow: hidden;
-  background: #ffffff;
+  background: var(--app-surface);
   box-shadow: var(--app-shadow-card);
 }
 // Horizontal scroll for wide tables on narrow screens. The vertical padding/negative-margin
@@ -176,26 +210,26 @@ mat-card table.mat-mdc-table {
   box-shadow: none;
 }
 .mat-mdc-header-row {
-  background: #f7f7f7;
+  background: var(--app-surface-alt);
 }
 mat-card .mat-mdc-header-row {
   background: transparent;
-  border-bottom: 2px solid #f7f7f7;
+  border-bottom: 2px solid var(--app-surface-alt);
 }
 .mat-mdc-header-cell {
-  color: #000000;
+  color: var(--app-text);
   font-weight: 700;
   border-bottom: none;
 }
 .mat-mdc-row {
-  background: #ffffff;
+  background: var(--app-surface);
 }
 mat-card .mat-mdc-row {
   background: transparent;
 }
 .mat-mdc-cell {
-  color: #000000;
-  border-bottom-color: #f7f7f7;
+  color: var(--app-text);
+  border-bottom-color: var(--app-surface-alt);
 }
 
 // Buttons — filled = carmine/white (mobile's FilledButton); outlined/text = carmine ink.
@@ -211,6 +245,9 @@ mat-card .mat-mdc-row {
 .mat-mdc-outlined-button,
 .mat-mdc-button {
   border-radius: var(--app-radius-pill);
+  --mat-text-button-label-text-color: var(--app-text);
+  --mat-outlined-button-label-text-color: var(--app-text);
+  --mat-outlined-button-outline-color: var(--app-outline);
 }
 .mat-mdc-unelevated-button,
 .mat-mdc-raised-button,
@@ -226,16 +263,36 @@ mat-card .mat-mdc-row {
 }
 .mat-mdc-icon-button {
   --mdc-icon-button-state-layer-size: 40px;
+  --mat-icon-button-icon-color: var(--app-text);
   width: 40px !important;
   height: 40px !important;
   padding: 8px;
   box-sizing: border-box;
 }
 
-// Chips — flat gray by default, never a tinted/gradient fill.
+// Slide toggle — carmine when on, theme-text-colored track/thumb when off (Material's
+// auto-generated "off" tones are pink, not within the brand palette).
+.mat-mdc-slide-toggle {
+  --mdc-switch-selected-track-color: #cd0040;
+  --mdc-switch-selected-focus-track-color: #cd0040;
+  --mdc-switch-selected-hover-track-color: #cd0040;
+  --mdc-switch-selected-pressed-track-color: #cd0040;
+  --mdc-switch-selected-handle-color: #ffffff;
+  --mdc-switch-selected-focus-handle-color: #ffffff;
+  --mdc-switch-selected-hover-handle-color: #ffffff;
+  --mdc-switch-selected-pressed-handle-color: #ffffff;
+  --mdc-switch-unselected-track-color: var(--app-surface-alt);
+  --mdc-switch-unselected-handle-color: var(--app-text);
+  --mdc-switch-unselected-focus-track-color: var(--app-surface-alt);
+  --mdc-switch-unselected-hover-track-color: var(--app-surface-alt);
+  --mdc-switch-unselected-pressed-track-color: var(--app-surface-alt);
+  --mat-slide-toggle-label-text-color: var(--app-text);
+}
+
+// Chips — flat surface-alt by default, never a tinted/gradient fill.
 .mat-mdc-standard-chip {
-  --mat-chip-elevated-container-color: #f7f7f7;
-  --mat-chip-label-text-color: #000000;
+  --mat-chip-elevated-container-color: var(--app-surface-alt);
+  --mat-chip-label-text-color: var(--app-text);
   border-radius: var(--app-radius-pill) !important;
 }
 
@@ -244,13 +301,15 @@ mat-card .mat-mdc-row {
 // (app_theme.dart), which always renders a solid 1px muted border, brightening to a 2px
 // carmine border on focus.
 .mat-mdc-form-field {
-  --mat-form-field-outlined-outline-color: #000000;
-  --mat-form-field-outlined-hover-outline-color: #000000;
+  --mat-form-field-outlined-outline-color: var(--app-outline);
+  --mat-form-field-outlined-hover-outline-color: var(--app-outline);
   --mat-form-field-outlined-outline-width: 1px;
   --mat-form-field-outlined-focus-outline-color: #cd0040;
   --mat-form-field-outlined-focus-outline-width: 2px;
   --mat-form-field-outlined-container-shape: var(--app-radius-sm);
-  --mat-form-field-outlined-disabled-outline-color: #00000033;
+  --mat-form-field-outlined-disabled-outline-color: var(--app-disabled-outline);
+  --mat-form-field-outlined-label-text-color: var(--app-text-muted);
+  --mat-form-field-outlined-input-text-color: var(--app-text);
   // Default outlined-field height runs noticeably taller than the buttons sitting next to it
   // in the same filter row — match the 40px buttons exactly. Flex-centering the wrapper/flex
   // layer (rather than relying on Material's padding-based label-transform math, which the
@@ -292,18 +351,18 @@ mat-card .mat-mdc-row {
 }
 
 // Tabbed pages (Organization, Leave) put their add/filter row straight under the tab strip;
-// give it the same white card surface as .filters-card so it doesn't float on the gray page.
+// give it the same surface as .filters-card so it doesn't float on the page background.
 // Bottom padding is smaller because form fields already reserve space for their hint line.
 .tab-content > .add-row {
-  background: #ffffff;
+  background: var(--app-surface);
   border-radius: var(--app-radius-lg);
   box-shadow: var(--app-shadow-card);
   padding: 20px 20px 4px;
 }
 
 // Tabs — carmine ink bar and selected label, no gradient underline.
-// The divider is a low-alpha black (still within the black/white/gray/carmine palette) so the
-// tab strip reads as a distinct bar rather than floating on the gray page background.
+// The divider is a low-alpha version of the theme's text color (still within the brand
+// palette) so the tab strip reads as a distinct bar rather than floating on the page background.
 .mat-mdc-tab-group {
   --mat-tab-active-indicator-color: #cd0040;
   --mat-tab-active-hover-indicator-color: #cd0040;
@@ -313,18 +372,18 @@ mat-card .mat-mdc-row {
   --mat-tab-active-hover-label-text-color: #cd0040;
   --mat-tab-active-focus-label-text-color: #cd0040;
   --mat-tab-active-ripple-color: #cd0040;
-  --mat-tab-inactive-label-text-color: #000000;
-  --mat-tab-inactive-hover-label-text-color: #000000;
-  --mat-tab-inactive-focus-label-text-color: #000000;
-  --mat-tab-divider-color: #0000001f;
+  --mat-tab-inactive-label-text-color: var(--app-text);
+  --mat-tab-inactive-hover-label-text-color: var(--app-text);
+  --mat-tab-inactive-focus-label-text-color: var(--app-text);
+  --mat-tab-divider-color: var(--app-divider);
   --mat-tab-divider-height: 1px;
 }
 
 // Toast (MatSnackBar) styling — same brand palette, no extra colors.
 .toast-success {
-  --mat-snack-bar-container-color: #000000;
-  --mat-snack-bar-supporting-text-color: #ffffff;
-  --mat-snack-bar-button-color: #f7f7f7;
+  --mat-snack-bar-container-color: var(--app-text);
+  --mat-snack-bar-supporting-text-color: var(--app-surface);
+  --mat-snack-bar-button-color: var(--app-surface-alt);
 }
 
 .toast-error {

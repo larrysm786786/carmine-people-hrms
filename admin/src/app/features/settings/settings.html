@@ -12,6 +12,13 @@
 </mat-card>
 
 <mat-card class="section-card">
+  <h2>Appearance</h2>
+  <mat-slide-toggle [checked]="themeService.mode() === 'dark'" (change)="themeService.toggle()">
+    Dark mode
+  </mat-slide-toggle>
+</mat-card>
+
+<mat-card class="section-card">
   <h2>In-app notifications</h2>
   @for (category of categories; track category) {
     <mat-checkbox [checked]="isEnabled(category)" (change)="togglePreference(category)">

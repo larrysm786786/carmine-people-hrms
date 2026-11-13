@@ -37,6 +37,9 @@
         </button>
       }
       <span class="spacer"></span>
+      <button mat-icon-button (click)="themeService.toggle()" [attr.aria-label]="themeService.mode() === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'">
+        <mat-icon>{{ themeService.mode() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
       <button mat-button [matMenuTriggerFor]="userMenu">
         <mat-icon>account_circle</mat-icon>
         @if (!isMobile()) {

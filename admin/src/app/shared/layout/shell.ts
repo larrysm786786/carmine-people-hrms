@@ -11,6 +11,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { map } from 'rxjs';
 import { AuthService } from '../../core/services/auth.service';
 import { BrandingService } from '../../core/services/branding.service';
+import { ThemeService } from '../../core/services/theme.service';
 
 @Component({
   selector: 'app-shell',
@@ -21,6 +22,7 @@ import { BrandingService } from '../../core/services/branding.service';
 export class Shell {
   protected readonly authService = inject(AuthService);
   protected readonly brandingService = inject(BrandingService);
+  protected readonly themeService = inject(ThemeService);
   private readonly router = inject(Router);
   private readonly breakpointObserver = inject(BreakpointObserver);
 

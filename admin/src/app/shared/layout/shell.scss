@@ -2,12 +2,12 @@
 // reserved for the active/primary state, gray only for subtle backgrounds.
 .shell {
   height: 100vh;
-  background: #f7f7f7;
+  background: var(--app-bg);
 }
 
 .sidenav {
   width: 248px;
-  background: #ffffff;
+  background: var(--app-surface);
   border-right: none;
   display: flex;
   flex-direction: column;
@@ -20,7 +20,7 @@
     padding: 8px 8px 20px;
     font-weight: 800;
     font-size: 16px;
-    color: #000000;
+    color: var(--app-text);
 
     .brand-logo {
       width: 32px;
@@ -43,8 +43,10 @@
 
   a[mat-list-item] {
     border-radius: 12px;
-    color: #000000;
+    color: var(--app-text);
     --mat-list-list-item-container-color: transparent;
+    --mat-list-list-item-label-text-color: var(--app-text);
+    --mat-list-list-item-leading-icon-color: var(--app-text);
   }
 
   // Material's list tokens set the title color on an inner element (overriding `color`
@@ -67,9 +69,9 @@
 }
 
 .topbar {
-  background: #ffffff;
-  border-bottom: 1px solid #f7f7f7;
-  color: #000000;
+  background: var(--app-surface);
+  border-bottom: 1px solid var(--app-surface-alt);
+  color: var(--app-text);
 
   .spacer {
     flex: 1 1 auto;

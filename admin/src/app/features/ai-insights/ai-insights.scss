@@ -14,7 +14,7 @@ h1 {
   height: calc(100vh - 200px);
   display: flex;
   flex-direction: column;
-  background: #ffffff;
+  background: var(--app-surface);
   border-radius: var(--app-radius-lg);
   box-shadow: var(--app-shadow-card);
   overflow: hidden;
@@ -43,7 +43,8 @@ h1 {
   line-height: 1.5;
   white-space: pre-line; // AI replies use \n for line breaks/lists — preserve them
   word-break: break-word;
-  background: var(--mat-sys-surface-container, #f7f7f7);
+  background: var(--app-surface-alt);
+  color: var(--app-text);
   align-self: flex-start;
 
   strong {
@@ -62,7 +63,7 @@ h1 {
   align-items: center;
   gap: 8px;
   padding: 8px 12px;
-  border-top: 2px solid #f7f7f7;
+  border-top: 2px solid var(--app-surface-alt);
 
   .input-field {
     flex: 1;

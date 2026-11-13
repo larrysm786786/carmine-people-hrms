@@ -10,9 +10,11 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { AuthService } from '../../core/services/auth.service';
 import { NotificationPreferenceService, NotificationPreference } from '../../core/services/notification-preference.service';
 import { BrandingService, Branding, COMMON_TIME_ZONES } from '../../core/services/branding.service';
+import { ThemeService } from '../../core/services/theme.service';
 import { ToastService } from '../../core/services/toast.service';
 import { errorMessage } from '../../core/utils/error-message';
 
@@ -31,6 +33,7 @@ const NOTIFICATION_CATEGORIES = ['leave', 'attendance', 'announcement'];
     MatFormFieldModule,
     MatInputModule,
     MatSelectModule,
+    MatSlideToggleModule,
   ],
   templateUrl: './settings.html',
   styleUrl: './settings.scss',
@@ -38,6 +41,7 @@ const NOTIFICATION_CATEGORIES = ['leave', 'attendance', 'announcement'];
 export class Settings {
   protected readonly authService = inject(AuthService);
   protected readonly brandingService = inject(BrandingService);
+  protected readonly themeService = inject(ThemeService);
   private readonly notificationPreferenceService = inject(NotificationPreferenceService);
   private readonly router = inject(Router);
   private readonly toast = inject(ToastService);

@@ -33,7 +33,7 @@ h1 {
 .shift-assign-panel {
   padding: 16px 20px;
   margin: -1px 0 8px;
-  background: #f7f7f7;
+  background: var(--app-surface-alt);
   border-radius: var(--app-radius-sm);
   display: flex;
   gap: 12px;
@@ -64,7 +64,7 @@ table {
 .documents-panel {
   padding: 16px 20px;
   margin: -1px 0 8px;
-  background: #f7f7f7;
+  background: var(--app-surface-alt);
   border-radius: var(--app-radius-sm);
 
   .upload-row {
