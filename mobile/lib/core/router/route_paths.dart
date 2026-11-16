@@ -29,4 +29,5 @@ class RoutePaths {
   static const orgChart = '/org-chart';
   static const expenses = '/expenses';
   static const expenseApprovals = '/expenses/approvals';
+  static const onboardingChecklist = '/onboarding-checklist';
 }

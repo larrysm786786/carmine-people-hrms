@@ -1,0 +1,128 @@
+<h1>Onboarding</h1>
+
+<mat-tab-group>
+  <mat-tab label="Employee Checklist">
+    <div class="tab-content">
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline">
+          <mat-label>Employee</mat-label>
+          <mat-select [(ngModel)]="selectedEmployeeId" (selectionChange)="onEmployeeChange()">
+            <mat-option value="">Select employee</mat-option>
+            @for (e of employees(); track e.id) {
+              <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }} ({{ e.employeeCode }})</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button mat-stroked-button [disabled]="!selectedEmployeeId || isApplying()" (click)="applyTemplates()">
+          @if (isApplying()) { Applying... } @else { Apply default checklist }
+        </button>
+      </div>
+
+      @if (selectedEmployeeId) {
+        <div class="add-row wrap">
+          <mat-form-field appearance="outline"><mat-label>New item title</mat-label><input matInput [(ngModel)]="newTask.title" /></mat-form-field>
+          <mat-form-field appearance="outline"><mat-label>Description</mat-label><input matInput [(ngModel)]="newTask.description" /></mat-form-field>
+          <button mat-flat-button color="primary" (click)="addTask()">Add</button>
+        </div>
+
+        <div class="table-scroll">
+        <table mat-table [dataSource]="tasks()">
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef>Title</th>
+            <td mat-cell *matCellDef="let t">{{ t.title }}</td>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef>Description</th>
+            <td mat-cell *matCellDef="let t">{{ t.description || '—' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="completed">
+            <th mat-header-cell *matHeaderCellDef>Done</th>
+            <td mat-cell *matCellDef="let t">
+              <mat-checkbox [checked]="t.isCompleted" (change)="toggleComplete(t)"></mat-checkbox>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let t">
+              <button mat-icon-button color="warn" (click)="removeTask(t.id)"><mat-icon>delete</mat-icon></button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="taskColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: taskColumns"></tr>
+        </table>
+        </div>
+
+        @if (!isLoadingTasks() && tasks().length === 0) {
+          <p class="empty">No checklist items yet. Apply the default checklist or add one manually.</p>
+        }
+      } @else {
+        <p class="hint">Select an employee to view or manage their onboarding checklist.</p>
+      }
+    </div>
+  </mat-tab>
+
+  <mat-tab label="Default Checklist">
+    <div class="tab-content">
+      <p class="hint">These items can be applied in one click to any employee's checklist.</p>
+      <div class="add-row wrap">
+        <mat-form-field appearance="outline"><mat-label>Title</mat-label><input matInput [(ngModel)]="newTemplate.title" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Description</mat-label><input matInput [(ngModel)]="newTemplate.description" /></mat-form-field>
+        <mat-form-field appearance="outline"><mat-label>Order</mat-label><input matInput type="number" [(ngModel)]="newTemplate.sortOrder" /></mat-form-field>
+        <button mat-flat-button color="primary" (click)="addTemplate()">Add</button>
+      </div>
+
+      <div class="table-scroll">
+      <table mat-table [dataSource]="templates()">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef>Title</th>
+          <td mat-cell *matCellDef="let t">
+            @if (editingTemplateId === t.id) {
+              <input matInput [(ngModel)]="editTemplate.title" />
+            } @else {
+              {{ t.title }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let t">
+            @if (editingTemplateId === t.id) {
+              <input matInput [(ngModel)]="editTemplate.description" />
+            } @else {
+              {{ t.description || '—' }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="sortOrder">
+          <th mat-header-cell *matHeaderCellDef>Order</th>
+          <td mat-cell *matCellDef="let t">
+            @if (editingTemplateId === t.id) {
+              <input matInput type="number" [(ngModel)]="editTemplate.sortOrder" style="width: 60px" />
+            } @else {
+              {{ t.sortOrder }}
+            }
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let t">
+            @if (editingTemplateId === t.id) {
+              <button mat-icon-button color="primary" (click)="saveEditTemplate()"><mat-icon>check</mat-icon></button>
+              <button mat-icon-button (click)="cancelEditTemplate()"><mat-icon>close</mat-icon></button>
+            } @else {
+              <button mat-icon-button (click)="startEditTemplate(t)"><mat-icon>edit</mat-icon></button>
+              <button mat-icon-button color="warn" (click)="removeTemplate(t.id)"><mat-icon>delete</mat-icon></button>
+            }
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="templateColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: templateColumns"></tr>
+      </table>
+      </div>
+
+      @if (templates().length === 0) {
+        <p class="empty">No default checklist items yet.</p>
+      }
+    </div>
+  </mat-tab>
+</mat-tab-group>

@@ -1,0 +1,43 @@
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.tab-content {
+  padding: 20px 0;
+}
+
+.add-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  &.wrap {
+    flex-wrap: wrap;
+  }
+
+  mat-form-field {
+    width: 200px;
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.hint {
+  opacity: 0.7;
+  margin-bottom: 16px;
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  opacity: 0.6;
+}

@@ -45,6 +45,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<BrandingSettings> BrandingSettings => Set<BrandingSettings>();
     public DbSet<Asset> Assets => Set<Asset>();
     public DbSet<Expense> Expenses => Set<Expense>();
+    public DbSet<OnboardingTaskTemplate> OnboardingTaskTemplates => Set<OnboardingTaskTemplate>();
+    public DbSet<OnboardingTask> OnboardingTasks => Set<OnboardingTask>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

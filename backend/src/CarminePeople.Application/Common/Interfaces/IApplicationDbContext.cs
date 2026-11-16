@@ -39,6 +39,8 @@ public interface IApplicationDbContext
     DbSet<BrandingSettings> BrandingSettings { get; }
     DbSet<Asset> Assets { get; }
     DbSet<Expense> Expenses { get; }
+    DbSet<OnboardingTaskTemplate> OnboardingTaskTemplates { get; }
+    DbSet<OnboardingTask> OnboardingTasks { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

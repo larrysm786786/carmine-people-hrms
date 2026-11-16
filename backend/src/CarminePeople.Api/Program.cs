@@ -36,6 +36,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<CarminePeople.Application.Employees.Services.EmployeeService>();
 builder.Services.AddScoped<CarminePeople.Application.Assets.Services.AssetService>();
 builder.Services.AddScoped<CarminePeople.Application.Expenses.Services.ExpenseService>();
+builder.Services.AddScoped<CarminePeople.Application.Onboarding.Services.OnboardingService>();
 builder.Services.AddScoped<CarminePeople.Application.Employees.Services.FaceEnrollmentService>();
 builder.Services.AddScoped<CarminePeople.Application.Common.Time.CompanyClock>();
 builder.Services.AddScoped<CarminePeople.Application.Attendance.Services.AttendanceService>();
