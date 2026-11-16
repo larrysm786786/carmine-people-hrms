@@ -27,4 +27,6 @@ class RoutePaths {
   static const shiftSwapApprovals = '/shift-swap/approvals';
   static const payroll = '/payroll';
   static const orgChart = '/org-chart';
+  static const expenses = '/expenses';
+  static const expenseApprovals = '/expenses/approvals';
 }
