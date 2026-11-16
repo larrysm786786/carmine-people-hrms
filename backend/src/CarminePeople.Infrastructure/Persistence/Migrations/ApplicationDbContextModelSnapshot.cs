@@ -499,6 +499,50 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                     b.ToTable("DeviceTokens");
                 });
 
+            modelBuilder.Entity("CarminePeople.Domain.Entities.DocumentSignature", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("SignatureDocumentId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SignatureImageBase64")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("SignedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("SignatureDocumentId", "EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("DocumentSignatures");
+                });
+
             modelBuilder.Entity("CarminePeople.Domain.Entities.Employee", b =>
                 {
                     b.Property<Guid>("Id")
@@ -1730,6 +1774,45 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                     b.ToTable("ShiftSwapRequests");
                 });
 
+            modelBuilder.Entity("CarminePeople.Domain.Entities.SignatureDocument", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(10000)
+                        .HasColumnType("character varying(10000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("SignatureDocuments");
+                });
+
             modelBuilder.Entity("CarminePeople.Domain.Entities.Announcement", b =>
                 {
                     b.HasOne("CarminePeople.Domain.Entities.Employee", "CreatedByEmployee")
@@ -1840,6 +1923,25 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+                });
+
+            modelBuilder.Entity("CarminePeople.Domain.Entities.DocumentSignature", b =>
+                {
+                    b.HasOne("CarminePeople.Domain.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CarminePeople.Domain.Entities.SignatureDocument", "SignatureDocument")
+                        .WithMany("Signatures")
+                        .HasForeignKey("SignatureDocumentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("SignatureDocument");
                 });
 
             modelBuilder.Entity("CarminePeople.Domain.Entities.Employee", b =>
@@ -2232,6 +2334,11 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("CarminePeople.Domain.Entities.Role", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("CarminePeople.Domain.Entities.SignatureDocument", b =>
+                {
+                    b.Navigation("Signatures");
                 });
 #pragma warning restore 612, 618
         }

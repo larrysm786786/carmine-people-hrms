@@ -316,6 +316,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           onTap: () => context.push(RoutePaths.pulseSurveys),
                         ),
                         QuickActionTile(
+                          icon: Icons.draw_outlined,
+                          label: 'Sign Documents',
+                          onTap: () => context.push(RoutePaths.signatureDocuments),
+                        ),
+                        QuickActionTile(
                           icon: Icons.campaign_outlined,
                           label: 'Announcements',
                           onTap: () => context.push(RoutePaths.announcements),

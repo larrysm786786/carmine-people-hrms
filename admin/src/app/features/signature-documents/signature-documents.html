@@ -1,0 +1,74 @@
+<h1>Signature Documents</h1>
+
+<div class="add-row wrap">
+  <mat-form-field appearance="outline" class="wide">
+    <mat-label>Title</mat-label>
+    <input matInput [(ngModel)]="newTitle" placeholder="e.g. Code of Conduct Policy v2" />
+  </mat-form-field>
+</div>
+<div class="add-row wrap">
+  <mat-form-field appearance="outline" class="wide-textarea">
+    <mat-label>Content employees must acknowledge</mat-label>
+    <textarea matInput [(ngModel)]="newContent" rows="4"></textarea>
+  </mat-form-field>
+</div>
+<div class="add-row">
+  <button mat-flat-button color="primary" (click)="create()">Add for signature</button>
+</div>
+
+<div class="table-scroll">
+<table mat-table [dataSource]="documents()">
+  <ng-container matColumnDef="title">
+    <th mat-header-cell *matHeaderCellDef>Title</th>
+    <td mat-cell *matCellDef="let d">{{ d.title }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let d">
+      <mat-chip [class]="d.isActive ? 'status-chip--success' : ''">{{ d.isActive ? 'Active' : 'Closed' }}</mat-chip>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="signatures">
+    <th mat-header-cell *matHeaderCellDef>Signatures</th>
+    <td mat-cell *matCellDef="let d">
+      <button mat-button (click)="toggleSignatures(d)">{{ d.signatureCount }} signed</button>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let d">
+      @if (d.isActive) {
+        <button mat-button (click)="close(d)">Close</button>
+      }
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+</div>
+
+@if (!isLoading() && documents().length === 0) {
+  <p class="empty">No documents yet. Add one above.</p>
+}
+
+@if (expandedDocumentId()) {
+  <div class="signatures-panel">
+    <h3>Signed by</h3>
+    @if (isLoadingSignatures()) {
+      <p>Loading...</p>
+    } @else if (signatures().length === 0) {
+      <p class="empty">No signatures yet.</p>
+    } @else {
+      @for (s of signatures(); track s.id) {
+        <div class="signature-row">
+          <span class="name">{{ s.employeeName }}</span>
+          <span class="date">{{ s.signedAt }}</span>
+        </div>
+      }
+    }
+  </div>
+}

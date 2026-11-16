@@ -21,6 +21,7 @@ export const routes: Routes = [
       { path: 'expenses', loadComponent: () => import('./features/expenses/expenses').then((m) => m.Expenses) },
       { path: 'onboarding', loadComponent: () => import('./features/onboarding/onboarding').then((m) => m.Onboarding) },
       { path: 'pulse-surveys', loadComponent: () => import('./features/pulse-surveys/pulse-surveys').then((m) => m.PulseSurveys) },
+      { path: 'signature-documents', loadComponent: () => import('./features/signature-documents/signature-documents').then((m) => m.SignatureDocuments) },
       { path: 'announcements', loadComponent: () => import('./features/announcements/announcements').then((m) => m.Announcements) },
       { path: 'reports', loadComponent: () => import('./features/reports/reports').then((m) => m.Reports) },
       { path: 'audit', loadComponent: () => import('./features/audit/audit').then((m) => m.Audit) },

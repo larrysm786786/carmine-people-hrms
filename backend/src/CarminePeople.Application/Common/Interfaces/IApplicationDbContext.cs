@@ -43,6 +43,8 @@ public interface IApplicationDbContext
     DbSet<OnboardingTask> OnboardingTasks { get; }
     DbSet<PulseSurvey> PulseSurveys { get; }
     DbSet<PulseSurveyResponse> PulseSurveyResponses { get; }
+    DbSet<SignatureDocument> SignatureDocuments { get; }
+    DbSet<DocumentSignature> DocumentSignatures { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

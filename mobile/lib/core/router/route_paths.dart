@@ -31,4 +31,5 @@ class RoutePaths {
   static const expenseApprovals = '/expenses/approvals';
   static const onboardingChecklist = '/onboarding-checklist';
   static const pulseSurveys = '/pulse-surveys';
+  static const signatureDocuments = '/signature-documents';
 }

@@ -49,6 +49,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<OnboardingTask> OnboardingTasks => Set<OnboardingTask>();
     public DbSet<PulseSurvey> PulseSurveys => Set<PulseSurvey>();
     public DbSet<PulseSurveyResponse> PulseSurveyResponses => Set<PulseSurveyResponse>();
+    public DbSet<SignatureDocument> SignatureDocuments => Set<SignatureDocument>();
+    public DbSet<DocumentSignature> DocumentSignatures => Set<DocumentSignature>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
