@@ -1,0 +1,53 @@
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+
+.add-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  &.wrap {
+    flex-wrap: wrap;
+  }
+
+  mat-form-field {
+    width: 180px;
+  }
+
+  .wide {
+    width: 280px;
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+}
+
+.stage-select {
+  width: 160px;
+}
+
+.empty {
+  padding: 24px;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.candidates-panel {
+  margin-top: 24px;
+  padding: 16px;
+  border: 1px solid var(--app-divider);
+  border-radius: 8px;
+
+  h3 {
+    margin-top: 0;
+  }
+}

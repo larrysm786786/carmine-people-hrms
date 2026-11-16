@@ -46,6 +46,8 @@ public interface IApplicationDbContext
     DbSet<SignatureDocument> SignatureDocuments { get; }
     DbSet<DocumentSignature> DocumentSignatures { get; }
     DbSet<PerformanceReview> PerformanceReviews { get; }
+    DbSet<JobPosting> JobPostings { get; }
+    DbSet<Candidate> Candidates { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

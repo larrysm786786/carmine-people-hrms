@@ -52,6 +52,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<SignatureDocument> SignatureDocuments => Set<SignatureDocument>();
     public DbSet<DocumentSignature> DocumentSignatures => Set<DocumentSignature>();
     public DbSet<PerformanceReview> PerformanceReviews => Set<PerformanceReview>();
+    public DbSet<JobPosting> JobPostings => Set<JobPosting>();
+    public DbSet<Candidate> Candidates => Set<Candidate>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

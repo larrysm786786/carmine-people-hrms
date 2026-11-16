@@ -1,0 +1,102 @@
+<h1>Recruitment</h1>
+
+<div class="add-row wrap">
+  <mat-form-field appearance="outline"><mat-label>Title</mat-label><input matInput [(ngModel)]="newTitle" placeholder="e.g. Senior Backend Engineer" /></mat-form-field>
+  <mat-form-field appearance="outline"><mat-label>Department</mat-label><input matInput [(ngModel)]="newDepartment" /></mat-form-field>
+  <mat-form-field appearance="outline" class="wide"><mat-label>Description</mat-label><input matInput [(ngModel)]="newDescription" /></mat-form-field>
+  <button mat-flat-button color="primary" (click)="createJobPosting()">Post opening</button>
+</div>
+
+<div class="table-scroll">
+<table mat-table [dataSource]="jobPostings()">
+  <ng-container matColumnDef="title">
+    <th mat-header-cell *matHeaderCellDef>Title</th>
+    <td mat-cell *matCellDef="let j">
+      <button mat-button (click)="selectJob(j)">{{ j.title }}</button>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="department">
+    <th mat-header-cell *matHeaderCellDef>Department</th>
+    <td mat-cell *matCellDef="let j">{{ j.department }}</td>
+  </ng-container>
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let j">
+      <mat-chip [class]="j.status === 0 ? 'status-chip--success' : ''">{{ j.status === 0 ? 'Open' : 'Closed' }}</mat-chip>
+    </td>
+  </ng-container>
+  <ng-container matColumnDef="candidates">
+    <th mat-header-cell *matHeaderCellDef>Candidates</th>
+    <td mat-cell *matCellDef="let j">{{ j.candidateCount }}</td>
+  </ng-container>
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let j">
+      @if (j.status === 0) {
+        <button mat-button (click)="closeJobPosting(j)">Close</button>
+      }
+    </td>
+  </ng-container>
+  <tr mat-header-row *matHeaderRowDef="['title', 'department', 'status', 'candidates', 'actions']"></tr>
+  <tr mat-row *matRowDef="let row; columns: ['title', 'department', 'status', 'candidates', 'actions']"></tr>
+</table>
+</div>
+
+@if (!isLoading() && jobPostings().length === 0) {
+  <p class="empty">No job postings yet. Post one above.</p>
+}
+
+@if (selectedJobId()) {
+  <div class="candidates-panel">
+    <h3>Candidates</h3>
+
+    <div class="add-row wrap">
+      <mat-form-field appearance="outline"><mat-label>Full name</mat-label><input matInput [(ngModel)]="newCandidate.fullName" /></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>Email</mat-label><input matInput [(ngModel)]="newCandidate.email" /></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>Phone</mat-label><input matInput [(ngModel)]="newCandidate.phone" /></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>Resume URL</mat-label><input matInput [(ngModel)]="newCandidate.resumeUrl" /></mat-form-field>
+      <button mat-flat-button color="primary" (click)="addCandidate()">Add candidate</button>
+    </div>
+
+    @if (isLoadingCandidates()) {
+      <p>Loading...</p>
+    } @else {
+      <div class="table-scroll">
+      <table mat-table [dataSource]="candidates()">
+        <ng-container matColumnDef="fullName">
+          <th mat-header-cell *matHeaderCellDef>Name</th>
+          <td mat-cell *matCellDef="let c">{{ c.fullName }}</td>
+        </ng-container>
+        <ng-container matColumnDef="email">
+          <th mat-header-cell *matHeaderCellDef>Email</th>
+          <td mat-cell *matCellDef="let c">{{ c.email }}</td>
+        </ng-container>
+        <ng-container matColumnDef="stage">
+          <th mat-header-cell *matHeaderCellDef>Stage</th>
+          <td mat-cell *matCellDef="let c">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic" class="stage-select">
+              <mat-select [value]="c.stage" (selectionChange)="updateStage(c, $event.value)">
+                @for (label of stageLabels; track $index) {
+                  <mat-option [value]="$index">{{ label }}</mat-option>
+                }
+              </mat-select>
+            </mat-form-field>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let c">
+            <button mat-icon-button color="warn" (click)="removeCandidate(c)"><mat-icon>delete</mat-icon></button>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="candidateColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: candidateColumns"></tr>
+      </table>
+      </div>
+
+      @if (candidates().length === 0) {
+        <p class="empty">No candidates yet.</p>
+      }
+    }
+  </div>
+}

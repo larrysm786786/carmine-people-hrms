@@ -379,6 +379,62 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                     b.ToTable("Breaks");
                 });
 
+            modelBuilder.Entity("CarminePeople.Domain.Entities.Candidate", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<Guid>("JobPostingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Notes")
+                        .HasMaxLength(2000)
+                        .HasColumnType("character varying(2000)");
+
+                    b.Property<string>("Phone")
+                        .HasMaxLength(30)
+                        .HasColumnType("character varying(30)");
+
+                    b.Property<string>("ResumeUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("Stage")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobPostingId");
+
+                    b.ToTable("Candidates");
+                });
+
             modelBuilder.Entity("CarminePeople.Domain.Entities.Department", b =>
                 {
                     b.Property<Guid>("Id")
@@ -881,6 +937,49 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                     b.HasIndex("LocationId");
 
                     b.ToTable("Holidays");
+                });
+
+            modelBuilder.Entity("CarminePeople.Domain.Entities.JobPosting", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Department")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(5000)
+                        .HasColumnType("character varying(5000)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("character varying(200)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("JobPostings");
                 });
 
             modelBuilder.Entity("CarminePeople.Domain.Entities.LeaveApplication", b =>
@@ -1957,6 +2056,17 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                     b.Navigation("AttendanceRecord");
                 });
 
+            modelBuilder.Entity("CarminePeople.Domain.Entities.Candidate", b =>
+                {
+                    b.HasOne("CarminePeople.Domain.Entities.JobPosting", "JobPosting")
+                        .WithMany("Candidates")
+                        .HasForeignKey("JobPostingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("JobPosting");
+                });
+
             modelBuilder.Entity("CarminePeople.Domain.Entities.Department", b =>
                 {
                     b.HasOne("CarminePeople.Domain.Entities.Employee", "Manager")
@@ -2391,6 +2501,11 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("CarminePeople.Domain.Entities.AttendanceRecord", b =>
                 {
                     b.Navigation("Breaks");
+                });
+
+            modelBuilder.Entity("CarminePeople.Domain.Entities.JobPosting", b =>
+                {
+                    b.Navigation("Candidates");
                 });
 
             modelBuilder.Entity("CarminePeople.Domain.Entities.LeaveApplication", b =>
