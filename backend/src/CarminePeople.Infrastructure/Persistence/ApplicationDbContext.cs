@@ -54,6 +54,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<PerformanceReview> PerformanceReviews => Set<PerformanceReview>();
     public DbSet<JobPosting> JobPostings => Set<JobPosting>();
     public DbSet<Candidate> Candidates => Set<Candidate>();
+    public DbSet<PayrollComplianceSettings> PayrollComplianceSettings => Set<PayrollComplianceSettings>();
+    public DbSet<TdsSlab> TdsSlabs => Set<TdsSlab>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -18,5 +18,13 @@ public class Payslip : AuditableEntity
     public decimal DeductionsAmount { get; set; }
     public decimal NetAmount { get; set; }
 
+    // Optional statutory breakdown — populated only when HR used the compliance calculator
+    // to arrive at DeductionsAmount; null means "not broken down" (plain manual entry).
+    public decimal? PfEmployeeAmount { get; set; }
+    public decimal? PfEmployerAmount { get; set; }
+    public decimal? EsiEmployeeAmount { get; set; }
+    public decimal? EsiEmployerAmount { get; set; }
+    public decimal? TdsAmount { get; set; }
+
     public string? Notes { get; set; }
 }

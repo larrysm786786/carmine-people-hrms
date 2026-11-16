@@ -1,0 +1,87 @@
+<h1>Payroll Compliance</h1>
+<p class="hint">
+  Enter your company's verified PF, ESI and TDS figures below. Nothing is pre-filled — confirm every rate and
+  threshold with your accountant before enabling a component.
+</p>
+
+@if (!isLoading()) {
+  <mat-card class="section">
+    <h3>Provident Fund (PF)</h3>
+    <mat-checkbox [(ngModel)]="settings.isPfEnabled">Enable PF deduction</mat-checkbox>
+    <div class="add-row wrap">
+      <mat-form-field appearance="outline"><mat-label>Employee rate %</mat-label><input matInput type="number" [(ngModel)]="settings.pfEmployeeRatePercent" /></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>Employer rate %</mat-label><input matInput type="number" [(ngModel)]="settings.pfEmployerRatePercent" /></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>Wage ceiling (optional)</mat-label><input matInput type="number" [(ngModel)]="settings.pfWageCeiling" /></mat-form-field>
+    </div>
+  </mat-card>
+
+  <mat-card class="section">
+    <h3>Employee State Insurance (ESI)</h3>
+    <mat-checkbox [(ngModel)]="settings.isEsiEnabled">Enable ESI deduction</mat-checkbox>
+    <div class="add-row wrap">
+      <mat-form-field appearance="outline"><mat-label>Employee rate %</mat-label><input matInput type="number" [(ngModel)]="settings.esiEmployeeRatePercent" /></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>Employer rate %</mat-label><input matInput type="number" [(ngModel)]="settings.esiEmployerRatePercent" /></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>Eligibility threshold (gross/month, optional)</mat-label><input matInput type="number" [(ngModel)]="settings.esiEligibilityThreshold" /></mat-form-field>
+    </div>
+  </mat-card>
+
+  <mat-card class="section">
+    <h3>Tax Deducted at Source (TDS)</h3>
+    <mat-checkbox [(ngModel)]="settings.isTdsEnabled">Enable TDS calculation</mat-checkbox>
+    <p class="hint">Define progressive annual-income slabs below. TDS is computed by applying each slab only to the portion of income within it, then dividing by 12 for a monthly deduction.</p>
+
+    <div class="add-row wrap">
+      <mat-form-field appearance="outline"><mat-label>Up to annual income (blank = top slab)</mat-label><input matInput type="number" [(ngModel)]="newSlab.upToAnnualIncome" /></mat-form-field>
+      <mat-form-field appearance="outline"><mat-label>Rate %</mat-label><input matInput type="number" [(ngModel)]="newSlab.ratePercent" /></mat-form-field>
+      <button mat-flat-button color="primary" (click)="addTdsSlab()">Add slab</button>
+    </div>
+
+    <div class="table-scroll">
+    <table mat-table [dataSource]="tdsSlabs()">
+      <ng-container matColumnDef="upTo">
+        <th mat-header-cell *matHeaderCellDef>Up to</th>
+        <td mat-cell *matCellDef="let s">{{ s.upToAnnualIncome !== null ? s.upToAnnualIncome : 'No limit' }}</td>
+      </ng-container>
+      <ng-container matColumnDef="rate">
+        <th mat-header-cell *matHeaderCellDef>Rate</th>
+        <td mat-cell *matCellDef="let s">{{ s.ratePercent }}%</td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef></th>
+        <td mat-cell *matCellDef="let s">
+          <button mat-icon-button color="warn" (click)="removeTdsSlab(s.id)"><mat-icon>delete</mat-icon></button>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="['upTo', 'rate', 'actions']"></tr>
+      <tr mat-row *matRowDef="let row; columns: ['upTo', 'rate', 'actions']"></tr>
+    </table>
+    </div>
+    @if (tdsSlabs().length === 0) {
+      <p class="empty">No TDS slabs defined yet.</p>
+    }
+  </mat-card>
+
+  <button mat-flat-button color="primary" [disabled]="isSaving()" (click)="save()">
+    @if (isSaving()) { Saving... } @else { Save settings }
+  </button>
+
+  <mat-card class="section calculator">
+    <h3>Calculator</h3>
+    <p class="hint">Preview the statutory deductions for a given monthly gross — use this to fill in a payslip's deductions.</p>
+    <div class="add-row wrap">
+      <mat-form-field appearance="outline"><mat-label>Monthly gross</mat-label><input matInput type="number" [(ngModel)]="calculatorGross" /></mat-form-field>
+      <button mat-stroked-button [disabled]="isCalculating()" (click)="calculate()">Calculate</button>
+    </div>
+
+    @if (calculatorResult(); as result) {
+      <div class="result-grid">
+        <div><span class="label">PF (employee)</span><span>{{ result.pfEmployeeAmount }}</span></div>
+        <div><span class="label">PF (employer)</span><span>{{ result.pfEmployerAmount }}</span></div>
+        <div><span class="label">ESI (employee)</span><span>{{ result.esiEmployeeAmount }}</span></div>
+        <div><span class="label">ESI (employer)</span><span>{{ result.esiEmployerAmount }}</span></div>
+        <div><span class="label">TDS</span><span>{{ result.tdsAmount }}</span></div>
+        <div class="total"><span class="label">Total employee deductions</span><span>{{ result.totalEmployeeDeductions }}</span></div>
+      </div>
+    }
+  </mat-card>
+}

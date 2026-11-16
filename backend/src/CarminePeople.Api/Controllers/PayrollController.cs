@@ -15,10 +15,12 @@ namespace CarminePeople.Api.Controllers;
 public class PayrollController : ControllerBase
 {
     private readonly PayrollService _payrollService;
+    private readonly PayrollComplianceService _complianceService;
 
-    public PayrollController(PayrollService payrollService)
+    public PayrollController(PayrollService payrollService, PayrollComplianceService complianceService)
     {
         _payrollService = payrollService;
+        _complianceService = complianceService;
     }
 
     [HttpPost("payslips")]
@@ -61,6 +63,64 @@ public class PayrollController : ControllerBase
 
         var items = await _payrollService.GetForEmployeeAsync(targetEmployeeId, year, ct);
         return Ok(new { success = true, data = items });
+    }
+
+    [HttpGet("compliance/settings")]
+    [Authorize(Policy = Permissions.PayrollManage)]
+    public async Task<IActionResult> GetComplianceSettings(CancellationToken ct)
+    {
+        var settings = await _complianceService.GetSettingsAsync(ct);
+        return Ok(new { success = true, data = settings });
+    }
+
+    [HttpPut("compliance/settings")]
+    [Authorize(Policy = Permissions.PayrollManage)]
+    public async Task<IActionResult> UpdateComplianceSettings([FromBody] UpdatePayrollComplianceSettingsRequest request, CancellationToken ct)
+    {
+        var settings = await _complianceService.UpdateSettingsAsync(request, User.GetEmployeeId(), ct);
+        return Ok(new { success = true, data = settings });
+    }
+
+    [HttpGet("compliance/tds-slabs")]
+    [Authorize(Policy = Permissions.PayrollManage)]
+    public async Task<IActionResult> GetTdsSlabs(CancellationToken ct)
+    {
+        var slabs = await _complianceService.GetTdsSlabsAsync(ct);
+        return Ok(new { success = true, data = slabs });
+    }
+
+    [HttpPost("compliance/tds-slabs")]
+    [Authorize(Policy = Permissions.PayrollManage)]
+    public async Task<IActionResult> AddTdsSlab([FromBody] UpsertTdsSlabRequest request, CancellationToken ct)
+    {
+        var slab = await _complianceService.AddTdsSlabAsync(request, User.GetEmployeeId(), ct);
+        return Ok(new { success = true, data = slab });
+    }
+
+    [HttpPut("compliance/tds-slabs/{id:guid}")]
+    [Authorize(Policy = Permissions.PayrollManage)]
+    public async Task<IActionResult> UpdateTdsSlab(Guid id, [FromBody] UpsertTdsSlabRequest request, CancellationToken ct)
+    {
+        var result = await _complianceService.UpdateTdsSlabAsync(id, request, User.GetEmployeeId(), ct);
+        if (!result.Success) return NotFound(Envelope(result.ErrorCode!, result.ErrorMessage!));
+        return Ok(new { success = true, data = result.Data });
+    }
+
+    [HttpDelete("compliance/tds-slabs/{id:guid}")]
+    [Authorize(Policy = Permissions.PayrollManage)]
+    public async Task<IActionResult> DeleteTdsSlab(Guid id, CancellationToken ct)
+    {
+        var result = await _complianceService.DeleteTdsSlabAsync(id, User.GetEmployeeId(), ct);
+        if (!result.Success) return NotFound(Envelope(result.ErrorCode!, result.ErrorMessage!));
+        return Ok(new { success = true, data = (object?)null });
+    }
+
+    [HttpPost("compliance/calculate")]
+    [Authorize(Policy = Permissions.PayrollManage)]
+    public async Task<IActionResult> CalculateCompliance([FromBody] CalculateComplianceRequest request, CancellationToken ct)
+    {
+        var result = await _complianceService.CalculateAsync(request, ct);
+        return Ok(new { success = true, data = result });
     }
 
     private object Envelope(string code, string message) => ApiEnvelope.Error(HttpContext, code, message);

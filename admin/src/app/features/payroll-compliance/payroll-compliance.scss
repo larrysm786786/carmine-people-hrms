@@ -1,0 +1,80 @@
+h1 {
+  font-size: 22px;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.hint {
+  opacity: 0.7;
+  margin-bottom: 16px;
+  max-width: 720px;
+}
+
+.section {
+  margin-bottom: 20px;
+  padding: 16px;
+
+  h3 {
+    margin-top: 0;
+  }
+}
+
+.add-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+
+  &.wrap {
+    flex-wrap: wrap;
+  }
+
+  mat-form-field {
+    width: 220px;
+  }
+}
+
+.table-scroll {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+
+table {
+  width: 100%;
+}
+
+.empty {
+  padding: 16px;
+  text-align: center;
+  opacity: 0.6;
+}
+
+.calculator {
+  margin-top: 24px;
+}
+
+.result-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+
+  div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px;
+    border: 1px solid var(--app-divider);
+    border-radius: 8px;
+  }
+
+  .label {
+    font-size: 12px;
+    opacity: 0.7;
+  }
+
+  .total {
+    font-weight: 700;
+    border-color: var(--app-danger);
+  }
+}

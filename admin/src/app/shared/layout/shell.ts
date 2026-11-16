@@ -52,6 +52,7 @@ export class Shell {
     { label: 'Signatures', icon: 'draw', route: '/signature-documents' },
     { label: 'Performance', icon: 'insights', route: '/performance-reviews' },
     { label: 'Recruitment', icon: 'work_outline', route: '/recruitment' },
+    { label: 'Payroll Compliance', icon: 'account_balance', route: '/payroll-compliance' },
     { label: 'Announcements', icon: 'campaign', route: '/announcements' },
     { label: 'Reports', icon: 'summarize', route: '/reports' },
     { label: 'Audit log', icon: 'fact_check', route: '/audit' },

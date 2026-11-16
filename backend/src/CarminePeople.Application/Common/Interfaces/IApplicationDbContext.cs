@@ -48,6 +48,8 @@ public interface IApplicationDbContext
     DbSet<PerformanceReview> PerformanceReviews { get; }
     DbSet<JobPosting> JobPostings { get; }
     DbSet<Candidate> Candidates { get; }
+    DbSet<PayrollComplianceSettings> PayrollComplianceSettings { get; }
+    DbSet<TdsSlab> TdsSlabs { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }
