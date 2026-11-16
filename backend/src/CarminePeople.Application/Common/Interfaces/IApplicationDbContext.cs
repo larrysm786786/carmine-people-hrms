@@ -41,6 +41,8 @@ public interface IApplicationDbContext
     DbSet<Expense> Expenses { get; }
     DbSet<OnboardingTaskTemplate> OnboardingTaskTemplates { get; }
     DbSet<OnboardingTask> OnboardingTasks { get; }
+    DbSet<PulseSurvey> PulseSurveys { get; }
+    DbSet<PulseSurveyResponse> PulseSurveyResponses { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

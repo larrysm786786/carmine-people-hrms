@@ -47,6 +47,8 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<Expense> Expenses => Set<Expense>();
     public DbSet<OnboardingTaskTemplate> OnboardingTaskTemplates => Set<OnboardingTaskTemplate>();
     public DbSet<OnboardingTask> OnboardingTasks => Set<OnboardingTask>();
+    public DbSet<PulseSurvey> PulseSurveys => Set<PulseSurvey>();
+    public DbSet<PulseSurveyResponse> PulseSurveyResponses => Set<PulseSurveyResponse>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

@@ -1,0 +1,72 @@
+<h1>Pulse Surveys</h1>
+
+<div class="add-row wrap">
+  <mat-form-field appearance="outline" class="wide">
+    <mat-label>New survey question</mat-label>
+    <input matInput [(ngModel)]="newQuestion" placeholder="e.g. How satisfied are you with work this week?" />
+  </mat-form-field>
+  <button mat-flat-button color="primary" (click)="create()">Create</button>
+</div>
+
+<div class="table-scroll">
+<table mat-table [dataSource]="surveys()">
+  <ng-container matColumnDef="question">
+    <th mat-header-cell *matHeaderCellDef>Question</th>
+    <td mat-cell *matCellDef="let s">{{ s.question }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let s">
+      <mat-chip [class]="s.isActive ? 'status-chip--success' : ''">{{ s.isActive ? 'Active' : 'Closed' }}</mat-chip>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="responses">
+    <th mat-header-cell *matHeaderCellDef>Responses</th>
+    <td mat-cell *matCellDef="let s">
+      <button mat-button (click)="toggleResponses(s)">{{ s.responseCount }} response(s)</button>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="average">
+    <th mat-header-cell *matHeaderCellDef>Avg. rating</th>
+    <td mat-cell *matCellDef="let s">{{ s.averageRating !== null ? (s.averageRating | number: '1.1-1') + ' / 5' : '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let s">
+      @if (s.isActive) {
+        <button mat-button (click)="close(s)">Close</button>
+      }
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+</div>
+
+@if (!isLoading() && surveys().length === 0) {
+  <p class="empty">No pulse surveys yet. Create one above.</p>
+}
+
+@if (expandedSurveyId()) {
+  <div class="responses-panel">
+    <h3>Responses</h3>
+    @if (isLoadingResponses()) {
+      <p>Loading...</p>
+    } @else if (responses().length === 0) {
+      <p class="empty">No responses yet.</p>
+    } @else {
+      @for (r of responses(); track r.id) {
+        <div class="response-row">
+          <span class="rating">{{ r.rating }}/5</span>
+          <span class="name">{{ r.employeeName || 'Anonymous' }}</span>
+          <span class="comment">{{ r.comment || '—' }}</span>
+        </div>
+      }
+    }
+  </div>
+}

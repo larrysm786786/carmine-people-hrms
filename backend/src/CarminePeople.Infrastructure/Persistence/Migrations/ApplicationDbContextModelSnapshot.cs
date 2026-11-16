@@ -1382,6 +1382,87 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                     b.ToTable("Permissions");
                 });
 
+            modelBuilder.Entity("CarminePeople.Domain.Entities.PulseSurvey", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("PulseSurveys");
+                });
+
+            modelBuilder.Entity("CarminePeople.Domain.Entities.PulseSurveyResponse", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Comment")
+                        .HasMaxLength(1000)
+                        .HasColumnType("character varying(1000)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("CreatedBy")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("EmployeeId")
+                        .HasColumnType("uuid");
+
+                    b.Property<bool>("IsAnonymous")
+                        .HasColumnType("boolean");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<int>("Rating")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("SurveyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid?>("UpdatedBy")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EmployeeId");
+
+                    b.HasIndex("SurveyId", "EmployeeId")
+                        .IsUnique();
+
+                    b.ToTable("PulseSurveyResponses");
+                });
+
             modelBuilder.Entity("CarminePeople.Domain.Entities.RefreshToken", b =>
                 {
                     b.Property<Guid>("Id")
@@ -2010,6 +2091,25 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
                     b.Navigation("Employee");
                 });
 
+            modelBuilder.Entity("CarminePeople.Domain.Entities.PulseSurveyResponse", b =>
+                {
+                    b.HasOne("CarminePeople.Domain.Entities.Employee", "Employee")
+                        .WithMany()
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("CarminePeople.Domain.Entities.PulseSurvey", "Survey")
+                        .WithMany("Responses")
+                        .HasForeignKey("SurveyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Employee");
+
+                    b.Navigation("Survey");
+                });
+
             modelBuilder.Entity("CarminePeople.Domain.Entities.RefreshToken", b =>
                 {
                     b.HasOne("CarminePeople.Domain.Entities.Employee", "Employee")
@@ -2117,6 +2217,11 @@ namespace CarminePeople.Infrastructure.Persistence.Migrations
             modelBuilder.Entity("CarminePeople.Domain.Entities.Permission", b =>
                 {
                     b.Navigation("RolePermissions");
+                });
+
+            modelBuilder.Entity("CarminePeople.Domain.Entities.PulseSurvey", b =>
+                {
+                    b.Navigation("Responses");
                 });
 
             modelBuilder.Entity("CarminePeople.Domain.Entities.RegularizationRequest", b =>

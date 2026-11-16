@@ -14,6 +14,7 @@ import '../../features/employees/presentation/employees_list_screen.dart';
 import '../../features/expenses/presentation/expense_approvals_screen.dart';
 import '../../features/expenses/presentation/expenses_screen.dart';
 import '../../features/onboarding_checklist/presentation/onboarding_checklist_screen.dart';
+import '../../features/pulse_surveys/presentation/pulse_surveys_screen.dart';
 import '../../features/holidays/presentation/holidays_screen.dart';
 import '../../features/home/presentation/home_screen.dart';
 import '../../features/leave/presentation/leave_approvals_screen.dart';
@@ -141,6 +142,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: RoutePaths.onboardingChecklist,
         builder: (context, state) => const OnboardingChecklistScreen(),
       ),
+      GoRoute(path: RoutePaths.pulseSurveys, builder: (context, state) => const PulseSurveysScreen()),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => AppShell(navigationShell: navigationShell),
         branches: [
