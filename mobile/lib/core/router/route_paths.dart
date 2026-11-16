@@ -32,4 +32,5 @@ class RoutePaths {
   static const onboardingChecklist = '/onboarding-checklist';
   static const pulseSurveys = '/pulse-surveys';
   static const signatureDocuments = '/signature-documents';
+  static const performanceReviews = '/performance-reviews';
 }

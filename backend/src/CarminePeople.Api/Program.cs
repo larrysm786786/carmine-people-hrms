@@ -39,6 +39,7 @@ builder.Services.AddScoped<CarminePeople.Application.Expenses.Services.ExpenseSe
 builder.Services.AddScoped<CarminePeople.Application.Onboarding.Services.OnboardingService>();
 builder.Services.AddScoped<CarminePeople.Application.PulseSurveys.Services.PulseSurveyService>();
 builder.Services.AddScoped<CarminePeople.Application.Signatures.Services.SignatureDocumentService>();
+builder.Services.AddScoped<CarminePeople.Application.PerformanceReviews.Services.PerformanceReviewService>();
 builder.Services.AddScoped<CarminePeople.Application.Employees.Services.FaceEnrollmentService>();
 builder.Services.AddScoped<CarminePeople.Application.Common.Time.CompanyClock>();
 builder.Services.AddScoped<CarminePeople.Application.Attendance.Services.AttendanceService>();

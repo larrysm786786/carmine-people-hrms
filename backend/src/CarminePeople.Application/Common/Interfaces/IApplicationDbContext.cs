@@ -45,6 +45,7 @@ public interface IApplicationDbContext
     DbSet<PulseSurveyResponse> PulseSurveyResponses { get; }
     DbSet<SignatureDocument> SignatureDocuments { get; }
     DbSet<DocumentSignature> DocumentSignatures { get; }
+    DbSet<PerformanceReview> PerformanceReviews { get; }
 
     Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
 }

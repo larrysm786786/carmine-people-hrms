@@ -51,6 +51,7 @@ public class ApplicationDbContext : DbContext, IApplicationDbContext
     public DbSet<PulseSurveyResponse> PulseSurveyResponses => Set<PulseSurveyResponse>();
     public DbSet<SignatureDocument> SignatureDocuments => Set<SignatureDocument>();
     public DbSet<DocumentSignature> DocumentSignatures => Set<DocumentSignature>();
+    public DbSet<PerformanceReview> PerformanceReviews => Set<PerformanceReview>();
 
     protected override void OnModelCreating(ModelBuilder builder)
     {

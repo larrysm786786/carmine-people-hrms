@@ -1,0 +1,78 @@
+<h1>Performance Reviews</h1>
+
+<div class="add-row wrap">
+  <mat-form-field appearance="outline">
+    <mat-label>Employee</mat-label>
+    <mat-select [(ngModel)]="newEmployeeId">
+      @for (e of employees(); track e.id) {
+        <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }} ({{ e.employeeCode }})</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field appearance="outline">
+    <mat-label>Period</mat-label>
+    <input matInput [(ngModel)]="newPeriod" placeholder="e.g. Annual 2026" />
+  </mat-form-field>
+  <button mat-flat-button color="primary" (click)="create()">Start review cycle</button>
+</div>
+
+<div class="table-scroll">
+<table mat-table [dataSource]="reviews()">
+  <ng-container matColumnDef="employee">
+    <th mat-header-cell *matHeaderCellDef>Employee</th>
+    <td mat-cell *matCellDef="let r">{{ r.employeeName }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="period">
+    <th mat-header-cell *matHeaderCellDef>Period</th>
+    <td mat-cell *matCellDef="let r">{{ r.period }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="selfRating">
+    <th mat-header-cell *matHeaderCellDef>Self rating</th>
+    <td mat-cell *matCellDef="let r">{{ r.selfRating ? r.selfRating + '/5' : '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="managerRating">
+    <th mat-header-cell *matHeaderCellDef>Manager rating</th>
+    <td mat-cell *matCellDef="let r">{{ r.managerRating ? r.managerRating + '/5' : '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let r">
+      <mat-chip [class]="statusChipClass(r.status)">{{ statusLabels[r.status] }}</mat-chip>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let r">
+      @if (r.status === 1) {
+        <div class="inline-review">
+          <mat-form-field appearance="outline" subscriptSizing="dynamic" class="small">
+            <mat-label>Rating</mat-label>
+            <mat-select [(ngModel)]="managerRatingDraft[r.id]">
+              @for (n of [1, 2, 3, 4, 5]; track n) {
+                <mat-option [value]="n">{{ n }}</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field appearance="outline" subscriptSizing="dynamic">
+            <mat-label>Comments</mat-label>
+            <input matInput [(ngModel)]="managerCommentsDraft[r.id]" />
+          </mat-form-field>
+          <button mat-button (click)="submitManagerReview(r)">Submit</button>
+        </div>
+      }
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+</div>
+
+@if (!isLoading() && reviews().length === 0) {
+  <p class="empty">No performance reviews yet. Start one above.</p>
+}

@@ -50,6 +50,7 @@ export class Shell {
     { label: 'Onboarding', icon: 'checklist', route: '/onboarding' },
     { label: 'Pulse Surveys', icon: 'mood', route: '/pulse-surveys' },
     { label: 'Signatures', icon: 'draw', route: '/signature-documents' },
+    { label: 'Performance', icon: 'insights', route: '/performance-reviews' },
     { label: 'Announcements', icon: 'campaign', route: '/announcements' },
     { label: 'Reports', icon: 'summarize', route: '/reports' },
     { label: 'Audit log', icon: 'fact_check', route: '/audit' },
