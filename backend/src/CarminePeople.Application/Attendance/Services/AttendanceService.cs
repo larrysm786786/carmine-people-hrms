@@ -326,14 +326,51 @@ public class AttendanceService
         await _db.SaveChangesAsync(ct);
 
         var employee = await _db.Employees.FirstOrDefaultAsync(e => e.Id == employeeId, ct);
+        var title = "Attendance correction awaiting approval";
+        var body = $"{employee?.FirstName} {employee?.LastName} requested an attendance correction.";
+        var deepLink = $"/regularizations/{regularization.Id}";
+
         if (employee?.ManagerId is { } managerId)
         {
-            await _notificationService.NotifyAsync(
-                managerId, "Attendance correction awaiting approval", $"{employee.FirstName} {employee.LastName} requested an attendance correction.",
-                "attendance", $"/regularizations/{regularization.Id}", ct);
+            await _notificationService.NotifyAsync(managerId, title, body, "attendance", deepLink, ct);
+        }
+        else
+        {
+            // No manager on file to notify — fall back to everyone who can act on this
+            // (HR/SuperAdmin), so the request doesn't silently sit unseen with no one alerted.
+            var approverIds = await _db.Employees
+                .Where(e => e.Role.RolePermissions.Any(rp => rp.Permission.Code == Permissions.AttendanceApprove))
+                .Select(e => e.Id)
+                .ToListAsync(ct);
+            foreach (var approverId in approverIds)
+            {
+                await _notificationService.NotifyAsync(approverId, title, body, "attendance", deepLink, ct);
+            }
         }
 
         return Result<Guid>.Ok(regularization.Id);
+    }
+
+    // Pending requests for the approvals screen — a plain manager sees only their direct
+    // reports' pending requests; HR/SuperAdmin (unscopedVisibility) see every pending request
+    // company-wide, matching the same visibility rule DecideRegularizationAsync enforces.
+    public async Task<List<RegularizationRequestDto>> GetPendingRegularizationsAsync(Guid callerId, bool unscopedVisibility, CancellationToken ct)
+    {
+        var q = _db.RegularizationRequests
+            .Include(r => r.AttendanceRecord)
+            .Include(r => r.Employee)
+            .Where(r => r.Status == RegularizationStatus.Pending || r.Status == RegularizationStatus.ManagerApproved);
+
+        if (!unscopedVisibility)
+        {
+            q = q.Where(r => r.Employee.ManagerId == callerId);
+        }
+
+        return await q.OrderBy(r => r.CreatedAt)
+            .Select(r => new RegularizationRequestDto(
+                r.Id, r.AttendanceRecordId, r.EmployeeId, r.Employee.FirstName + " " + r.Employee.LastName, r.AttendanceRecord.Date,
+                r.Reason, r.RequestedCheckInAt, r.RequestedCheckOutAt, r.Status, r.CreatedAt))
+            .ToListAsync(ct);
     }
 
     public async Task<Result<bool>> DecideRegularizationAsync(Guid regularizationId, Guid approverId, RegularizationStatus decision, string? comment, CancellationToken ct)

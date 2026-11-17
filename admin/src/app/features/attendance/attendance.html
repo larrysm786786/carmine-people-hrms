@@ -1,5 +1,33 @@
 <h1>Attendance</h1>
 
+@if (pendingRegularizations().length > 0) {
+  <mat-card class="regularizations-card">
+    <h3>Pending Regularization Requests</h3>
+    @for (req of pendingRegularizations(); track req.id) {
+      <div class="regularization-row">
+        <div class="regularization-info">
+          <span class="name">{{ req.employeeName }}</span>
+          <span class="date">{{ req.attendanceDate }}</span>
+          <span class="reason">{{ req.reason }}</span>
+          @if (req.requestedCheckInAt || req.requestedCheckOutAt) {
+            <span class="requested">
+              Requested: {{ formatTime(req.requestedCheckInAt) }} → {{ formatTime(req.requestedCheckOutAt) }}
+            </span>
+          }
+        </div>
+        <div class="regularization-actions">
+          <button mat-icon-button color="primary" [disabled]="actingRegularizationId() === req.id" (click)="approveRegularization(req)">
+            <mat-icon>check_circle</mat-icon>
+          </button>
+          <button mat-icon-button color="warn" [disabled]="actingRegularizationId() === req.id" (click)="rejectRegularization(req)">
+            <mat-icon>cancel</mat-icon>
+          </button>
+        </div>
+      </div>
+    }
+  </mat-card>
+}
+
 <mat-card class="filters-card">
   <div class="filters">
     <mat-form-field appearance="outline">

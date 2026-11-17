@@ -11,19 +11,22 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatPaginatorModule, PageEvent } from '@angular/material/paginator';
 import { MatCardModule } from '@angular/material/card';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { AttendanceService, AttendanceRecord, ATTENDANCE_STATUS_LABELS } from '../../core/services/attendance.service';
+import { MatIconModule } from '@angular/material/icon';
+import { AttendanceService, AttendanceRecord, ATTENDANCE_STATUS_LABELS, RegularizationRequest } from '../../core/services/attendance.service';
 import { EmployeeService } from '../../core/services/employee.service';
 import { EmployeeListItem } from '../../core/models/employee.model';
+import { ToastService } from '../../core/services/toast.service';
 
 @Component({
   selector: 'app-attendance',
-  imports: [FormsModule, MatTableModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatPaginatorModule, MatCardModule, MatDatepickerModule],
+  imports: [FormsModule, MatTableModule, MatChipsModule, MatFormFieldModule, MatInputModule, MatSelectModule, MatButtonModule, MatIconModule, MatPaginatorModule, MatCardModule, MatDatepickerModule],
   templateUrl: './attendance.html',
   styleUrl: './attendance.scss',
 })
 export class Attendance {
   private readonly attendanceService = inject(AttendanceService);
   private readonly employeeService = inject(EmployeeService);
+  private readonly toast = inject(ToastService);
 
   readonly displayedColumns = ['employee', 'date', 'checkInAt', 'checkOutAt', 'breakMinutes', 'workingMinutes', 'status'];
   readonly items = signal<AttendanceRecord[]>([]);
@@ -32,6 +35,9 @@ export class Attendance {
   readonly errorMessage = signal<string | null>(null);
   readonly statusLabels = ATTENDANCE_STATUS_LABELS;
   readonly employees = signal<EmployeeListItem[]>([]);
+
+  readonly pendingRegularizations = signal<RegularizationRequest[]>([]);
+  readonly actingRegularizationId = signal<string | null>(null);
 
   fromDate: Date | null = null;
   toDate: Date | null = null;
@@ -43,6 +49,7 @@ export class Attendance {
   constructor() {
     this.loadEmployees();
     this.load();
+    this.loadPendingRegularizations();
   }
 
   async loadEmployees(): Promise<void> {
@@ -98,6 +105,40 @@ export class Attendance {
   formatTime(iso: string | null): string {
     if (!iso) return '—';
     return new Date(iso).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  async loadPendingRegularizations(): Promise<void> {
+    try {
+      this.pendingRegularizations.set(await this.attendanceService.getPendingRegularizations());
+    } catch {
+      // Non-critical banner on this page; failing to load it must never block the main table.
+    }
+  }
+
+  async approveRegularization(req: RegularizationRequest): Promise<void> {
+    this.actingRegularizationId.set(req.id);
+    try {
+      await this.attendanceService.approveRegularization(req.id);
+      await Promise.all([this.loadPendingRegularizations(), this.load()]);
+      this.toast.success('Regularization approved.');
+    } catch (err) {
+      this.toast.error(errorMessage(err) ?? 'Unable to approve regularization.');
+    } finally {
+      this.actingRegularizationId.set(null);
+    }
+  }
+
+  async rejectRegularization(req: RegularizationRequest): Promise<void> {
+    this.actingRegularizationId.set(req.id);
+    try {
+      await this.attendanceService.rejectRegularization(req.id);
+      await Promise.all([this.loadPendingRegularizations(), this.load()]);
+      this.toast.success('Regularization rejected.');
+    } catch (err) {
+      this.toast.error(errorMessage(err) ?? 'Unable to reject regularization.');
+    } finally {
+      this.actingRegularizationId.set(null);
+    }
   }
 
   statusChipClass(status: number): string {

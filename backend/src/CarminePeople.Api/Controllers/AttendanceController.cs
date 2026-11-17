@@ -126,6 +126,15 @@ public class AttendanceController : ControllerBase
         return Ok(new { success = true, data = new { regularizationId = result.Data } });
     }
 
+    [HttpGet("regularizations/pending")]
+    [Authorize(Policy = Permissions.AttendanceApprove)]
+    public async Task<IActionResult> GetPendingRegularizations(CancellationToken ct)
+    {
+        var isPrivileged = await _attendanceService.IsHrOrSuperAdminAsync(User.GetEmployeeId(), ct);
+        var requests = await _attendanceService.GetPendingRegularizationsAsync(User.GetEmployeeId(), isPrivileged, ct);
+        return Ok(new { success = true, data = requests });
+    }
+
     [HttpPut("regularization/{id:guid}/approve")]
     [Authorize(Policy = Permissions.AttendanceApprove)]
     public async Task<IActionResult> ApproveRegularization(Guid id, [FromBody] RegularizationDecisionRequest request, CancellationToken ct)

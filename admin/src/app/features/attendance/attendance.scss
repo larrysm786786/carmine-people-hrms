@@ -8,6 +8,51 @@ h1 {
   color: #cd0040;
 }
 
+.regularizations-card {
+  margin-bottom: 16px;
+  padding: 16px;
+
+  h3 {
+    margin-top: 0;
+  }
+}
+
+.regularization-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--app-divider);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.regularization-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+
+  .name {
+    font-weight: 700;
+  }
+
+  .date,
+  .reason,
+  .requested {
+    font-size: 12px;
+    opacity: 0.75;
+  }
+}
+
+.regularization-actions {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
 .filters {
   display: flex;
   flex-wrap: wrap;

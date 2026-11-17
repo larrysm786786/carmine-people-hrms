@@ -19,6 +19,10 @@ public record RegularizeRequest(string Reason, DateTime? RequestedCheckInAt, Dat
 
 public record RegularizationDecisionRequest(string? Comment);
 
+public record RegularizationRequestDto(
+    Guid Id, Guid AttendanceRecordId, Guid EmployeeId, string EmployeeName, DateOnly AttendanceDate,
+    string Reason, DateTime? RequestedCheckInAt, DateTime? RequestedCheckOutAt, RegularizationStatus Status, DateTime CreatedAt);
+
 public record TodayScheduleDto(string? ShiftName, TimeSpan? StartTime, TimeSpan? EndTime, int GracePeriodMinutes, BreakDto? ActiveBreak, int TotalBreakMinutesToday);
 
 public record MonthlySummaryDto(int Present, int Absent, int Leave, int Late, int WorkingHours);

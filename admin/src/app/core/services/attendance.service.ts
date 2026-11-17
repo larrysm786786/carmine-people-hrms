@@ -22,6 +22,19 @@ export const ATTENDANCE_STATUS_LABELS = [
   'Present', 'Absent', 'Late', 'Half Day', 'Leave', 'Holiday', 'Week Off', 'WFH', 'Pending Regularization',
 ];
 
+export interface RegularizationRequest {
+  id: string;
+  attendanceRecordId: string;
+  employeeId: string;
+  employeeName: string;
+  attendanceDate: string;
+  reason: string;
+  requestedCheckInAt: string | null;
+  requestedCheckOutAt: string | null;
+  status: number;
+  createdAt: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AttendanceService {
   private readonly http = inject(HttpClient);
@@ -40,5 +53,27 @@ export class AttendanceService {
       return { items: response.data, total: response.meta?.total ?? 0 };
     }
     throw new Error(response.error.message);
+  }
+
+  async getPendingRegularizations(): Promise<RegularizationRequest[]> {
+    const response = await firstValueFrom(
+      this.http.get<ApiEnvelope<RegularizationRequest[]>>(`${API_BASE_URL}/attendance/regularizations/pending`),
+    );
+    if (!response.success) throw new Error(response.error.message);
+    return response.data;
+  }
+
+  async approveRegularization(id: string, comment?: string): Promise<void> {
+    const response = await firstValueFrom(
+      this.http.put<ApiEnvelope<null>>(`${API_BASE_URL}/attendance/regularization/${id}/approve`, { comment }),
+    );
+    if (!response.success) throw new Error(response.error.message);
+  }
+
+  async rejectRegularization(id: string, comment?: string): Promise<void> {
+    const response = await firstValueFrom(
+      this.http.put<ApiEnvelope<null>>(`${API_BASE_URL}/attendance/regularization/${id}/reject`, { comment }),
+    );
+    if (!response.success) throw new Error(response.error.message);
   }
 }
