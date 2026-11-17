@@ -31,18 +31,25 @@ public class ShiftSwapController : ControllerBase
         return Ok(new { success = true, data = result.Data });
     }
 
+    // Always scoped to the caller via the JWT (either side of the swap) — the mobile app's
+    // own "My Shift Swaps" screen must call this, not GetList below, or a manager/HR viewer
+    // would see every employee's requests on what is meant to be their own personal history.
+    [HttpGet("mine")]
+    public async Task<IActionResult> GetMine([FromQuery] ShiftSwapStatus? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+    {
+        var result = await _shiftSwapService.GetListAsync(new ShiftSwapQuery(User.GetEmployeeId(), status, page, pageSize), ct);
+        return Ok(new { success = true, data = result.Items, meta = new { result.Page, result.PageSize, result.Total } });
+    }
+
+    // Company-wide (or a specific employee's, via employeeId) view for HR/managers — omitting
+    // employeeId returns every employee's requests, not just the caller's own.
     [HttpGet]
+    [Authorize(Policy = Permissions.ShiftSwapApprove)]
     public async Task<IActionResult> GetList(
         [FromQuery] Guid? employeeId, [FromQuery] ShiftSwapStatus? status,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
     {
-        var targetEmployeeId = employeeId ?? User.GetEmployeeId();
-        if (targetEmployeeId != User.GetEmployeeId() && !User.HasClaim("permission", Permissions.ShiftSwapApprove))
-        {
-            return Forbid();
-        }
-
-        var result = await _shiftSwapService.GetListAsync(new ShiftSwapQuery(targetEmployeeId, status, page, pageSize), ct);
+        var result = await _shiftSwapService.GetListAsync(new ShiftSwapQuery(employeeId, status, page, pageSize), ct);
         return Ok(new { success = true, data = result.Items, meta = new { result.Page, result.PageSize, result.Total } });
     }
 

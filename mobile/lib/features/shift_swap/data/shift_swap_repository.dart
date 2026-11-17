@@ -23,8 +23,11 @@ class ShiftSwapRepository {
     });
   }
 
+  // Always scoped to the caller by the backend — calling plain '/shift-swaps' with no filter
+  // would return every employee's requests instead, for anyone holding shift_swap.approve
+  // (every manager does, since they also use this same screen for their own requests).
   Future<PagedResult<ShiftSwapItem>> fetchMine({int page = 1, int pageSize = 20}) async {
-    final raw = await _client.getPage('/shift-swaps', queryParameters: {'page': page, 'pageSize': pageSize});
+    final raw = await _client.getPage('/shift-swaps/mine', queryParameters: {'page': page, 'pageSize': pageSize});
     return PagedResult.fromRawPage(raw, ShiftSwapItem.fromJson);
   }
 

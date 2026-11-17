@@ -26,6 +26,7 @@ export const routes: Routes = [
       { path: 'recruitment', loadComponent: () => import('./features/recruitment/recruitment').then((m) => m.Recruitment) },
       { path: 'payroll-compliance', loadComponent: () => import('./features/payroll-compliance/payroll-compliance').then((m) => m.PayrollCompliance) },
       { path: 'overtime', loadComponent: () => import('./features/overtime/overtime').then((m) => m.Overtime) },
+      { path: 'shift-swap', loadComponent: () => import('./features/shift-swap/shift-swap').then((m) => m.ShiftSwap) },
       { path: 'announcements', loadComponent: () => import('./features/announcements/announcements').then((m) => m.Announcements) },
       { path: 'reports', loadComponent: () => import('./features/reports/reports').then((m) => m.Reports) },
       { path: 'audit', loadComponent: () => import('./features/audit/audit').then((m) => m.Audit) },

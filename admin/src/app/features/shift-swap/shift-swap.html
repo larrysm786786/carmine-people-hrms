@@ -1,0 +1,69 @@
+<h1>Shift Swap</h1>
+
+<div class="add-row wrap">
+  <mat-form-field appearance="outline">
+    <mat-label>Employee</mat-label>
+    <mat-select [(ngModel)]="employeeId" (selectionChange)="onFilterChange()">
+      <mat-option value="">All employees</mat-option>
+      @for (e of employees(); track e.id) {
+        <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }} ({{ e.employeeCode }})</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+}
+
+<div class="table-scroll">
+<table mat-table [dataSource]="items()" class="mat-elevation-z0">
+  <ng-container matColumnDef="requester">
+    <th mat-header-cell *matHeaderCellDef>Requester</th>
+    <td mat-cell *matCellDef="let s">{{ s.requesterName }} <span class="muted">({{ s.requesterDate }})</span></td>
+  </ng-container>
+
+  <ng-container matColumnDef="counterpart">
+    <th mat-header-cell *matHeaderCellDef>Counterpart</th>
+    <td mat-cell *matCellDef="let s">{{ s.counterpartName }} <span class="muted">({{ s.counterpartDate }})</span></td>
+  </ng-container>
+
+  <ng-container matColumnDef="dates">
+    <th mat-header-cell *matHeaderCellDef>Swap</th>
+    <td mat-cell *matCellDef="let s">{{ s.requesterDate }} → {{ s.counterpartDate }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="reason">
+    <th mat-header-cell *matHeaderCellDef>Reason</th>
+    <td mat-cell *matCellDef="let s">{{ s.reason || '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let s">
+      <mat-chip [class]="statusChipClass(s.status)">{{ statusLabels[s.status] }}</mat-chip>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let s">
+      @if (s.status === 1) {
+        <button mat-icon-button color="primary" [disabled]="actingId() === s.id" (click)="approve(s.id)">
+          <mat-icon>check_circle</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" [disabled]="actingId() === s.id" (click)="reject(s.id)">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      }
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+</div>
+
+@if (!isLoading() && items().length === 0) {
+  <p class="empty">No shift swap requests found.</p>
+}

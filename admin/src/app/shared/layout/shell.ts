@@ -43,6 +43,7 @@ export class Shell {
     { label: 'Employees', icon: 'group', route: '/employees' },
     { label: 'Attendance', icon: 'event_available', route: '/attendance' },
     { label: 'Overtime', icon: 'schedule', route: '/overtime' },
+    { label: 'Shift Swap', icon: 'swap_horiz', route: '/shift-swap' },
     { label: 'Leave', icon: 'beach_access', route: '/leave' },
     { label: 'Organization', icon: 'apartment', route: '/organization' },
     { label: 'Holidays', icon: 'celebration', route: '/holidays' },

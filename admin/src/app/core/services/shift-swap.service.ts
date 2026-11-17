@@ -1,0 +1,49 @@
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Injectable, inject } from '@angular/core';
+import { firstValueFrom } from 'rxjs';
+import { ApiEnvelope } from '../models/api-envelope.model';
+import { API_BASE_URL } from './api-config';
+
+export const SHIFT_SWAP_STATUS_LABELS = ['Awaiting Acceptance', 'Pending', 'Approved', 'Rejected', 'Cancelled'];
+
+export interface ShiftSwapRequest {
+  id: string;
+  requesterId: string;
+  requesterName: string;
+  counterpartId: string;
+  counterpartName: string;
+  requesterDate: string;
+  counterpartDate: string;
+  reason: string | null;
+  status: number;
+  decisionComment: string | null;
+}
+
+@Injectable({ providedIn: 'root' })
+export class ShiftSwapService {
+  private readonly http = inject(HttpClient);
+
+  async getList(params: { employeeId?: string; status?: number; page?: number; pageSize?: number } = {}) {
+    let httpParams = new HttpParams();
+    Object.entries(params).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && (value as unknown) !== '') {
+        httpParams = httpParams.set(key, String(value));
+      }
+    });
+    const response = await firstValueFrom(
+      this.http.get<ApiEnvelope<ShiftSwapRequest[]>>(`${API_BASE_URL}/shift-swaps`, { params: httpParams }),
+    );
+    if (!response.success) throw new Error(response.error.message);
+    return { items: response.data, total: response.meta?.total ?? 0 };
+  }
+
+  async approve(id: string, comment?: string): Promise<void> {
+    const response = await firstValueFrom(this.http.put<ApiEnvelope<null>>(`${API_BASE_URL}/shift-swaps/${id}/approve`, { comment }));
+    if (!response.success) throw new Error(response.error.message);
+  }
+
+  async reject(id: string, comment?: string): Promise<void> {
+    const response = await firstValueFrom(this.http.put<ApiEnvelope<null>>(`${API_BASE_URL}/shift-swaps/${id}/reject`, { comment }));
+    if (!response.success) throw new Error(response.error.message);
+  }
+}
