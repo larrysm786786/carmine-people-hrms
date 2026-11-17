@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/widgets/async_value_view.dart';
-import '../../employees/application/employees_list_notifier.dart';
-import '../../profile/data/employee_detail.dart';
+import '../../employees/application/employee_directory_notifier.dart';
+import '../../employees/data/employee_directory_item.dart';
 import '../application/shift_swap_notifiers.dart';
 
 class RequestShiftSwapScreen extends ConsumerStatefulWidget {
@@ -15,7 +15,7 @@ class RequestShiftSwapScreen extends ConsumerStatefulWidget {
 }
 
 class _RequestShiftSwapScreenState extends ConsumerState<RequestShiftSwapScreen> {
-  EmployeeDetail? _counterpart;
+  EmployeeDirectoryItem? _counterpart;
   DateTime? _requesterDate;
   DateTime? _counterpartDate;
   final _reasonController = TextEditingController();
@@ -53,7 +53,7 @@ class _RequestShiftSwapScreenState extends ConsumerState<RequestShiftSwapScreen>
 
   @override
   Widget build(BuildContext context) {
-    final employees = ref.watch(employeesListNotifierProvider);
+    final employees = ref.watch(employeeDirectoryNotifierProvider);
     final state = ref.watch(shiftSwapRequestNotifierProvider);
 
     return Scaffold(
@@ -67,11 +67,11 @@ class _RequestShiftSwapScreenState extends ConsumerState<RequestShiftSwapScreen>
             const SizedBox(height: 8),
             AsyncValueView(
               value: employees,
-              data: (paged) => DropdownButtonFormField<EmployeeDetail>(
+              data: (list) => DropdownButtonFormField<EmployeeDirectoryItem>(
                 initialValue: _counterpart,
                 hint: const Text('Select employee'),
                 items: [
-                  for (final e in paged.items)
+                  for (final e in list)
                     DropdownMenuItem(value: e, child: Text(e.fullName)),
                 ],
                 onChanged: (value) => setState(() => _counterpart = value),

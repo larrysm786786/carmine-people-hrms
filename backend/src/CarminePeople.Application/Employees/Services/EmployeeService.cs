@@ -289,6 +289,15 @@ public class EmployeeService
         return roots.Select(Build).ToList();
     }
 
+    // Flat, name-only list of every other active employee — backs the shift-swap counterpart
+    // picker, which any employee must be able to use regardless of employee.view.
+    public async Task<List<EmployeeDirectoryItemDto>> GetDirectoryAsync(Guid callerId, CancellationToken ct) =>
+        await _db.Employees.AsNoTracking()
+            .Where(e => e.EmploymentStatus == Domain.Enums.EmploymentStatus.Active && e.Id != callerId)
+            .OrderBy(e => e.FirstName).ThenBy(e => e.LastName)
+            .Select(e => new EmployeeDirectoryItemDto(e.Id, e.FirstName, e.LastName))
+            .ToListAsync(ct);
+
     // "Upcoming" is a rolling window from today, wrapping year-end (e.g. checking the next
     // 30 days in late December must include early-January dates) — computed in memory since
     // comparing month/day across arbitrary birth years isn't expressible as a simple SQL range.

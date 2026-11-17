@@ -38,6 +38,13 @@ public class EmployeesController : ControllerBase
         return Ok(new { success = true, data = chart });
     }
 
+    [HttpGet("directory")]
+    public async Task<IActionResult> GetDirectory(CancellationToken ct)
+    {
+        var directory = await _employeeService.GetDirectoryAsync(User.GetEmployeeId(), ct);
+        return Ok(new { success = true, data = directory });
+    }
+
     [HttpGet("celebrations")]
     public async Task<IActionResult> GetCelebrations([FromQuery] int withinDays = 30, CancellationToken ct = default)
     {

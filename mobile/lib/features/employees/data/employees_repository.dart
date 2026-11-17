@@ -4,6 +4,7 @@ import '../../../core/network/api_client.dart';
 import '../../../core/utils/paged_result.dart';
 import '../../profile/data/employee_detail.dart';
 import 'celebration.dart';
+import 'employee_directory_item.dart';
 import 'org_chart_node.dart';
 
 class EmployeesRepository {
@@ -26,6 +27,13 @@ class EmployeesRepository {
       'withinDays': withinDays,
     });
     return items.map((e) => Celebration.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  // Name-only list of every other active employee, not gated behind employee.view — backs
+  // pickers (like the shift-swap counterpart) that any employee must be able to use.
+  Future<List<EmployeeDirectoryItem>> fetchDirectory() async {
+    final items = await _client.getList('/employees/directory');
+    return items.map((e) => EmployeeDirectoryItem.fromJson(e as Map<String, dynamic>)).toList();
   }
 }
 

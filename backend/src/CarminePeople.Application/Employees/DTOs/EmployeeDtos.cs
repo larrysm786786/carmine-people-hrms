@@ -48,3 +48,7 @@ public record OrgChartNodeDto(
 // Both DateOfBirth and DateOfJoining anniversaries share one shape — Kind distinguishes them
 // so the client can label "Birthday" vs "Work Anniversary" without a second endpoint.
 public record UpcomingCelebrationDto(Guid EmployeeId, string EmployeeName, string? ProfileImageUrl, DateTime Date, string Kind, int YearsCount);
+
+// Name-only, deliberately not gated behind employee.view (same reasoning as the org chart):
+// picking a colleague for shift swap needs nobody's details, just who exists to pick from.
+public record EmployeeDirectoryItemDto(Guid Id, string FirstName, string LastName);
