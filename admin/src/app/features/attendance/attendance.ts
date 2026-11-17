@@ -38,6 +38,7 @@ export class Attendance {
 
   readonly pendingRegularizations = signal<RegularizationRequest[]>([]);
   readonly actingRegularizationId = signal<string | null>(null);
+  readonly highlightedRegularizationId = signal<string | null>(null);
 
   fromDate: Date | null = null;
   toDate: Date | null = null;
@@ -141,15 +142,29 @@ export class Attendance {
     }
   }
 
+  // Clicking the red "Pending Regularization" chip jumps to that request's row in the
+  // approvals card above, instead of making the admin hunt for it in a separate list.
+  onStatusClick(record: AttendanceRecord): void {
+    if (record.status !== 8) return;
+    const match = this.pendingRegularizations().find((r) => r.attendanceRecordId === record.id);
+    if (!match) return;
+
+    this.highlightedRegularizationId.set(match.id);
+    document.getElementById('regularization-' + match.id)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    setTimeout(() => {
+      if (this.highlightedRegularizationId() === match.id) this.highlightedRegularizationId.set(null);
+    }, 2000);
+  }
+
   statusChipClass(status: number): string {
     switch (status) {
       case 0: // Present
       case 7: // WFH
         return 'status-chip--success';
       case 1: // Absent
+      case 8: // PendingRegularization — needs attention, same as Absent
         return 'status-chip--danger';
       case 2: // Late
-      case 8: // PendingRegularization
         return 'status-chip--warning';
       default:
         return '';

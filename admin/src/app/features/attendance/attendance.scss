@@ -24,9 +24,15 @@ h1 {
   gap: 16px;
   padding: 10px 0;
   border-bottom: 1px solid var(--app-divider);
+  border-radius: 6px;
+  transition: background-color 0.3s ease;
 
   &:last-child {
     border-bottom: none;
+  }
+
+  &.highlighted {
+    background-color: color-mix(in srgb, var(--app-danger) 12%, transparent);
   }
 }
 
@@ -75,6 +81,10 @@ h1 {
 table {
   width: 100%;
   min-width: 600px;
+}
+
+mat-chip.clickable {
+  cursor: pointer;
 }
 
 .empty {
