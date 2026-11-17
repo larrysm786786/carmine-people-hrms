@@ -25,7 +25,9 @@ class UpdateCheckService {
   Future<AppUpdateInfo> checkForUpdate() async {
     final packageInfo = await PackageInfo.fromPlatform();
     final currentBuild = int.tryParse(packageInfo.buildNumber) ?? 0;
-    final currentVersion = '${packageInfo.version}+${packageInfo.buildNumber}';
+    // Displayed as "1.0.0.11" rather than Flutter's internal "1.0.0+11" — purely
+    // cosmetic, the pubspec/tag format with "+" is unaffected and still parsed below.
+    final currentVersion = '${packageInfo.version}.${packageInfo.buildNumber}';
 
     final response = await _dio.get<Map<String, dynamic>>(
       'https://api.github.com/repos/$_repo/releases/latest',
@@ -50,7 +52,7 @@ class UpdateCheckService {
     return AppUpdateInfo(
       updateAvailable: latestBuild > currentBuild && downloadUrl != null,
       currentVersion: currentVersion,
-      latestVersion: tagName.isEmpty ? null : tagName.replaceFirst('app-v', ''),
+      latestVersion: tagName.isEmpty ? null : tagName.replaceFirst('app-v', '').replaceFirst('+', '.'),
       downloadUrl: downloadUrl,
     );
   }
