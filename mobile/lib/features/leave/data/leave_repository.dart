@@ -19,8 +19,11 @@ class LeaveRepository {
     return items.map((e) => LeaveBalance.fromJson(e as Map<String, dynamic>)).toList();
   }
 
+  // Always scoped to the caller by the backend — calling plain '/leaves' with no filter would
+  // return every employee's leave applications instead, since leave.view (needed to see your
+  // own history) is granted company-wide, not just for your own records.
   Future<PagedResult<LeaveApplication>> fetchHistory({int page = 1, int pageSize = 20}) async {
-    final raw = await _client.getPage('/leaves', queryParameters: {'page': page, 'pageSize': pageSize});
+    final raw = await _client.getPage('/leaves/mine', queryParameters: {'page': page, 'pageSize': pageSize});
     return PagedResult.fromRawPage(raw, LeaveApplication.fromJson);
   }
 

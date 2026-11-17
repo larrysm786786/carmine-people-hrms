@@ -74,6 +74,17 @@ public class LeavesController : ControllerBase
         return Ok(new { success = true, data = result.Data });
     }
 
+    // Always scoped to the caller, regardless of permissions — unlike GetList below, which
+    // returns company-wide data to anyone holding leave.view (every Employee has it, precisely
+    // so they can see their own history). A plain employee's personal "my leave" screen must
+    // call this, not GetList, or it ends up seeing every other employee's leave applications too.
+    [HttpGet("mine")]
+    public async Task<IActionResult> GetMine([FromQuery] LeaveApplicationStatus? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+    {
+        var result = await _leaveService.GetListAsync(new LeaveApplicationQuery(User.GetEmployeeId(), status, null, page, pageSize), ct);
+        return Ok(new { success = true, data = result.Items, meta = new { result.Page, result.PageSize, result.Total } });
+    }
+
     [HttpGet]
     [Authorize(Policy = Permissions.LeaveView)]
     public async Task<IActionResult> GetList(
