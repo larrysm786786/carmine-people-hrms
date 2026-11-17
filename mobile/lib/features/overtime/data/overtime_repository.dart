@@ -17,8 +17,11 @@ class OvertimeRepository {
     });
   }
 
+  // Always scoped to the caller by the backend — calling plain '/overtime' with no filter
+  // would return every employee's requests instead, for anyone holding overtime.approve
+  // (every manager does, since they also use this same screen for their own requests).
   Future<PagedResult<OvertimeRequestItem>> fetchMine({int page = 1, int pageSize = 20}) async {
-    final raw = await _client.getPage('/overtime', queryParameters: {'page': page, 'pageSize': pageSize});
+    final raw = await _client.getPage('/overtime/mine', queryParameters: {'page': page, 'pageSize': pageSize});
     return PagedResult.fromRawPage(raw, OvertimeRequestItem.fromJson);
   }
 

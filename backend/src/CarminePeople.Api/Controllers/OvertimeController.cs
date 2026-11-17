@@ -31,20 +31,25 @@ public class OvertimeController : ControllerBase
         return Ok(new { success = true, data = result.Data });
     }
 
+    // Always scoped to the caller via the JWT — the mobile app's own "My Overtime" screen
+    // must call this, not GetList below, or a manager/HR viewer would see every employee's
+    // requests on what is meant to be their own personal history.
+    [HttpGet("mine")]
+    public async Task<IActionResult> GetMine([FromQuery] OvertimeRequestStatus? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
+    {
+        var result = await _overtimeService.GetListAsync(new OvertimeQuery(User.GetEmployeeId(), status, page, pageSize), ct);
+        return Ok(new { success = true, data = result.Items, meta = new { result.Page, result.PageSize, result.Total } });
+    }
+
+    // Company-wide (or a specific employee's, via employeeId) view for HR/managers — omitting
+    // employeeId returns every employee's requests, not just the caller's own.
     [HttpGet]
+    [Authorize(Policy = Permissions.OvertimeApprove)]
     public async Task<IActionResult> GetList(
         [FromQuery] Guid? employeeId, [FromQuery] OvertimeRequestStatus? status,
         [FromQuery] int page = 1, [FromQuery] int pageSize = 20, CancellationToken ct = default)
     {
-        // Self-service: an employee with only overtime.apply may list their own requests;
-        // seeing anyone else's list requires overtime.approve (manager/HR/SuperAdmin).
-        var targetEmployeeId = employeeId ?? User.GetEmployeeId();
-        if (targetEmployeeId != User.GetEmployeeId() && !User.HasClaim("permission", Permissions.OvertimeApprove))
-        {
-            return Forbid();
-        }
-
-        var result = await _overtimeService.GetListAsync(new OvertimeQuery(targetEmployeeId, status, page, pageSize), ct);
+        var result = await _overtimeService.GetListAsync(new OvertimeQuery(employeeId, status, page, pageSize), ct);
         return Ok(new { success = true, data = result.Items, meta = new { result.Page, result.PageSize, result.Total } });
     }
 
