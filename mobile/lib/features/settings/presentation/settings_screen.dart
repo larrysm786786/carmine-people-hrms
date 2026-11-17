@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:open_filex/open_filex.dart';
 
 import '../../../core/auth_session/biometric_service.dart';
 import '../../../core/network/api_client.dart';
@@ -28,6 +28,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _checkingUpdate = false;
   AppUpdateInfo? _updateInfo;
   String? _updateCheckError;
+  bool _downloading = false;
+  double _downloadProgress = 0;
+  String? _downloadError;
 
   @override
   void initState() {
@@ -76,8 +79,26 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 
   Future<void> _downloadUpdate(String url) async {
-    final uri = Uri.parse(url);
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    setState(() {
+      _downloading = true;
+      _downloadProgress = 0;
+      _downloadError = null;
+    });
+    try {
+      final filePath = await ref.read(updateCheckServiceProvider).downloadApk(
+            url,
+            onProgress: (progress) {
+              if (mounted) setState(() => _downloadProgress = progress);
+            },
+          );
+      // Hands off to the system package installer — the app can't install itself,
+      // this just opens the APK with a matching handler, which on Android is that.
+      await OpenFilex.open(filePath);
+    } catch (e) {
+      if (mounted) setState(() => _downloadError = 'Download failed. Please try again.');
+    } finally {
+      if (mounted) setState(() => _downloading = false);
+    }
   }
 
   @override
@@ -204,7 +225,15 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               Text(_updateCheckError!, style: TextStyle(color: AppColors.carmine)),
               const SizedBox(height: 12),
             ],
-            if (_updateInfo?.updateAvailable == true)
+            if (_downloadError != null) ...[
+              Text(_downloadError!, style: TextStyle(color: AppColors.carmine)),
+              const SizedBox(height: 12),
+            ],
+            if (_downloading) ...[
+              LinearProgressIndicator(value: _downloadProgress > 0 ? _downloadProgress : null, color: AppColors.carmine),
+              const SizedBox(height: 8),
+              Text('Downloading update... ${(_downloadProgress * 100).toStringAsFixed(0)}%', style: TextStyle(color: AppColors.muted)),
+            ] else if (_updateInfo?.updateAvailable == true)
               FilledButton.icon(
                 onPressed: () => _downloadUpdate(_updateInfo!.downloadUrl!),
                 icon: const Icon(Icons.download),

@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:path_provider/path_provider.dart';
 
 /// Result of comparing the running app's build number against the latest GitHub Release.
 class AppUpdateInfo {
@@ -52,6 +53,22 @@ class UpdateCheckService {
       latestVersion: tagName.isEmpty ? null : tagName.replaceFirst('app-v', ''),
       downloadUrl: downloadUrl,
     );
+  }
+
+  // Downloads the release APK into the app's own storage rather than handing the URL to an
+  // external browser, so the update installs without ever leaving the app.
+  Future<String> downloadApk(String url, {void Function(double progress)? onProgress}) async {
+    final dir = await getTemporaryDirectory();
+    final filePath = '${dir.path}/carmine-people-update.apk';
+
+    await _dio.download(
+      url,
+      filePath,
+      onReceiveProgress: (received, total) {
+        if (total > 0) onProgress?.call(received / total);
+      },
+    );
+    return filePath;
   }
 }
 
