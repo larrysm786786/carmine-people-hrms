@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -136,49 +137,55 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const Divider(height: 32),
             ],
-            Text('API Base URL', style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _controller,
-              decoration: const InputDecoration(
-                hintText: 'http://192.168.1.10:5083/api/v1',
-              ),
-            ),
-            if (_testResult != null) ...[
+            // Developer-only connectivity override — regular employees never need to point
+            // the app at a different backend, and typing a bad URL here would break their
+            // app's connectivity with no way for them to diagnose it. kDebugMode is false
+            // in the release APK built by CI, so this never reaches a real employee's build.
+            if (kDebugMode) ...[
+              Text('API Base URL', style: Theme.of(context).textTheme.titleMedium),
               const SizedBox(height: 8),
-              Text(
-                _testResult!,
-                style: TextStyle(
-                  color: _testFailed ? AppColors.carmine : AppColors.muted,
-                  fontWeight: _testFailed ? FontWeight.normal : FontWeight.bold,
+              TextField(
+                controller: _controller,
+                decoration: const InputDecoration(
+                  hintText: 'http://192.168.1.10:5083/api/v1',
                 ),
               ),
-            ],
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: _testing ? null : _testConnection,
-                    child: _testing
-                        ? const SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          )
-                        : const Text('Test Connection'),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: FilledButton(
-                    onPressed: _saveAndRestart,
-                    child: const Text('Save'),
+              if (_testResult != null) ...[
+                const SizedBox(height: 8),
+                Text(
+                  _testResult!,
+                  style: TextStyle(
+                    color: _testFailed ? AppColors.carmine : AppColors.muted,
+                    fontWeight: _testFailed ? FontWeight.normal : FontWeight.bold,
                   ),
                 ),
               ],
-            ),
-            const Divider(height: 32),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: _testing ? null : _testConnection,
+                      child: _testing
+                          ? const SizedBox(
+                              height: 16,
+                              width: 16,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Text('Test Connection'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: _saveAndRestart,
+                      child: const Text('Save'),
+                    ),
+                  ),
+                ],
+              ),
+              const Divider(height: 32),
+            ],
             Text('App Update', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 8),
             if (_updateInfo != null) ...[
