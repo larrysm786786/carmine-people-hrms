@@ -1,0 +1,69 @@
+<h1>Overtime</h1>
+
+<div class="add-row wrap">
+  <mat-form-field appearance="outline">
+    <mat-label>Employee</mat-label>
+    <mat-select [(ngModel)]="employeeId" (selectionChange)="onFilterChange()">
+      <mat-option value="">All employees</mat-option>
+      @for (e of employees(); track e.id) {
+        <mat-option [value]="e.id">{{ e.firstName }} {{ e.lastName }} ({{ e.employeeCode }})</mat-option>
+      }
+    </mat-select>
+  </mat-form-field>
+</div>
+
+@if (errorMessage()) {
+  <p class="error">{{ errorMessage() }}</p>
+}
+
+<div class="table-scroll">
+<table mat-table [dataSource]="items()" class="mat-elevation-z0">
+  <ng-container matColumnDef="employee">
+    <th mat-header-cell *matHeaderCellDef>Employee</th>
+    <td mat-cell *matCellDef="let o">{{ o.employeeName }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="date">
+    <th mat-header-cell *matHeaderCellDef>Date</th>
+    <td mat-cell *matCellDef="let o">{{ o.date }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="hours">
+    <th mat-header-cell *matHeaderCellDef>Hours</th>
+    <td mat-cell *matCellDef="let o">{{ o.hours }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="reason">
+    <th mat-header-cell *matHeaderCellDef>Reason</th>
+    <td mat-cell *matCellDef="let o">{{ o.reason || '—' }}</td>
+  </ng-container>
+
+  <ng-container matColumnDef="status">
+    <th mat-header-cell *matHeaderCellDef>Status</th>
+    <td mat-cell *matCellDef="let o">
+      <mat-chip [class]="statusChipClass(o.status)">{{ statusLabels[o.status] }}</mat-chip>
+    </td>
+  </ng-container>
+
+  <ng-container matColumnDef="actions">
+    <th mat-header-cell *matHeaderCellDef></th>
+    <td mat-cell *matCellDef="let o">
+      @if (o.status === 0) {
+        <button mat-icon-button color="primary" [disabled]="actingId() === o.id" (click)="approve(o.id)">
+          <mat-icon>check_circle</mat-icon>
+        </button>
+        <button mat-icon-button color="warn" [disabled]="actingId() === o.id" (click)="reject(o.id)">
+          <mat-icon>cancel</mat-icon>
+        </button>
+      }
+    </td>
+  </ng-container>
+
+  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+  <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+</table>
+</div>
+
+@if (!isLoading() && items().length === 0) {
+  <p class="empty">No overtime requests found.</p>
+}

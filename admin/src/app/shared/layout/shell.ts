@@ -42,6 +42,7 @@ export class Shell {
     { label: 'Dashboard', icon: 'dashboard', route: '/' },
     { label: 'Employees', icon: 'group', route: '/employees' },
     { label: 'Attendance', icon: 'event_available', route: '/attendance' },
+    { label: 'Overtime', icon: 'schedule', route: '/overtime' },
     { label: 'Leave', icon: 'beach_access', route: '/leave' },
     { label: 'Organization', icon: 'apartment', route: '/organization' },
     { label: 'Holidays', icon: 'celebration', route: '/holidays' },
