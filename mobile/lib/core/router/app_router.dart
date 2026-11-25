@@ -34,6 +34,7 @@ import '../../features/onboarding/presentation/onboarding_screen.dart';
 import '../../features/profile/presentation/profile_screen.dart';
 import '../../features/settings/presentation/settings_screen.dart';
 import '../../features/splash/presentation/splash_screen.dart';
+import '../attendance_support/background_checkin_service.dart';
 import '../attendance_support/geofence_radius_monitor.dart';
 import '../attendance_support/wifi_office_connection_monitor.dart';
 import '../auth_session/auth_notifier.dart';
@@ -48,6 +49,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ref.read(fcmServiceProvider).initOnce();
       ref.read(wifiOfficeConnectionMonitorProvider).start();
       ref.read(geofenceRadiusMonitorProvider).start();
+      // Registering is safe to repeat (ExistingPeriodicWorkPolicy.keep) — this just makes
+      // sure the periodic check survives even if the employee never opens the app again
+      // right after login until background location permission is granted in Settings.
+      ref.read(backgroundCheckinServiceProvider).initialize();
     }
   });
 

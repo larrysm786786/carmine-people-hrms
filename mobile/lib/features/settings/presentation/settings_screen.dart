@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:open_filex/open_filex.dart';
 
+import '../../../core/attendance_support/background_checkin_service.dart';
 import '../../../core/auth_session/biometric_service.dart';
 import '../../../core/network/api_client.dart';
 import '../../../core/network/api_config.dart';
@@ -31,12 +33,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _downloading = false;
   double _downloadProgress = 0;
   String? _downloadError;
+  bool _officeNotificationsEnabled = false;
 
   @override
   void initState() {
     super.initState();
     _loadCurrent();
     _loadBiometricState();
+    _loadOfficeNotificationState();
   }
 
   Future<void> _loadCurrent() async {
@@ -61,6 +65,53 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     }
     await ref.read(tokenStorageProvider).setBiometricEnabled(value);
     if (mounted) setState(() => _biometricEnabled = value);
+  }
+
+  Future<void> _loadOfficeNotificationState() async {
+    final permission = await ref.read(backgroundCheckinServiceProvider).currentPermission();
+    if (!mounted) return;
+    setState(() => _officeNotificationsEnabled = permission == LocationPermission.always);
+  }
+
+  Future<void> _toggleOfficeNotifications(bool value) async {
+    if (!value) {
+      // Android has no API to downgrade "Allow all the time" back to "while
+      // using the app" — only the system Settings screen can do that.
+      await Geolocator.openAppSettings();
+      await _loadOfficeNotificationState();
+      return;
+    }
+
+    final proceed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Office arrival notifications'),
+        content: const Text(
+          'To notify you when you arrive at the office even while the app is fully closed, '
+          "Android needs location permission set to \"Allow all the time\" rather than just "
+          '"While using the app". The next screen will ask for that.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(false), child: const Text('Not now')),
+          FilledButton(onPressed: () => Navigator.of(context).pop(true), child: const Text('Continue')),
+        ],
+      ),
+    );
+    if (proceed != true) return;
+
+    final granted = await ref.read(backgroundCheckinServiceProvider).requestBackgroundPermission();
+    if (!mounted) return;
+    if (!granted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Grant location access while using the app first, then try again, or enable '
+            '"Allow all the time" from the app\'s Settings page.',
+          ),
+        ),
+      );
+    }
+    setState(() => _officeNotificationsEnabled = granted);
   }
 
   Future<void> _checkForUpdate() async {
@@ -158,6 +209,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               ),
               const Divider(height: 32),
             ],
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              activeTrackColor: AppColors.carmine,
+              title: const Text('Office Arrival Notifications'),
+              subtitle: const Text(
+                "Get notified when you arrive at the office, even if the app is fully closed",
+              ),
+              value: _officeNotificationsEnabled,
+              onChanged: _toggleOfficeNotifications,
+            ),
+            const Divider(height: 32),
             // Developer-only connectivity override — regular employees never need to point
             // the app at a different backend, and typing a bad URL here would break their
             // app's connectivity with no way for them to diagnose it. kDebugMode is false
