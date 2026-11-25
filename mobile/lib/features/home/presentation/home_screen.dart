@@ -234,14 +234,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 style: TextStyle(color: fgColor, fontSize: 13),
                               ),
                             ],
-                            if (today.valueOrNull?.checkInAt != null) ...[
+                            if (today.valueOrNull?.record?.checkInAt != null) ...[
                               const SizedBox(height: 16),
                               SizedBox(
                                 width: double.infinity,
                                 child: Center(
                                   child: _LiveWorkTimer(
-                                    checkInAt: today.valueOrNull?.checkInAt,
-                                    checkOutAt: today.valueOrNull?.checkOutAt,
+                                    checkInAt: today.valueOrNull?.record?.checkInAt,
+                                    checkOutAt: today.valueOrNull?.record?.checkOutAt,
                                     color: fgColor,
                                   ),
                                 ),
