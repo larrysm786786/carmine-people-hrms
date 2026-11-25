@@ -57,6 +57,22 @@ class AttendanceRepository {
     return PagedResult.fromRawPage(raw, AttendanceRecord.fromJson);
   }
 
+  // Backs the monthly calendar view — a month never has more than 31 records
+  // for a single employee, so one page covers it without pagination.
+  Future<List<AttendanceRecord>> fetchForMonth(DateTime month) async {
+    final from = DateTime(month.year, month.month, 1);
+    final to = DateTime(month.year, month.month + 1, 0);
+    final raw = await _client.getPage('/attendance', queryParameters: {
+      'from': _isoDate(from),
+      'to': _isoDate(to),
+      'pageSize': 31,
+    });
+    return raw.items.map((e) => AttendanceRecord.fromJson(e as Map<String, dynamic>)).toList();
+  }
+
+  String _isoDate(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
+
   Future<Map<String, dynamic>> fetchOfficeWifi() async {
     final data = await _client.get('/attendance/office-wifi');
     return data ?? const {};

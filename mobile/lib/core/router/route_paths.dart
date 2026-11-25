@@ -21,6 +21,7 @@ class RoutePaths {
   static const leaveApprovals = '/leave/approvals';
   static const leaveCalendar = '/leave/calendar';
   static const attendanceAnalytics = '/attendance/analytics';
+  static const attendanceCalendar = '/attendance/calendar';
   static const overtime = '/overtime';
   static const overtimeApprovals = '/overtime/approvals';
   static const shiftSwap = '/shift-swap';

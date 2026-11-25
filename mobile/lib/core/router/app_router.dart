@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../features/ai_assistant/presentation/ai_chat_screen.dart';
 import '../../features/announcements/presentation/announcements_screen.dart';
 import '../../features/attendance/presentation/attendance_analytics_screen.dart';
+import '../../features/attendance/presentation/attendance_calendar_screen.dart';
 import '../../features/attendance/presentation/attendance_screen.dart';
 import '../../features/auth/biometric_lock_screen.dart';
 import '../../features/auth/forgot_password_screen.dart';
@@ -127,6 +128,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: RoutePaths.attendanceAnalytics,
         builder: (context, state) => const AttendanceAnalyticsScreen(),
+      ),
+      GoRoute(
+        path: RoutePaths.attendanceCalendar,
+        builder: (context, state) => const AttendanceCalendarScreen(),
       ),
       GoRoute(path: RoutePaths.overtime, builder: (context, state) => const OvertimeScreen()),
       GoRoute(

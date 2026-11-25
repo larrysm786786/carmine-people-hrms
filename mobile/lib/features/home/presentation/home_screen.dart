@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:io';
 import 'dart:ui' as ui;
 
@@ -559,9 +558,9 @@ class _HomeHeader extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               // Replaces the Home card's old "View attendance history" text link —
-              // same destination, now reachable from the header on every screen state.
+              // opens the monthly calendar view, reachable from the header on every screen state.
               IconButton(
-                onPressed: () => context.push(RoutePaths.attendance),
+                onPressed: () => context.push(RoutePaths.attendanceCalendar),
                 icon: const Icon(Icons.calendar_today_outlined, color: AppColors.white),
                 visualDensity: VisualDensity.compact,
               ),
@@ -580,10 +579,16 @@ class _HomeHeader extends StatelessWidget {
   }
 }
 
-// Ticks once a second while checked in (start = check-in time, now), then freezes at the
-// final duration once checked out (start = check-in time, end = check-out time). Replaces
-// the old "View attendance history" link with a live view of today's elapsed work time.
-class _LiveWorkTimer extends StatefulWidget {
+// Ticks once a second while checked in via a Riverpod stream provider (rather than a
+// hand-rolled Timer+setState) so the rebuild is driven by Riverpod's own listener
+// mechanism — recomputed fresh from (checkInAt, now) on every tick, so it's immune to
+// clock drift. Freezes at the final duration once checked out. Replaces the old
+// "View attendance history" link with a live view of today's elapsed work time.
+final _secondTickerProvider = StreamProvider.autoDispose<void>((ref) {
+  return Stream<void>.periodic(const Duration(seconds: 1));
+});
+
+class _LiveWorkTimer extends ConsumerWidget {
   const _LiveWorkTimer({required this.checkInAt, required this.checkOutAt, required this.color});
 
   final String? checkInAt;
@@ -591,73 +596,31 @@ class _LiveWorkTimer extends StatefulWidget {
   final Color color;
 
   @override
-  State<_LiveWorkTimer> createState() => _LiveWorkTimerState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (checkInAt == null) return const SizedBox.shrink();
 
-class _LiveWorkTimerState extends State<_LiveWorkTimer> {
-  Timer? _ticker;
-  Duration _elapsed = Duration.zero;
-
-  @override
-  void initState() {
-    super.initState();
-    _recompute();
-    _syncTicker();
-  }
-
-  @override
-  void didUpdateWidget(covariant _LiveWorkTimer oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.checkInAt != widget.checkInAt || oldWidget.checkOutAt != widget.checkOutAt) {
-      _recompute();
-      _syncTicker();
+    // Only watch the ticker while still checked in — once checked out, the duration is
+    // fixed, and watching would just waste a timer running in the background forever.
+    if (checkOutAt == null) {
+      ref.watch(_secondTickerProvider);
     }
-  }
 
-  void _recompute() {
-    final checkIn = parseServerUtc(widget.checkInAt);
-    if (checkIn == null) {
-      _elapsed = Duration.zero;
-      return;
-    }
-    final end = parseServerUtc(widget.checkOutAt) ?? DateTime.now();
+    final checkIn = parseServerUtc(checkInAt);
+    if (checkIn == null) return const SizedBox.shrink();
+    final end = parseServerUtc(checkOutAt) ?? DateTime.now();
     final diff = end.difference(checkIn);
-    _elapsed = diff.isNegative ? Duration.zero : diff;
-  }
+    final elapsed = diff.isNegative ? Duration.zero : diff;
 
-  void _syncTicker() {
-    final isRunning = widget.checkInAt != null && widget.checkOutAt == null;
-    if (isRunning && _ticker == null) {
-      _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
-        if (!mounted) return;
-        setState(_recompute);
-      });
-    } else if (!isRunning && _ticker != null) {
-      _ticker?.cancel();
-      _ticker = null;
-    }
-  }
-
-  @override
-  void dispose() {
-    _ticker?.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget.checkInAt == null) return const SizedBox.shrink();
-
-    final h = _elapsed.inHours.toString().padLeft(2, '0');
-    final m = (_elapsed.inMinutes % 60).toString().padLeft(2, '0');
-    final s = (_elapsed.inSeconds % 60).toString().padLeft(2, '0');
+    final h = elapsed.inHours.toString().padLeft(2, '0');
+    final m = (elapsed.inMinutes % 60).toString().padLeft(2, '0');
+    final s = (elapsed.inSeconds % 60).toString().padLeft(2, '0');
 
     return Column(
       children: [
         Text(
           '$h:$m:$s',
           style: TextStyle(
-            color: widget.color,
+            color: color,
             fontSize: 32,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.2,
@@ -666,8 +629,8 @@ class _LiveWorkTimerState extends State<_LiveWorkTimer> {
         ),
         const SizedBox(height: 2),
         Text(
-          widget.checkOutAt == null ? 'Time since check-in' : 'Total time worked today',
-          style: TextStyle(color: widget.color, fontSize: 12, fontWeight: FontWeight.w600),
+          checkOutAt == null ? 'Time since check-in' : 'Total time worked today',
+          style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w600),
         ),
       ],
     );
