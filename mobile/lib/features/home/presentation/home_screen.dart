@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -552,7 +553,7 @@ class _HomeHeader extends StatelessWidget {
                   ),
                   Text(
                     DateFormat('d MMM yyyy').format(DateTime.now()),
-                    style: TextStyle(color: AppColors.white.withValues(alpha: 0.85), fontSize: 11),
+                    style: const TextStyle(color: AppColors.gray, fontSize: 11),
                   ),
                 ],
               ),
@@ -660,13 +661,13 @@ class _LiveWorkTimerState extends State<_LiveWorkTimer> {
             fontSize: 32,
             fontWeight: FontWeight.w800,
             letterSpacing: 1.2,
-            fontFeatures: const [FontFeature.tabularFigures()],
+            fontFeatures: const [ui.FontFeature.tabularFigures()],
           ),
         ),
         const SizedBox(height: 2),
         Text(
           widget.checkOutAt == null ? 'Time since check-in' : 'Total time worked today',
-          style: TextStyle(color: widget.color.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600),
+          style: TextStyle(color: widget.color, fontSize: 12, fontWeight: FontWeight.w600),
         ),
       ],
     );
