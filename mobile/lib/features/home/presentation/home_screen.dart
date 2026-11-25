@@ -1,8 +1,10 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/attendance_support/geofence_prompt_service.dart';
 import '../../../core/attendance_support/wifi_checkin_service.dart';
@@ -231,19 +233,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                 style: TextStyle(color: fgColor, fontSize: 13),
                               ),
                             ],
-                            const SizedBox(height: 12),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: TextButton(
-                                style: TextButton.styleFrom(
-                                  foregroundColor: fgColor,
-                                  padding: EdgeInsets.zero,
-                                  minimumSize: const Size(0, 0),
+                            if (today.valueOrNull?.checkInAt != null) ...[
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                width: double.infinity,
+                                child: Center(
+                                  child: _LiveWorkTimer(
+                                    checkInAt: today.valueOrNull?.checkInAt,
+                                    checkOutAt: today.valueOrNull?.checkOutAt,
+                                    color: fgColor,
+                                  ),
                                 ),
-                                onPressed: () => context.push(RoutePaths.attendance),
-                                child: const Text('View attendance history'),
                               ),
-                            ),
+                            ],
                           ],
                         ),
                       );
@@ -517,31 +519,156 @@ class _HomeHeader extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Welcome back',
-                style: TextStyle(color: AppColors.white, fontSize: 13),
-              ),
-              Text(
-                name,
-                style: const TextStyle(
-                  color: AppColors.white,
-                  fontSize: 24,
-                  fontWeight: FontWeight.w800,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Welcome back',
+                  style: TextStyle(color: AppColors.white, fontSize: 13),
                 ),
+                Text(
+                  name,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    color: AppColors.white,
+                    fontSize: 24,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    DateFormat('EEEE').format(DateTime.now()),
+                    style: const TextStyle(color: AppColors.white, fontSize: 13, fontWeight: FontWeight.w600),
+                  ),
+                  Text(
+                    DateFormat('d MMM yyyy').format(DateTime.now()),
+                    style: TextStyle(color: AppColors.white.withValues(alpha: 0.85), fontSize: 11),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 10),
+              // Replaces the Home card's old "View attendance history" text link —
+              // same destination, now reachable from the header on every screen state.
+              IconButton(
+                onPressed: () => context.push(RoutePaths.attendance),
+                icon: const Icon(Icons.calendar_today_outlined, color: AppColors.white),
+                visualDensity: VisualDensity.compact,
+              ),
+              const SizedBox(width: 6),
+              CircleAvatar(
+                radius: 22,
+                backgroundColor: AppColors.white,
+                backgroundImage: photoPath != null ? FileImage(File(photoPath!)) : null,
+                child: photoPath == null ? const Icon(Icons.person_outline, color: AppColors.carmine) : null,
               ),
             ],
           ),
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: AppColors.white,
-            backgroundImage: photoPath != null ? FileImage(File(photoPath!)) : null,
-            child: photoPath == null ? const Icon(Icons.person_outline, color: AppColors.carmine) : null,
-          ),
         ],
       ),
+    );
+  }
+}
+
+// Ticks once a second while checked in (start = check-in time, now), then freezes at the
+// final duration once checked out (start = check-in time, end = check-out time). Replaces
+// the old "View attendance history" link with a live view of today's elapsed work time.
+class _LiveWorkTimer extends StatefulWidget {
+  const _LiveWorkTimer({required this.checkInAt, required this.checkOutAt, required this.color});
+
+  final String? checkInAt;
+  final String? checkOutAt;
+  final Color color;
+
+  @override
+  State<_LiveWorkTimer> createState() => _LiveWorkTimerState();
+}
+
+class _LiveWorkTimerState extends State<_LiveWorkTimer> {
+  Timer? _ticker;
+  Duration _elapsed = Duration.zero;
+
+  @override
+  void initState() {
+    super.initState();
+    _recompute();
+    _syncTicker();
+  }
+
+  @override
+  void didUpdateWidget(covariant _LiveWorkTimer oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.checkInAt != widget.checkInAt || oldWidget.checkOutAt != widget.checkOutAt) {
+      _recompute();
+      _syncTicker();
+    }
+  }
+
+  void _recompute() {
+    final checkIn = parseServerUtc(widget.checkInAt);
+    if (checkIn == null) {
+      _elapsed = Duration.zero;
+      return;
+    }
+    final end = parseServerUtc(widget.checkOutAt) ?? DateTime.now();
+    final diff = end.difference(checkIn);
+    _elapsed = diff.isNegative ? Duration.zero : diff;
+  }
+
+  void _syncTicker() {
+    final isRunning = widget.checkInAt != null && widget.checkOutAt == null;
+    if (isRunning && _ticker == null) {
+      _ticker = Timer.periodic(const Duration(seconds: 1), (_) {
+        if (!mounted) return;
+        setState(_recompute);
+      });
+    } else if (!isRunning && _ticker != null) {
+      _ticker?.cancel();
+      _ticker = null;
+    }
+  }
+
+  @override
+  void dispose() {
+    _ticker?.cancel();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.checkInAt == null) return const SizedBox.shrink();
+
+    final h = _elapsed.inHours.toString().padLeft(2, '0');
+    final m = (_elapsed.inMinutes % 60).toString().padLeft(2, '0');
+    final s = (_elapsed.inSeconds % 60).toString().padLeft(2, '0');
+
+    return Column(
+      children: [
+        Text(
+          '$h:$m:$s',
+          style: TextStyle(
+            color: widget.color,
+            fontSize: 32,
+            fontWeight: FontWeight.w800,
+            letterSpacing: 1.2,
+            fontFeatures: const [FontFeature.tabularFigures()],
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          widget.checkOutAt == null ? 'Time since check-in' : 'Total time worked today',
+          style: TextStyle(color: widget.color.withValues(alpha: 0.8), fontSize: 12, fontWeight: FontWeight.w600),
+        ),
+      ],
     );
   }
 }

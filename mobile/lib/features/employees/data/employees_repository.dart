@@ -22,7 +22,10 @@ class EmployeesRepository {
     return items.map((e) => OrgChartNode.fromJson(e as Map<String, dynamic>)).toList();
   }
 
-  Future<List<Celebration>> fetchUpcomingCelebrations({int withinDays = 30}) async {
+  // Home screen's celebration banner only wants a 2-day heads-up, not a full month —
+  // the backend already rolls a date to next year the day after it passes, so narrowing
+  // this window is what actually stops a birthday from lingering on Home for weeks.
+  Future<List<Celebration>> fetchUpcomingCelebrations({int withinDays = 2}) async {
     final items = await _client.getList('/employees/celebrations', queryParameters: {
       'withinDays': withinDays,
     });
