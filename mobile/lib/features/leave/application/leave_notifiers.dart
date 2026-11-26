@@ -47,6 +47,7 @@ class LeaveHistoryNotifier extends AsyncNotifier<PagedResult<LeaveApplication>> 
   Future<void> cancel(String leaveId) async {
     await ref.read(leaveRepositoryProvider).cancel(leaveId);
     ref.invalidateSelf();
+    ref.invalidate(leaveBalancesNotifierProvider);
   }
 }
 

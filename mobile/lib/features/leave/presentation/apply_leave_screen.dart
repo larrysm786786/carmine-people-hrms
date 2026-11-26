@@ -56,7 +56,11 @@ class _ApplyLeaveScreenState extends ConsumerState<ApplyLeaveScreen> {
           endDate: _endDate!.toIso8601String().split('T').first,
           reason: _reasonController.text.trim(),
         );
-    if (success && mounted) Navigator.of(context).pop();
+    if (success && mounted) {
+      ref.invalidate(leaveBalancesNotifierProvider);
+      ref.invalidate(leaveHistoryNotifierProvider);
+      Navigator.of(context).pop();
+    }
   }
 
   @override
